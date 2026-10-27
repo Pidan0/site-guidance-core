@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "name": "演示工厂英文与中文询盘站",
+  "request": "用提供的产品资料做一个中英文网站，客户能联系销售，代码由我们接管。",
+  "goals": ["brand", "inquiry"],
+  "languages": ["en", "zh-CN"],
+  "features": { "catalog": true, "onlinePayment": false, "internalOrders": false, "contentEditor": "developer", "forms": false },
+  "ownership": { "sourceCode": true, "selfHost": true },
+  "operations": { "technicalTeam": true, "maintenanceOwner": "演示交付团队" },
+  "constraints": { "hostingRegion": "overseas" }
+}

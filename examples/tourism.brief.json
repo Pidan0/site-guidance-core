@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "name": "演示景区介绍与购票引导", "goals": ["brand", "tickets"], "languages": ["zh-CN"],
+  "features": { "onlinePayment": false, "internalOrders": false, "externalCheckoutUrl": "https://tickets.example.com/event" },
+  "ownership": { "sourceCode": true, "selfHost": false },
+  "operations": { "technicalTeam": true, "maintenanceOwner": "景区营销与交付团队" }
+}

@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "name": "演示内容发布站", "goals": ["content"], "languages": ["zh-CN"],
+  "features": { "contentEditor": "client", "onlinePayment": false },
+  "ownership": { "sourceCode": true, "selfHost": true },
+  "operations": { "technicalTeam": true, "maintenanceOwner": "内容与工程团队" }
+}

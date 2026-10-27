@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "capabilities": [
+    { "id": "intake", "name": "需求归一与关键追问", "status": "implemented", "implementation": "src/planner.mjs", "evidence": "test/planner.test.mjs" },
+    { "id": "routing", "name": "按需求选择路线并解释原因", "status": "implemented", "implementation": "src/planner.mjs", "evidence": "test/planner.test.mjs" },
+    { "id": "gap-analysis", "name": "逐项能力差距与实施任务", "status": "implemented", "implementation": "src/planner.mjs", "evidence": "test/planner.test.mjs" },
+    { "id": "static-site", "name": "多页展示、产品目录与联系方式", "status": "implemented", "implementation": "src/renderer.mjs", "evidence": "test/renderer.test.mjs" },
+    { "id": "multilingual", "name": "中文与英文的显式译文输出", "status": "implemented", "implementation": "src/renderer.mjs", "evidence": "test/renderer.test.mjs" },
+    { "id": "source-editing", "name": "持久化内容源与局部修改", "status": "implemented", "implementation": "src/workspace.mjs", "evidence": "test/workspace.test.mjs" },
+    { "id": "revisions", "name": "不可变版本、完整性核对与回退", "status": "implemented", "implementation": "src/workspace.mjs", "evidence": "test/workspace.test.mjs" },
+    { "id": "quality", "name": "本地页面、链接与搜索结构检查", "status": "implemented", "implementation": "src/checker.mjs", "evidence": "test/renderer.test.mjs" },
+    { "id": "handoff", "name": "导出交付包和上线准备包", "status": "implemented", "implementation": "src/workspace.mjs", "evidence": "test/workspace.test.mjs" },
+    { "id": "external-checkout", "name": "链接到外部购买或预约入口", "status": "implemented", "implementation": "src/renderer.mjs", "evidence": "test/renderer.test.mjs" },
+    { "id": "forms", "name": "真实表单收集与送达", "status": "integration_required", "guide": "guides/integrations.md" },
+    { "id": "commerce", "name": "商品交易、支付、订单与库存后台", "status": "integration_required", "guide": "guides/commerce.md" },
+    { "id": "tickets", "name": "场次容量、票务、核销与退款", "status": "integration_required", "guide": "guides/tickets-booking.md" },
+    { "id": "booking", "name": "预约时段、容量、改期与取消", "status": "integration_required", "guide": "guides/tickets-booking.md" },
+    { "id": "cms", "name": "客户可登录的内容管理后台", "status": "integration_required", "guide": "guides/content-app.md" },
+    { "id": "application", "name": "会员、权限和业务应用后台", "status": "integration_required", "guide": "guides/content-app.md" },
+    { "id": "live-deployment", "name": "公网部署、DNS与运行验收", "status": "manual_verification", "guide": "guides/publishing.md" },
+    { "id": "visual-editor", "name": "可视化拖拽编辑器", "status": "planned", "guide": "docs/ROADMAP.md" },
+    { "id": "media-assets", "name": "图片与视频资源管理和授权记录", "status": "planned", "guide": "docs/ROADMAP.md" },
+    { "id": "additional-locales", "name": "中文英文之外的界面翻译与审核", "status": "planned", "guide": "docs/ROADMAP.md" }
+  ]
+}

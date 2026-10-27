@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "routes": [
+    { "id": "discovery", "name": "先澄清目标", "execution": "discovery", "guide": "guides/intake.md", "candidates": [], "summary": "关键业务目标尚未明确，先取得会改变路线的信息。" },
+    { "id": "static-owned", "name": "自有展示与询盘站", "execution": "local", "guide": "guides/static-site.md", "candidates": ["本核心静态生成器"], "summary": "用可持久化内容生成可修改、可交接的展示站。" },
+    { "id": "tourism-referral", "name": "文旅内容站与已有购票入口", "execution": "local", "guide": "guides/tickets-booking.md", "candidates": ["本核心静态生成器", "客户现有票务系统"], "summary": "站点解释体验和票品，购买与订单继续由外部票务系统承接。" },
+    { "id": "booking-referral", "name": "服务展示与已有预约入口", "execution": "local", "guide": "guides/tickets-booking.md", "candidates": ["本核心静态生成器", "客户现有预约系统"], "summary": "介绍服务并引导到已存在的预约入口。" },
+    { "id": "commerce-referral", "name": "展示站与已有商城入口", "execution": "local", "guide": "guides/commerce.md", "candidates": ["本核心静态生成器", "客户现有商城"], "summary": "网站只介绍商品并链接已有商城，支付和订单在外部系统完成。" },
+    { "id": "managed-commerce", "name": "成熟平台建店", "execution": "guided", "guide": "guides/commerce.md", "candidates": ["Shopify", "SHOPLINE", "Shoplazza"], "summary": "在成熟平台配置店面、支付、订单和履约；具体平台需结合地区与账户核实。" },
+    { "id": "hybrid-commerce", "name": "自有店面与外部交易后台", "execution": "guided", "guide": "guides/commerce.md", "candidates": ["自有前台与成熟交易API"], "summary": "保留自有前台代码，交易交给外部服务；需要另行实现和验证连接器。" },
+    { "id": "owned-commerce", "name": "自托管电商底座", "execution": "guided", "guide": "guides/commerce.md", "candidates": ["WooCommerce", "Medusa", "Saleor", "Vendure"], "summary": "按自托管约束评估电商底座、许可证、支付连接器和长期运维。" },
+    { "id": "ticketing-integration", "name": "票务系统专项接入", "execution": "guided", "guide": "guides/tickets-booking.md", "candidates": ["客户票务供应商或适用行业系统"], "summary": "先核对日期、场次、容量、核销、改退和对账，不能用普通商品页代替票务系统。" },
+    { "id": "managed-booking", "name": "预约服务接入", "execution": "guided", "guide": "guides/tickets-booking.md", "candidates": ["适用的预约平台或已有供应商"], "summary": "核对时区、时段容量、支付、改期及取消规则后接入预约系统。" },
+    { "id": "cms-owned", "name": "带内容后台的网站", "execution": "guided", "guide": "guides/content-app.md", "candidates": ["Payload", "WordPress", "适用CMS"], "summary": "客户需要自行登录改内容时，接入内容模型、权限、预览与发布后台。" },
+    { "id": "custom-app", "name": "业务应用专项设计", "execution": "guided", "guide": "guides/content-app.md", "candidates": ["按业务模型选择应用方案"], "summary": "先设计用户、权限、数据、操作与异常状态，再评估应用开发。" },
+    { "id": "existing-platform", "name": "保留并改进已有平台", "execution": "guided", "guide": "guides/migration.md", "candidates": ["客户现有平台"], "summary": "现有系统能满足需求时，优先配置和改进，避免无依据重建。" }
+  ]
+}

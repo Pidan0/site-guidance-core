@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "name": "演示自托管商城", "goals": ["sales"], "languages": ["en"],
+  "features": { "onlinePayment": true, "internalOrders": true, "inventory": true },
+  "ownership": { "sourceCode": true, "selfHost": true },
+  "operations": { "technicalTeam": true, "maintenanceOwner": "工程与运营团队" }
+}

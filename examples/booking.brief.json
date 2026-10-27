@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "name": "演示服务预约", "goals": ["booking"], "languages": ["zh-CN"],
+  "features": { "onlinePayment": true, "internalOrders": true },
+  "ownership": { "selfHost": false },
+  "operations": { "technicalTeam": false, "maintenanceOwner": "服务商运营团队" }
+}

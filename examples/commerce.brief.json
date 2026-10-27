@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "name": "演示品牌商城", "goals": ["sales"], "languages": ["zh-CN"],
+  "features": { "onlinePayment": true, "internalOrders": true, "inventory": true },
+  "ownership": { "sourceCode": false, "selfHost": false },
+  "operations": { "technicalTeam": false, "maintenanceOwner": "品牌运营团队" }
+}

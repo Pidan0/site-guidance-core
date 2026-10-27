@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "建站需求",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "name",
+    "goals"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "enum": [
+        1
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "request": {
+      "type": "string",
+      "maxLength": 10000
+    },
+    "goals": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 8,
+      "items": {
+        "enum": [
+          "brand",
+          "inquiry",
+          "sales",
+          "tickets",
+          "booking",
+          "content",
+          "membership",
+          "application"
+        ]
+      }
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$"
+      }
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "catalog": {
+          "type": "boolean"
+        },
+        "onlinePayment": {
+          "type": "boolean"
+        },
+        "internalOrders": {
+          "type": "boolean"
+        },
+        "inventory": {
+          "type": "boolean"
+        },
+        "customerLogin": {
+          "type": "boolean"
+        },
+        "contentEditor": {
+          "enum": [
+            "developer",
+            "client",
+            "none"
+          ]
+        },
+        "externalCheckoutUrl": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "externalBookingUrl": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "forms": {
+          "type": "boolean"
+        },
+        "media": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sourceCode": {
+          "type": "boolean"
+        },
+        "selfHost": {
+          "type": "boolean"
+        }
+      }
+    },
+    "operations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "technicalTeam": {
+          "type": "boolean"
+        },
+        "maintenanceOwner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "existing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "meetsNeeds": {
+          "type": "boolean"
+        },
+        "migrationRequired": {
+          "type": "boolean"
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hostingRegion": {
+          "enum": [
+            "mainland",
+            "overseas",
+            "unspecified"
+          ]
+        },
+        "budget": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "deadline": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "baseUrl": "https://demo.example.com/catalog/",
+  "defaultLocale": "en",
+  "contact": { "email": "demo@example.com" },
+  "theme": { "primary": "#244bb8" },
+  "locales": {
+    "en": {
+      "brand": "Demo Factory",
+      "headline": "Understand our products, then contact our team.",
+      "summary": "A fictional demonstration of a product and inquiry website. All information is supplied for testing only.",
+      "about": "This company and its products are fictional examples.\n\nReplace every piece of content and verify it before using the project for a customer.",
+      "products": [{ "id": "sample-bottle", "name": "Sample bottle", "summary": "A fictional product used to demonstrate a catalog page.", "description": "No capacity, certification, price or delivery promise is implied. Provide confirmed customer information here." }],
+      "faq": [{ "question": "Can I buy on this site?", "answer": "This demonstration is a static inquiry website. It does not include checkout or order processing." }]
+    },
+    "zh-CN": {
+      "brand": "演示工厂",
+      "headline": "先看懂产品，再联系团队。",
+      "summary": "这是用于测试的虚构产品询盘站示例。内容仅用于展示生成与交付流程。",
+      "about": "公司和产品均为虚构示例。\n\n用于真实客户前，请逐项替换资料并完成核对。",
+      "products": [{ "id": "sample-bottle", "name": "示例水杯", "summary": "用于演示产品目录的虚构商品。", "description": "此处没有默认容量、认证、价格或发货承诺。请填写客户确认过的实际资料。" }],
+      "faq": [{ "question": "这个站点可以直接购买吗？", "answer": "当前示例为静态询盘网站，不包含收款和订单处理。" }]
+    }
+  }
+}

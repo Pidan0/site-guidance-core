@@ -1,0 +1,16 @@
+{
+  "name": "site-guidance-core",
+  "version": "0.1.0",
+  "description": "需求驱动的建站指导、能力判断与可交付静态站核心",
+  "type": "module",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": { "node": ">=22" },
+  "bin": { "site-core": "bin/site-core.mjs" },
+  "exports": "./src/index.mjs",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "demo": "node bin/site-core.mjs demo --out .output/demo",
+    "check:knowledge": "node bin/site-core.mjs catalog"
+  }
+}
