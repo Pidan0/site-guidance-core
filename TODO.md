@@ -9,8 +9,8 @@
 ## 一、0.2.0 收尾
 
 - [x] PR #5 `integration/0.2.0 → main` 已合并，同时合入了 main 上的 MIT 开源提交。
-- [ ] 关闭 #1 到 #4，它们的内容已包含在 #5 中。
-- [ ] 删除临时分支：`release/0.2.0`、`feat/foundation`、`feat/mcp`、`feat/execution`、`feat/playbooks`、`integration/0.2.0`。
+- [x] 已关闭 #1 到 #4，它们的内容已包含在 #5 中。
+- [x] 已删除临时分支：`release/0.2.0`、`feat/foundation`、`feat/mcp`、`feat/execution`、`feat/playbooks`、`integration/0.2.0`。
 - [ ] 通知使用方以下三项行为变化：
   - 卖货、票务或预约已有外部入口承接时，不再要求接入对应后台。
   - `questions[].options` 从字符串数组改为对象数组，是破坏性变化。
