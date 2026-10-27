@@ -5,7 +5,10 @@ import { example } from './helpers.mjs';
 import { access } from 'node:fs/promises';
 
 test('同一核心按真实需求返回不同路线，而非全部推荐静态站', async () => {
-  const expected = { b2b: 'static-owned', commerce: 'managed-commerce', 'self-hosted-commerce': 'owned-commerce', tourism: 'tourism-referral', booking: 'managed-booking', content: 'cms-owned', unknown: 'discovery' };
+  const expected = {
+    b2b: 'static-owned', commerce: 'managed-commerce', 'self-hosted-commerce': 'owned-commerce', tourism: 'tourism-referral',
+    booking: 'managed-booking', content: 'cms-owned', unknown: 'discovery'
+  };
   for (const [name, id] of Object.entries(expected)) assert.equal(planSite(await example(name)).route.id, id);
 });
 test('信息不足不把未知写成false或宣称可开始生成', async () => {
@@ -17,13 +20,21 @@ test('自托管与无人维护冲突必须进入计划', async () => {
   const b = await example('b2b'); b.operations.technicalTeam = false;
   const p = planSite(b); assert.equal(p.readiness.localBuild, 'blocked'); assert.equal(p.conflicts[0].id, 'operations-owner');
 });
-test('在线表单是外部缺口，不能用普通链接伪装为收集后台', async () => {
+test('需要询盘表单时可本地构建，计划写明送达由所选接收服务负责', async () => {
   const b = await example('b2b'); b.features.forms = true;
-  const p = planSite(b); assert.equal(p.readiness.localBuild, 'blocked'); assert.ok(p.gaps.some(c => c.id === 'forms' && c.status === 'integration_required'));
+  const p = planSite(b), forms = p.capabilities.find(c => c.id === 'forms');
+  assert.equal(p.readiness.localBuild, 'ready'); assert.equal(forms.status, 'implemented'); assert.ok(!p.gaps.find(c => c.id === 'forms'));
+  assert.match(forms.boundary, /送达/); assert.ok(p.warnings.some(x => x.includes('review form')));
 });
-test('明确需要媒体资源时，不能悄悄降级成文本网站', async () => {
+test('需要图片时可本地构建，授权记录明确为自报', async () => {
   const b = await example('b2b'); b.features.media = true;
-  const p = planSite(b); assert.equal(p.readiness.localBuild, 'blocked'); assert.ok(p.gaps.find(x => x.id === 'media-assets'));
+  const p = planSite(b); assert.equal(p.readiness.localBuild, 'ready');
+  assert.equal(p.capabilities.find(x => x.id === 'media-assets').status, 'implemented'); assert.ok(p.warnings.some(x => x.includes('自报')));
+});
+test('完整示例（图片+表单）的计划为static-owned且本地可构建，上线仍待人工验收', async () => {
+  const p = planSite(await example('b2b-full'));
+  assert.equal(p.route.id, 'static-owned'); assert.equal(p.readiness.localBuild, 'ready'); assert.equal(p.readiness.publication, 'not_verified');
+  assert.deepEqual(p.gaps.map(c => c.id), ['live-deployment']);
 });
 test('票务是否本站承接未知时追问，不能直接当作外链售票', async () => {
   const b = await example('tourism'); delete b.features.onlinePayment;
@@ -40,7 +51,8 @@ test('客户需要账号时优先考虑业务后台', async () => {
 test('现有平台已可满足时保留，明确迁移则不隐去迁移任务', async () => {
   const b = await example('commerce'); b.existing = { platform: '已有商城', meetsNeeds: true };
   assert.equal(planSite(b).route.id, 'existing-platform');
-  b.existing.migrationRequired = true; const p = planSite(b); assert.notEqual(p.route.id, 'existing-platform'); assert.ok(p.warnings.some(x => x.includes('重定向')));
+  b.existing.migrationRequired = true; const p = planSite(b);
+  assert.notEqual(p.route.id, 'existing-platform'); assert.ok(p.warnings.some(x => x.includes('重定向')));
 });
 test('自有前台代码和自托管交易系统是不同约束', async () => {
   const b = await example('commerce'); b.ownership.sourceCode = true;
@@ -81,5 +93,7 @@ test('能力目录状态有区分，每条本地实现可追溯测试', () => {
   assert.ok(capabilities.some(c => c.status === 'planned'));
 });
 test('每条目录指向真实实现、测试或指引文件', async () => {
-  for (const item of [...capabilities, ...routes]) for (const key of ['implementation', 'evidence', 'guide']) if (item[key]) await access(new URL(`../${item[key]}`, import.meta.url));
+  for (const item of [...capabilities, ...routes]) for (const key of ['implementation', 'evidence', 'guide']) {
+    if (item[key]) await access(new URL(`../${item[key]}`, import.meta.url));
+  }
 });

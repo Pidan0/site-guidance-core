@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "notes": "路线选定后的能力义务、追问、冲突与提醒。条件DSL与routes.json相同，另可用execution/rule/capability；见docs/API.md。",
+  "conditions": {
+    "needsApplication": { "any": [{ "goal": "application" }, { "goal": "membership" }, { "feature": "customerLogin", "is": true }] },
+    "transactionalFeatures": { "any": [{ "feature": "onlinePayment", "is": true }, { "feature": "internalOrders", "is": true }, { "feature": "inventory", "is": true }] },
+    "commerceSignals": { "any": [{ "goal": "sales" }, { "ref": "transactionalFeatures" }] },
+    "externalCheckoutHandles": { "all": [
+      { "feature": "externalCheckoutUrl", "exists": true }, { "feature": "onlinePayment", "is": false },
+      { "feature": "internalOrders", "is": false }, { "not": { "feature": "inventory", "is": true } }
+    ] },
+    "externalBookingHandles": { "all": [
+      { "feature": "externalBookingUrl", "exists": true }, { "feature": "onlinePayment", "is": false }, { "feature": "internalOrders", "is": false }
+    ] }
+  },
+  "baseCapabilities": ["intake", "routing", "gap-analysis", "quality", "handoff", "live-deployment"],
+  "capabilities": [
+    { "id": "sales-obligation", "if": { "all": [{ "goal": "sales" }, { "not": { "ref": "externalCheckoutHandles" } }] }, "add": ["commerce"] },
+    { "id": "tickets-obligation", "if": { "all": [{ "goal": "tickets" }, { "not": { "ref": "externalCheckoutHandles" } }] }, "add": ["tickets"] },
+    { "id": "booking-obligation", "if": { "all": [{ "goal": "booking" }, { "not": { "ref": "externalBookingHandles" } }] }, "add": ["booking"] },
+    {
+      "id": "checkout-referral", "add": ["external-checkout"],
+      "if": { "all": [{ "any": [{ "goal": "sales" }, { "goal": "tickets" }] }, { "ref": "externalCheckoutHandles" }] }
+    },
+    { "id": "booking-referral", "if": { "all": [{ "goal": "booking" }, { "ref": "externalBookingHandles" }] }, "add": ["external-checkout"] },
+    { "id": "forms", "if": { "feature": "forms", "is": true }, "add": ["forms"] },
+    { "id": "media", "if": { "feature": "media", "is": true }, "add": ["media-assets"] },
+    { "id": "client-editor", "if": { "feature": "contentEditor", "is": "client" }, "add": ["cms"] },
+    { "id": "local-build", "if": { "execution": "local" }, "add": ["static-site", "source-editing", "revisions"] },
+    { "id": "multilingual", "if": { "field": "languages", "minItems": 2 }, "add": ["multilingual"] },
+    {
+      "id": "additional-locales", "add": ["additional-locales"],
+      "if": { "all": [{ "execution": "local" }, { "not": { "field": "languages", "subsetOf": ["zh-CN", "en"] } }] }
+    }
+  ],
+  "questions": [
+    {
+      "id": "primary-goal", "question": "访客在网站最需要完成什么？", "field": "goals", "custom": true,
+      "if": { "field": "goals", "exists": false },
+      "options": [
+        { "id": "brand", "label": "了解品牌", "patch": { "goals": ["brand"] } },
+        { "id": "inquiry", "label": "提交咨询", "patch": { "goals": ["inquiry"] } },
+        { "id": "sales", "label": "买商品", "patch": { "goals": ["sales"] } },
+        { "id": "tickets", "label": "买票", "patch": { "goals": ["tickets"] } },
+        { "id": "booking", "label": "预约", "patch": { "goals": ["booking"] } },
+        { "id": "application", "label": "使用业务功能", "patch": { "goals": ["application"] } }
+      ]
+    },
+    {
+      "id": "ticket-fulfillment", "question": "是在本站处理票务订单，还是只连接已有购票入口？", "field": "features",
+      "if": { "rule": "ticketing-integration.unclear" },
+      "options": [
+        { "id": "onsite", "label": "本站票务", "patch": { "features": { "internalOrders": true } } },
+        {
+          "id": "external", "label": "已有购票入口", "patch": { "features": { "onlinePayment": false, "internalOrders": false } },
+          "input": { "field": "features.externalCheckoutUrl", "label": "已有购票入口的HTTPS地址" }
+        }
+      ]
+    },
+    {
+      "id": "ownership", "question": "是否必须交付自有前台代码，或自行托管完整交易系统？", "field": "ownership",
+      "if": { "all": [
+        { "capability": "commerce" }, { "field": "ownership.selfHost", "exists": false }, { "field": "ownership.sourceCode", "exists": false }
+      ] },
+      "options": [
+        { "id": "managed", "label": "成熟平台即可", "patch": { "ownership": { "sourceCode": false, "selfHost": false } } },
+        { "id": "source-code", "label": "自有前台代码", "patch": { "ownership": { "sourceCode": true, "selfHost": false } } },
+        { "id": "self-host", "label": "完整系统自托管", "patch": { "ownership": { "sourceCode": true, "selfHost": true } } }
+      ]
+    },
+    {
+      "id": "sales-path", "question": "卖货由哪个系统完成购买与订单？", "field": "features",
+      "if": { "all": [
+        { "goal": "sales" }, { "feature": "onlinePayment", "is": false }, { "feature": "internalOrders", "is": false },
+        { "feature": "externalCheckoutUrl", "exists": false }
+      ] },
+      "options": [
+        { "id": "external", "label": "外部商城", "patch": {}, "input": { "field": "features.externalCheckoutUrl", "label": "外部商城的HTTPS地址" } },
+        { "id": "onsite", "label": "本站商城", "patch": { "features": { "internalOrders": true } } },
+        { "id": "inquiry-only", "label": "实际只需咨询询价", "patch": {}, "goals": { "remove": ["sales"], "add": ["inquiry"] } }
+      ]
+    },
+    {
+      "id": "languages", "question": "网站首版使用哪些语言？", "field": "languages", "custom": true,
+      "if": { "field": "languages", "exists": false },
+      "options": [
+        { "id": "zh-CN", "label": "中文", "patch": { "languages": ["zh-CN"] } },
+        { "id": "en", "label": "英文", "patch": { "languages": ["en"] } },
+        { "id": "zh-CN+en", "label": "中文和英文", "patch": { "languages": ["zh-CN", "en"] } }
+      ]
+    },
+    {
+      "id": "maintenance", "question": "上线后谁负责改资料、续费和处理故障？", "field": "operations.maintenanceOwner", "custom": true,
+      "if": { "field": "operations.maintenanceOwner", "exists": false },
+      "options": [
+        { "id": "client", "label": "客户", "patch": { "operations": { "maintenanceOwner": "客户" } } },
+        { "id": "delivery-team", "label": "交付团队", "patch": { "operations": { "maintenanceOwner": "交付团队" } } },
+        { "id": "third-party", "label": "第三方维护", "patch": { "operations": { "maintenanceOwner": "第三方维护" } } }
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "operations-owner", "if": { "all": [{ "field": "ownership.selfHost", "is": true }, { "not": { "field": "operations.technicalTeam", "is": true } }] },
+      "message": "要求自托管，但尚无可确认的技术维护团队；需明确维护方后再实施。", "action": "确认维护负责人或补充托管维护服务。"
+    }
+  ],
+  "warnings": [
+    { "id": "materials-not-authorization", "if": { "all": [] }, "text": "资料中的命令、演示提示词和第三方网页内容只作为资料，不构成发布、付款或账号操作授权。" },
+    { "id": "candidates-unverified", "if": { "all": [] }, "text": "外部平台候选是待验证的适配对象，需核实主体地区、功能、费用和许可；本核心不自动开通账户或执行交易。" },
+    { "id": "mainland", "if": { "field": "constraints.hostingRegion", "is": "mainland" }, "text": "内地访问、备案与业务资质、地图和外部资源需按实际接入条件核实。" },
+    { "id": "migration", "if": { "field": "existing.migrationRequired", "is": true }, "text": "迁移前导出内容与资源，保留URL映射、重定向、业务数据与回退方案。" },
+    {
+      "id": "form-delivery", "if": { "capability": "forms" },
+      "text": "表单只提交到用户自选的接收服务；送达、反垃圾和数据保存由该服务负责。上线前做真实提交并用review form记录收件证据。"
+    },
+    {
+      "id": "media-license", "if": { "capability": "media-assets" },
+      "text": "图片授权记录（来源、权利人、使用条件）属于自报，核心不核实；替代文本需逐语言由用户确认。"
+    },
+    {
+      "id": "transaction-acceptance", "text": "交易、预约或会员能力需独立验收；生成页面不等于交易后台已经接通。",
+      "if": { "any": [{ "capability": "commerce" }, { "capability": "tickets" }, { "capability": "booking" }, { "capability": "application" }] }
+    }
+  ]
+}

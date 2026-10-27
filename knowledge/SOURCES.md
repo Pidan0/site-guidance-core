@@ -13,6 +13,8 @@
 | 迁移边界 | [Webflow导出](https://help.webflow.com/hc/en-us/articles/33961386739347-How-do-I-export-my-Webflow-site-code)、[Framer导出](https://www.framer.com/help/articles/can-i-export-my-website-to-html-and-self-host-it/)、[Wix托管](https://support.wix.com/en/article/exporting-or-embedding-your-wix-site-elsewhere) | 不能把内容或静态代码导出当完整业务迁移 |
 | 支付 | [Stripe Webhooks](https://docs.stripe.com/webhooks)、[Shopify支持地区](https://help.shopify.com/en/manual/payments/shopify-payments/supported-countries) | 准入、签名、异步状态和重复事件需实际实施 |
 | 多语言与性能 | [Google多语言](https://developers.google.com/search/docs/specialty/international/localized-versions)、[Web Vitals](https://web.dev/articles/vitals) | 基础结构检查不承诺排名或真实用户性能 |
+| GitHub Pages发布包（2026-10-27核对） | [Actions发布Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)、[自定义域名](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)、[configure-pages](https://github.com/actions/configure-pages)、[upload-pages-artifact](https://github.com/actions/upload-pages-artifact)、[deploy-pages](https://github.com/actions/deploy-pages) | SHA由`gh api repos/<owner>/<repo>/git/ref/tags/<tag>`查得，见src/pages.mjs；Actions发布时CNAME文件被忽略，自定义域名在Settings→Pages设置 |
+| 表单接收服务候选 | [Formspree](https://formspree.io/)、[Getform](https://getform.io/) | 仅为候选类型，不作背书；送达、反垃圾、数据保存与费用按实际账号核实 |
 | 运行时与CI | [Node测试](https://nodejs.org/api/test.html)、[Node文件系统](https://nodejs.org/api/fs.html)、[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node) | CI固定行动commit；运行时以测试环境为准 |
 
 没有复制这些项目的源码或图像；本仓库实现为独立编写。既有内部插件不随仓库分发，其接口可在宿主另行适配。

@@ -29,13 +29,15 @@ node bin/site-core.mjs demo --out .output/first-demo
 
 ```text
 .output/first-demo/
-  plans/                  七种需求的不同指导结果
+  plans/                  八个示例需求的指导结果（含图片+表单的b2b-full）
   workspace/
     project.json          可持续修改的客户资料
     GUIDANCE.md           当前项目的执行指导
     plan.json             机器可读的路线、缺口和任务
     revisions/r-.../site/  中英文、多页的静态样站
   handoff/                草稿交付包，包含网站和资料源
+  full-workspace/         带图片与询盘表单的完整示例工作区
+  full-pages-draft/       该示例的GitHub Pages草稿包（repository/可直接作为仓库内容）
 ```
 
 演示数据全部虚构，邮箱、域名和外部入口均为示例。生成结果仍是草稿，没有上线或处理真实交易。
@@ -49,7 +51,12 @@ node bin/site-core.mjs intake --text "我想做一个卖门票的网站"
 # 对话Agent或用户确认需求后，用结构化资料做正式判断
 node bin/site-core.mjs plan --brief examples/tourism.brief.json
 node bin/site-core.mjs plan --brief examples/commerce.brief.json
+
+# 用户回答追问后写回需求（选项ID见plan的「必须先回答」）
+node bin/site-core.mjs answer --brief examples/unknown.brief.json --answers examples/unknown.answers.json --out .output/answered.brief.json
 ```
+
+路线、追问、冲突和复合需求的规则是`knowledge/routes.json`与`knowledge/rules.json`中的数据，每份计划都带`decision`判断依据（命中规则与被跳过的更高优先级规则）。
 
 可以把本仓库交给对话Agent，先让它读`AGENTS.md`。人类不需要记住JSON字段；Agent负责把确认后的自然语言需求转换成brief，再调用核心判断。CLI的关键词采集仅提供未确认线索，不冒充通用自然语言理解。
 
@@ -57,11 +64,15 @@ node bin/site-core.mjs plan --brief examples/commerce.brief.json
 
 | 层 | 已实现的内容 | 完成边界 |
 |---|---|---|
-| 需求与判断 | 输入校验、关键追问、路线选择、约束冲突、能力缺口、任务和验收输出 | 确定性规则；原话由人或Agent确认 |
-| 本地建站 | 中英文、文本多页介绍、产品和服务目录、联系方式、外部购买或预约链接 | 静态站；媒体管理、交易、表单和CMS按目录列为待补或接入项 |
+| 需求与判断 | 输入校验、数据驱动的路线规则与决策轨迹、关键追问与answer回写、约束冲突、能力缺口、任务和验收输出 | 确定性规则；原话由人或Agent确认 |
+| 本地建站 | 中英文多页介绍、产品和服务目录、联系方式、外部购买或预约链接、404页 | 静态站；交易和CMS按目录列为接入项 |
+| 图片 | png/jpeg/webp/avif按文件头识别、尺寸、按内容命名、逐语言alt与授权记录；换图即新版本，回退恢复原件 | 授权为自报不核实；不做裁剪压缩，不收SVG和视频 |
+| 询盘表单 | 无脚本POST表单、label与必填、蜜罐、CSP只放行接收地址；有表单时需form人工验收 | 提交到用户自选的接收服务，送达、反垃圾和数据保存由该服务负责 |
 | 持续交付 | 单一资料源、局部修改、不可变版本、完整性核对、回退、交接包 | 文件工作区，不是多人在线管理系统 |
-| 上线准备 | 草稿与公开包分开、版本对应的人工证据、待上传包 | 不自动上传、改DNS或宣称公网可用 |
-| 外部路线 | 商城、自托管商城、票务、预约、CMS、业务应用、已有平台与迁移指导 | 已沉淀流程和验收；对应业务连接器尚需实施 |
+| 上线准备 | 草稿与公开包分开、版本对应的人工证据、待上传包；GitHub Pages仓库目录与固定SHA的部署工作流、baseUrl/cname校验 | 不创建仓库、不改Pages设置或DNS，不宣称公网可用 |
+| 外部路线 | 每条路线与未实现能力的结构化实施手册（步骤、执行方、选型标准、验收用例、交接物）；`playbook`命令输出 | 手册不含价格，候选供应商待核实 |
+| 连接器契约 | forms/commerce/tickets/booking/cms的操作、事件、状态机、幂等与签名契约；`verifyConnector`自测 | 契约通过≠后台已接通；具体供应商连接器尚需实施 |
+| Agent接入 | 零依赖MCP stdio服务，11个工具，限定root | 不提供上传、部署、付款或DNS工具 |
 
 能力状态与实现位置由`knowledge/capabilities.json`维护。新增功能要同时补实现和测试，不能只改状态。
 
@@ -78,6 +89,18 @@ node bin/site-core.mjs export --workspace .output/customer --out .output/custome
 
 更新对象时深合并，数组整体替换。每个新版本保留旧版本，重复构建同一资料返回同一版本。若生成文件被手改，核心会拒绝把它当作可信旧版本；资料应在project.json中修改。有未构建修改时，回退和交接会明确拦截。
 
+### 带图片和询盘表单的完整示例
+
+```sh
+node bin/site-core.mjs init --brief examples/b2b-full.brief.json --site examples/b2b-full.site.json --out .output/full
+node bin/site-core.mjs media add --workspace .output/full --file examples/media/factory.png --id factory
+node bin/site-core.mjs media add --workspace .output/full --file examples/media/sample-bottle.png --id sample-bottle
+node bin/site-core.mjs build --workspace .output/full
+node bin/site-core.mjs export --workspace .output/full --out .output/full-pages-draft --target github-pages
+```
+
+图片的alt与授权在`site.media`登记；示例图片是用Node写出的纯色PNG。表单接收地址是占位域名，所以示例只能生成草稿包；换成真实接收服务与地址并完成review后，`prepare-publish --target github-pages`才会产出公开包。
+
 ## 如何判断已经可以上线
 
 先完成真实内容核对、联系路径送达和域名条件检查。用`review`记录当前版本的实际证据，再生成公开准备包：
@@ -87,6 +110,7 @@ node bin/site-core.mjs review --workspace .output/customer --check content --sta
 node bin/site-core.mjs review --workspace .output/customer --check contact --status pass --note "填写真实联系路径测试记录"
 node bin/site-core.mjs review --workspace .output/customer --check domain --status pass --note "填写真实域名配置核对记录"
 node bin/site-core.mjs prepare-publish --workspace .output/customer --out .output/customer-public-package
+# 有表单时再记录 --check form；发布到GitHub Pages时加 --target github-pages [--cname 域名]
 ```
 
 不要照抄示例文字当验收证据。演示域名会阻止公开准备包；先在资料中配置实际地址并构建。审核属于人工自报，核心不会自动核实DNS或邮件。任何回执都保持`published:false`，直到由外部发布工具完成实际部署并返回可验证结果。只有`site/`应作为静态网站根上传，内部资料另行交接。
@@ -106,6 +130,16 @@ if (plan.readiness.localBuild === 'ready') {
 
 各接口的输入、输出和错误见[接口说明](docs/API.md)，不同路线见[指引目录](guides/README.md)。现有插件可通过适配层调用核心；不需要复制客户项目或把业务源码带入此仓库。
 
+## 作为MCP工具使用
+
+Claude Code等Agent宿主可直接把本核心当工具：用户用自然语言提需求，Agent调用工具追问、判断并在受限目录内本地建站。
+
+```sh
+claude mcp add site-core -- node /path/to/site-guidance-core/bin/site-core-mcp.mjs --root /path/projects
+```
+
+提供`intake`、`plan`、`answer`、`catalog`和`workspace_init/build/update/check/rollback/review/export`；不提供上传、部署、付款或DNS工具，回执仍是`published:false`，验收记录仍是人工自报。接入方式、安全边界与推荐工作流见[adapters/mcp.md](adapters/mcp.md)。
+
 ## 开源仓库与协作
 
 仓库：[Pidan0/site-guidance-core](https://github.com/Pidan0/site-guidance-core)。按所有者2026-10-27的最新要求公开，方便同事查看和复用。
@@ -124,11 +158,14 @@ GitHub保存核心代码和指导资料；客户网站仍按独立项目交付�
 
 ## 继续看
 
+- [同事上手指南](docs/QUICKSTART.md)
+- [当前完整度与适用范围](docs/MATURITY.md)
 - [能力重新评估与产品目标](docs/PRODUCT.md)
+- [待办清单](TODO.md)
 - [当前实现、接入项与后续路线](docs/ROADMAP.md)
 - [API与数据格式](docs/API.md)
 - [接入其他宿主](adapters/README.md)
 - [知识来源与更新](knowledge/SOURCES.md)
 - [贡献规则](CONTRIBUTING.md)
 
-当前版本：0.1.0。已实现需求指导、本地静态执行与版本交接；支付、票务、预约、客户后台和拖拽编辑器均按能力目录中的状态处理。测试通过不代表所有建站场景已可上线。
+当前版本：0.2.0。完整含义是“需求指导、本地静态执行、版本交付以及外部能力接入契约”的闭环；支付、票务、预约、客户后台和拖拽编辑器均按能力目录中的状态处理。测试通过不代表所有建站场景已可上线。

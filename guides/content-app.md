@@ -11,3 +11,5 @@
 列出每种用户能看什么数据、能做什么动作、成功和失败是什么状态。设计认证、授权、数据隔离、审计、导出和删除；根据实际业务补支付、预约等连接器。
 
 从一个关键业务流程开始，用真实可回查结果验收。静态生成器不提供账号服务；本核心目前输出路线、缺口和任务，而不是宣称这些应用能力已经上线。
+
+结构化版本见 knowledge/playbooks.json（路线custom-app、cms-owned，能力cms、application）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。

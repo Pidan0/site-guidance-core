@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "kind": "forms",
+  "version": "1.0.0",
+  "capability": "forms",
+  "summary": "表单连接器：接收提交、投递到下游、失败重试、垃圾标记与按期限删除。",
+  "notes": "契约只定义连接器必须满足的行为，不代表任何后台已接通；能力状态仍以knowledge/capabilities.json为准。用法见adapters/README.md。",
+  "interface": {
+    "operations": "连接器对象上同名的异步方法，入参和返回值为JSON对象；失败时抛出带code的错误。",
+    "ingestEvent": "async ingestEvent(rawBody, headers) → { status: \"applied\"|\"duplicate\", entityId, state }；仅在存在入站事件时必需。",
+    "onEvent": "onEvent(handler) → 取消订阅函数；handler接收出站事件信封；仅在存在出站事件时必需。",
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "entityId": { "type": "string", "minLength": 1 },
+        "occurredAt": { "type": "string", "minLength": 1 },
+        "data": { "type": "object" }
+      },
+      "required": ["id", "type", "entityId", "occurredAt"]
+    }
+  },
+  "operations": [
+    {
+      "name": "submitForm",
+      "summary": "接收一次提交；校验通过后状态为received，不代表已送达。",
+      "idempotent": true,
+      "creates": true,
+      "input": {
+        "type": "object",
+        "properties": {
+          "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "formId": { "type": "string", "minLength": 1 },
+          "fields": { "type": "object" },
+          "consent": { "type": "boolean" }
+        },
+        "required": ["idempotencyKey", "formId", "fields"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "state": { "type": "string", "minLength": 1 },
+          "formId": { "type": "string", "minLength": 1 }
+        },
+        "required": ["id", "state", "formId"]
+      },
+      "errors": ["VALIDATION_FAILED", "IDEMPOTENCY_CONFLICT", "RATE_LIMITED"]
+    },
+    {
+      "name": "getSubmission",
+      "summary": "按id读取当前状态；必须返回契约状态名。",
+      "input": { "type": "object", "properties": { "id": { "type": "string", "minLength": 1 } }, "required": ["id"] },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND"]
+    },
+    {
+      "name": "markSpam",
+      "summary": "把提交标记为垃圾，不再通知跟进人。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "retryDelivery",
+      "summary": "对投递失败的提交重新投递。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "deleteSubmission",
+      "summary": "按保存期限或删除请求清除内容。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "exportSubmissions",
+      "summary": "导出指定表单的提交；必须校验调用者权限。",
+      "query": true,
+      "input": { "type": "object", "properties": { "formId": { "type": "string", "minLength": 1 } }, "required": ["formId"] },
+      "output": { "type": "object", "properties": { "items": { "type": "array" } }, "required": ["items"] },
+      "errors": ["VALIDATION_FAILED", "PERMISSION_DENIED"]
+    }
+  ],
+  "events": [
+    {
+      "name": "delivery.succeeded",
+      "direction": "inbound",
+      "summary": "下游邮箱或CRM确认收到。",
+      "data": { "type": "object", "properties": { "deliveryId": { "type": "string", "minLength": 1 } } }
+    },
+    {
+      "name": "delivery.failed",
+      "direction": "inbound",
+      "summary": "下游投递失败。",
+      "data": { "type": "object", "properties": { "reason": { "type": "string", "minLength": 1 } }, "required": ["reason"] }
+    },
+    { "name": "submission.delivered", "direction": "outbound", "summary": "提交已送达下游。", "data": { "type": "object", "properties": {  } } },
+    {
+      "name": "submission.delivery_failed",
+      "direction": "outbound",
+      "summary": "提交投递失败。",
+      "data": { "type": "object", "properties": {  } }
+    },
+    { "name": "submission.deleted", "direction": "outbound", "summary": "提交已删除。", "data": { "type": "object", "properties": {  } } }
+  ],
+  "lifecycle": {
+    "entity": "submission",
+    "create": "submitForm",
+    "read": "getSubmission",
+    "initial": "received",
+    "states": ["received", "delivered", "delivery_failed", "spam", "deleted"],
+    "terminal": ["deleted"],
+    "transitions": [
+      { "from": "received", "to": "delivered", "via": { "event": "delivery.succeeded" }, "emits": "submission.delivered" },
+      { "from": "received", "to": "delivery_failed", "via": { "event": "delivery.failed" }, "emits": "submission.delivery_failed" },
+      { "from": "delivery_failed", "to": "received", "via": { "operation": "retryDelivery" } },
+      { "from": "received", "to": "spam", "via": { "operation": "markSpam" } },
+      { "from": "delivery_failed", "to": "spam", "via": { "operation": "markSpam" } },
+      { "from": "received", "to": "deleted", "via": { "operation": "deleteSubmission" }, "emits": "submission.deleted" },
+      { "from": "delivered", "to": "deleted", "via": { "operation": "deleteSubmission" }, "emits": "submission.deleted" },
+      { "from": "delivery_failed", "to": "deleted", "via": { "operation": "deleteSubmission" }, "emits": "submission.deleted" },
+      { "from": "spam", "to": "deleted", "via": { "operation": "deleteSubmission" }, "emits": "submission.deleted" }
+    ]
+  },
+  "errors": [
+    { "code": "VALIDATION_FAILED", "meaning": "输入缺字段或取值不合格式；不产生任何副作用。", "retryable": false },
+    { "code": "NOT_FOUND", "meaning": "指定id的对象不存在。", "retryable": false },
+    { "code": "ILLEGAL_TRANSITION", "meaning": "当前状态不允许该操作或事件；状态保持不变，不静默忽略。", "retryable": false },
+    { "code": "IDEMPOTENCY_CONFLICT", "meaning": "同一idempotencyKey被用于不同的输入。", "retryable": false },
+    { "code": "SIGNATURE_INVALID", "meaning": "事件签名缺失或不匹配；事件不被处理。", "retryable": false },
+    { "code": "SIGNATURE_EXPIRED", "meaning": "事件时间戳超出容忍窗口；事件不被处理。", "retryable": false },
+    { "code": "UPSTREAM_UNAVAILABLE", "meaning": "上游供应商暂时不可用；调用方可以用同一idempotencyKey重试。", "retryable": true },
+    { "code": "RATE_LIMITED", "meaning": "提交过于频繁；不产生记录，调用方稍后重试。", "retryable": true },
+    { "code": "PERMISSION_DENIED", "meaning": "当前身份无权导出或删除；数据不变。", "retryable": false }
+  ],
+  "conformance": {
+    "create": { "formId": "contact", "fields": { "name": "测试", "message": "你好" }, "consent": true },
+    "createAlt": { "formId": "contact", "fields": { "name": "其他", "message": "你好吗" }, "consent": true },
+    "operations": { "markSpam": {  }, "retryDelivery": {  }, "deleteSubmission": {  } },
+    "events": { "delivery.succeeded": { "deliveryId": "dlv_test_1" }, "delivery.failed": { "reason": "mailbox unavailable" } }
+  },
+  "idempotency": {
+    "operations": "带idempotencyKey的操作：同键同输入返回相同结果且只产生一次副作用；同键不同输入抛IDEMPOTENCY_CONFLICT；键至少保留24小时。",
+    "events": "入站事件以信封id去重：重复投递返回{status:\"duplicate\"}，不重复变更状态、不重复发出出站事件。",
+    "outbound": "每次状态转换最多发出一次出站事件，事件id稳定，幂等重放不再发出。"
+  },
+  "signature": {
+    "required": true,
+    "scheme": "hmac-sha256",
+    "headers": { "signature": "x-signature", "timestamp": "x-timestamp" },
+    "signedPayload": "`${timestamp}.${rawBody}`，rawBody为投递的原始JSON字符串；x-signature取值为\"v1=<十六进制摘要>\"",
+    "toleranceSeconds": 300,
+    "rules": ["先验签再解析业务字段", "签名不符抛SIGNATURE_INVALID，时间戳超窗抛SIGNATURE_EXPIRED", "密钥只来自宿主安全配置，不写入仓库或project.json"]
+  }
+}

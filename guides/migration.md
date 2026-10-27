@@ -11,3 +11,5 @@
 5. 切换后按实际地区验证访问和关键行为，保留旧系统直到确认可回退。
 
 完成依据：关键内容和业务记录能对上，目标路径可用，责任方能接手维护；不能只以新页面更好看验收迁移。
+
+结构化版本见 knowledge/playbooks.json（路线existing-platform）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。

@@ -14,3 +14,5 @@
 | 上线、账号和交接 | publishing.md |
 
 指引为执行依据，不代表所述连接器已在本仓库安装或验收。
+
+每份指引都有机器可读的结构化版本，见 knowledge/playbooks.json；plan输出的`playbook`与任务会引用其中的步骤和验收用例编号。

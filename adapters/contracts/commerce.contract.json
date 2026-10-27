@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "kind": "commerce",
+  "version": "1.0.0",
+  "capability": "commerce",
+  "summary": "商品交易连接器：订单、支付确认、履约、取消与退款。",
+  "notes": "契约只定义连接器必须满足的行为，不代表任何后台已接通；能力状态仍以knowledge/capabilities.json为准。用法见adapters/README.md。",
+  "interface": {
+    "operations": "连接器对象上同名的异步方法，入参和返回值为JSON对象；失败时抛出带code的错误。",
+    "ingestEvent": "async ingestEvent(rawBody, headers) → { status: \"applied\"|\"duplicate\", entityId, state }；仅在存在入站事件时必需。",
+    "onEvent": "onEvent(handler) → 取消订阅函数；handler接收出站事件信封；仅在存在出站事件时必需。",
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "entityId": { "type": "string", "minLength": 1 },
+        "occurredAt": { "type": "string", "minLength": 1 },
+        "data": { "type": "object" }
+      },
+      "required": ["id", "type", "entityId", "occurredAt"]
+    }
+  },
+  "operations": [
+    {
+      "name": "createOrder",
+      "summary": "创建订单并按库存策略预占；初始状态pending_payment。",
+      "idempotent": true,
+      "creates": true,
+      "input": {
+        "type": "object",
+        "properties": {
+          "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": { "sku": { "type": "string", "minLength": 1 }, "quantity": { "type": "number" } },
+              "required": ["sku", "quantity"]
+            }
+          },
+          "currency": { "type": "string", "minLength": 1, "pattern": "^[A-Z]{3}$" },
+          "customer": { "type": "object", "properties": { "email": { "type": "string", "minLength": 1 } } }
+        },
+        "required": ["idempotencyKey", "items", "currency"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "state": { "type": "string", "minLength": 1 },
+          "currency": { "type": "string", "minLength": 1 }
+        },
+        "required": ["id", "state", "currency"]
+      },
+      "errors": ["VALIDATION_FAILED", "IDEMPOTENCY_CONFLICT", "OUT_OF_STOCK"]
+    },
+    {
+      "name": "getOrder",
+      "summary": "按id读取当前状态；必须返回契约状态名。",
+      "input": { "type": "object", "properties": { "id": { "type": "string", "minLength": 1 } }, "required": ["id"] },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND"]
+    },
+    {
+      "name": "cancelOrder",
+      "summary": "取消未付款或付款失败的订单并释放预占库存。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "reason": { "type": "string" }
+        },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "fulfillOrder",
+      "summary": "标记已付款订单已发货。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "tracking": { "type": "string" }
+        },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "requestRefund",
+      "summary": "对已付款订单发起全额或部分退款；累计退款不得超过实付。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "amount": { "type": "number" },
+          "reason": { "type": "string" }
+        },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED", "REFUND_EXCEEDS_PAID"]
+    },
+    {
+      "name": "getStock",
+      "summary": "读取SKU可售库存。",
+      "query": true,
+      "input": { "type": "object", "properties": { "sku": { "type": "string", "minLength": 1 } }, "required": ["sku"] },
+      "output": {
+        "type": "object",
+        "properties": { "sku": { "type": "string", "minLength": 1 }, "available": { "type": "number" } },
+        "required": ["sku", "available"]
+      },
+      "errors": ["VALIDATION_FAILED", "NOT_FOUND"]
+    }
+  ],
+  "events": [
+    {
+      "name": "payment.succeeded",
+      "direction": "inbound",
+      "summary": "支付服务商确认付款成功。",
+      "data": {
+        "type": "object",
+        "properties": {
+          "paymentId": { "type": "string", "minLength": 1 },
+          "amount": { "type": "number" },
+          "currency": { "type": "string", "minLength": 1 }
+        },
+        "required": ["paymentId"]
+      }
+    },
+    {
+      "name": "payment.failed",
+      "direction": "inbound",
+      "summary": "支付失败。",
+      "data": {
+        "type": "object",
+        "properties": { "paymentId": { "type": "string", "minLength": 1 }, "reason": { "type": "string", "minLength": 1 } },
+        "required": ["paymentId"]
+      }
+    },
+    {
+      "name": "payment.expired",
+      "direction": "inbound",
+      "summary": "预占超时仍未付款。",
+      "data": { "type": "object", "properties": { "paymentId": { "type": "string", "minLength": 1 } } }
+    },
+    {
+      "name": "refund.completed",
+      "direction": "inbound",
+      "summary": "退款全额完成。",
+      "data": {
+        "type": "object",
+        "properties": { "refundId": { "type": "string", "minLength": 1 }, "amount": { "type": "number" } },
+        "required": ["refundId"]
+      }
+    },
+    {
+      "name": "refund.partially_completed",
+      "direction": "inbound",
+      "summary": "部分退款完成。",
+      "data": {
+        "type": "object",
+        "properties": { "refundId": { "type": "string", "minLength": 1 }, "amount": { "type": "number" } },
+        "required": ["refundId"]
+      }
+    },
+    {
+      "name": "refund.failed",
+      "direction": "inbound",
+      "summary": "退款失败。",
+      "data": {
+        "type": "object",
+        "properties": { "refundId": { "type": "string", "minLength": 1 }, "amount": { "type": "number" } },
+        "required": ["refundId"]
+      }
+    },
+    { "name": "order.paid", "direction": "outbound", "summary": "订单已付款。", "data": { "type": "object", "properties": {  } } },
+    { "name": "order.fulfilled", "direction": "outbound", "summary": "订单已发货。", "data": { "type": "object", "properties": {  } } },
+    { "name": "order.cancelled", "direction": "outbound", "summary": "订单已取消。", "data": { "type": "object", "properties": {  } } },
+    { "name": "order.refunded", "direction": "outbound", "summary": "订单已全额退款。", "data": { "type": "object", "properties": {  } } },
+    { "name": "order.partially_refunded", "direction": "outbound", "summary": "订单已部分退款。", "data": { "type": "object", "properties": {  } } }
+  ],
+  "lifecycle": {
+    "entity": "order",
+    "create": "createOrder",
+    "read": "getOrder",
+    "initial": "pending_payment",
+    "states": [
+      "pending_payment",
+      "paid",
+      "payment_failed",
+      "fulfilled",
+      "cancelled",
+      "refund_pending",
+      "partially_refunded",
+      "refunded",
+      "refund_failed"
+    ],
+    "terminal": ["cancelled", "refunded"],
+    "transitions": [
+      { "from": "pending_payment", "to": "paid", "via": { "event": "payment.succeeded" }, "emits": "order.paid" },
+      { "from": "pending_payment", "to": "payment_failed", "via": { "event": "payment.failed" } },
+      { "from": "pending_payment", "to": "cancelled", "via": { "operation": "cancelOrder" }, "emits": "order.cancelled" },
+      { "from": "pending_payment", "to": "cancelled", "via": { "event": "payment.expired" }, "emits": "order.cancelled" },
+      { "from": "payment_failed", "to": "cancelled", "via": { "operation": "cancelOrder" }, "emits": "order.cancelled" },
+      { "from": "paid", "to": "fulfilled", "via": { "operation": "fulfillOrder" }, "emits": "order.fulfilled" },
+      { "from": "paid", "to": "refund_pending", "via": { "operation": "requestRefund" } },
+      { "from": "fulfilled", "to": "refund_pending", "via": { "operation": "requestRefund" } },
+      { "from": "refund_pending", "to": "refunded", "via": { "event": "refund.completed" }, "emits": "order.refunded" },
+      {
+        "from": "refund_pending",
+        "to": "partially_refunded",
+        "via": { "event": "refund.partially_completed" },
+        "emits": "order.partially_refunded"
+      },
+      { "from": "refund_pending", "to": "refund_failed", "via": { "event": "refund.failed" } },
+      { "from": "partially_refunded", "to": "refund_pending", "via": { "operation": "requestRefund" } },
+      { "from": "refund_failed", "to": "refund_pending", "via": { "operation": "requestRefund" } }
+    ]
+  },
+  "errors": [
+    { "code": "VALIDATION_FAILED", "meaning": "输入缺字段或取值不合格式；不产生任何副作用。", "retryable": false },
+    { "code": "NOT_FOUND", "meaning": "指定id的对象不存在。", "retryable": false },
+    { "code": "ILLEGAL_TRANSITION", "meaning": "当前状态不允许该操作或事件；状态保持不变，不静默忽略。", "retryable": false },
+    { "code": "IDEMPOTENCY_CONFLICT", "meaning": "同一idempotencyKey被用于不同的输入。", "retryable": false },
+    { "code": "SIGNATURE_INVALID", "meaning": "事件签名缺失或不匹配；事件不被处理。", "retryable": false },
+    { "code": "SIGNATURE_EXPIRED", "meaning": "事件时间戳超出容忍窗口；事件不被处理。", "retryable": false },
+    { "code": "UPSTREAM_UNAVAILABLE", "meaning": "上游供应商暂时不可用；调用方可以用同一idempotencyKey重试。", "retryable": true },
+    { "code": "OUT_OF_STOCK", "meaning": "库存不足；订单不创建，库存不变。", "retryable": false },
+    { "code": "REFUND_EXCEEDS_PAID", "meaning": "累计退款将超过实付金额。", "retryable": false }
+  ],
+  "conformance": {
+    "create": { "items": [{ "sku": "SKU-TEST-1", "quantity": 1 }], "currency": "USD", "customer": { "email": "buyer@example.com" } },
+    "createAlt": { "items": [{ "sku": "SKU-TEST-2", "quantity": 2 }], "currency": "USD", "customer": { "email": "buyer@example.com" } },
+    "operations": { "cancelOrder": { "reason": "test" }, "fulfillOrder": { "tracking": "TRACK-1" }, "requestRefund": { "amount": 1, "reason": "test" } },
+    "events": {
+      "payment.succeeded": { "paymentId": "pay_test_1", "amount": 1, "currency": "USD" },
+      "payment.failed": { "paymentId": "pay_test_1", "reason": "declined" },
+      "payment.expired": { "paymentId": "pay_test_1" },
+      "refund.completed": { "refundId": "ref_test_1", "amount": 1 },
+      "refund.partially_completed": { "refundId": "ref_test_1", "amount": 1 },
+      "refund.failed": { "refundId": "ref_test_1", "amount": 1 }
+    }
+  },
+  "idempotency": {
+    "operations": "带idempotencyKey的操作：同键同输入返回相同结果且只产生一次副作用；同键不同输入抛IDEMPOTENCY_CONFLICT；键至少保留24小时。",
+    "events": "入站事件以信封id去重：重复投递返回{status:\"duplicate\"}，不重复变更状态、不重复发出出站事件。",
+    "outbound": "每次状态转换最多发出一次出站事件，事件id稳定，幂等重放不再发出。"
+  },
+  "signature": {
+    "required": true,
+    "scheme": "hmac-sha256",
+    "headers": { "signature": "x-signature", "timestamp": "x-timestamp" },
+    "signedPayload": "`${timestamp}.${rawBody}`，rawBody为投递的原始JSON字符串；x-signature取值为\"v1=<十六进制摘要>\"",
+    "toleranceSeconds": 300,
+    "rules": ["先验签再解析业务字段", "签名不符抛SIGNATURE_INVALID，时间戳超窗抛SIGNATURE_EXPIRED", "密钥只来自宿主安全配置，不写入仓库或project.json"]
+  }
+}

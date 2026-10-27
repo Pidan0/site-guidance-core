@@ -24,8 +24,33 @@
 
 单次产出的指导结果包括机器可读JSON和人可读Markdown，不需要每次重新读整份市场报告。
 
-## 0.1.0的完成范围
+## 对0.1.0的重新评估（2026-10-27）
 
-需求可以进入规则引擎，得到可解释路线；本地适用需求能走完资料、生成、修改、版本、检查和交接；不适用的需求有明确缺口、实施指引和验收。发布准备与真实公网发布分开。这个范围有行为测试，不靠“功能规划”代替代码。
+0.1.0已有可运行的判断与本地静态闭环，但作为“产品能力”仍偏薄：
 
-尚不包括在线多人协作、拖拽画布、真实表单服务、支付、库存、票务、预约或账号后台。这些通过能力目录和guide保留为明确接入对象。
+| 层 | 0.1.0实际状态 | 问题 |
+|---|---|---|
+| 判断 | 路线条件写在planner的if/else里 | 调研结论更新必须改代码；无法解释为何没选其他路线 |
+| 需求 | 追问只是文字和字符串选项 | 回答无法回写需求，Agent需要自行拼brief |
+| 执行 | 只有纯文本中英文静态站 | 最常见的图片、询盘表单一出现即blocked；没有可用的发布包 |
+| 外部路线 | 每条路线一篇散文guide，任务只写“补充或接入：XX” | 不能逐步执行和验收；连接器没有可验证的契约 |
+| 宿主 | JS API与CLI | Agent只能读文档后自己调命令 |
+
+结论：调研成果停留在guide层，多数真实需求只能得到“建议”，拿不到可执行的步骤、可验证的契约或能交付的产物。
+
+## 0.2.0的完成范围
+
+| 层 | 0.2.0能力 | 依据 |
+|---|---|---|
+| 判断 | 路线、追问、冲突、能力追加均由`knowledge/routes.json`、`rules.json`数据驱动；输出`decision`决策轨迹 | `src/rules.mjs`、test/rules |
+| 需求 | 追问带字段与选项patch，`answerQuestions`/CLI`answer`回写brief并重新判断，直至可执行 | `src/answers.mjs`、test/answers |
+| 执行 | 图片（授权与alt、换图即新版本）、无脚本询盘表单、404页、GitHub Pages仓库包 | `src/media.mjs`、`src/form.mjs`、test/media、forms、pages |
+| 外部路线 | 每条路线与每个未实现能力有结构化实施手册（阶段步骤、执行方、选型标准、验收用例、风险、交接物），计划任务直接引用步骤与验收ID | `knowledge/playbooks.json`、test/playbooks |
+| 连接器 | forms/commerce/tickets/booking/cms契约（操作、事件、状态机、幂等、签名、错误）与`verifyConnector`自测 | `adapters/contracts/`、`src/contracts.mjs` |
+| 宿主 | 零依赖MCP stdio服务，限定root，无上传/付款/DNS工具 | `bin/site-core-mcp.mjs`、adapters/mcp.md |
+
+“企业展示 + 产品图 + 询盘表单 + 发布到GitHub Pages”可端到端生成交付物；商城、票务、预约、CMS、业务应用得到可执行手册和契约，但后台仍需按契约实施并以真实环境验收后才改为implemented。
+
+## 仍不包括
+
+真实部署与DNS、表单送达、支付、库存、票务、预约或账号后台的具体供应商连接器；视频与多尺寸图片；中英文以外语言；拖拽编辑；多人在线协作。状态见`knowledge/capabilities.json`，后续顺序见ROADMAP。

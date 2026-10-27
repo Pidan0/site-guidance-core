@@ -4,6 +4,8 @@
 
 一次只追问最影响路线的缺口。通常是：交易由本站还是已有系统承接；是否必须自有代码或完整自托管；语言；是否要客户登录改内容；谁维护。预算、时间和地区进入约束，不能代替业务目标。
 
-用户未确认时，字段省略。传给plan后看questions和conflicts，解释这些答案为什么改变执行。不要把“想要网站”默认成商城或询盘站，也不要把行业标签当完整需求。
+用户未确认时，字段省略。传给plan后看questions和conflicts，解释这些答案为什么改变执行。每个question有field和带patch的options；用户回答后用answerQuestions或CLI的answer写回brief，再重新判断。不要把“想要网站”默认成商城或询盘站，也不要把行业标签当完整需求。
 
 完成时交付：经确认brief、选择依据、待解决事项，以及下一条应走的route。用户只要指导时，无需强行创建工作区。
+
+结构化版本见 knowledge/playbooks.json（路线discovery）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。
