@@ -4,6 +4,7 @@ import { evaluate, explain } from './rules.mjs';
 import { fail, invariant } from './errors.mjs';
 import { mergePatch, valueAt } from './patch.mjs';
 import { ENGINE_VERSION } from './version.mjs';
+import { getPlaybook, composePlaybook, playbookSections } from './playbooks.mjs';
 
 const fill = (template, brief) => template.replace(/\{([a-zA-Z.]+)\}/g, (_, path) => String(valueAt(brief, path) ?? ''));
 
@@ -53,8 +54,27 @@ function materializeQuestion(def, brief) {
   return { id: def.id, question: def.question, field: def.field, options, ...(def.custom ? { custom: true } : {}), blocksExecution: true };
 }
 
+// Step and acceptance ids a given playbook source contributes to the merged plan playbook.
+function refsOf(playbook, source) {
+  const steps = playbook.phases.flatMap(p => p.steps).filter(step => step.source === source);
+  return {
+    steps: steps.map(step => step.id), blocking: steps.filter(step => step.blocking).map(step => step.id),
+    acceptanceIds: playbook.acceptance.filter(item => item.source === source).map(item => item.id)
+  };
+}
+
+function playbookTask({ id, stage, prefix, name, guide, refs }) {
+  const detail = `按实施手册完成${refs.steps.length}个步骤（从${refs.steps[0]}开始，阻塞步骤${refs.blocking.length}个）`;
+  return {
+    id, stage, action: `${prefix}${name}。${detail}。`, guide, acceptance: `通过验收用例并留存证据：${refs.acceptanceIds.join('、')}。`,
+    steps: refs.steps, acceptanceIds: refs.acceptanceIds
+  };
+}
+
 function tasksFor(plan, brief, executionGaps) {
-  const verb = plan.route.id === 'existing-platform' ? '核验已有平台能力' : '补充或接入';
+  const verb = plan.route.id === 'existing-platform' ? '核验已有平台能力：' : '补充或接入：', pb = plan.playbook;
+  const routeRefs = refsOf(pb, `route:${plan.route.id}`), deliveryRefs = plan.gaps.filter(c => c.status === 'manual_verification');
+  const delivery = deliveryRefs.map(c => refsOf(pb, `capability:${c.id}`));
   return [
     ...plan.questions.map(q => ({ id: q.id, stage: 'intake', action: q.question, acceptance: '用户明确回答并更新需求资料。' })),
     ...plan.conflicts.map(c => ({ id: c.id, stage: 'decision', action: c.action, acceptance: '约束冲突有明确解决方案。' })),
@@ -62,11 +82,18 @@ function tasksFor(plan, brief, executionGaps) {
       id: 'migration', stage: 'migration', action: '导出既有内容、资源和业务数据，建立旧新URL映射、重定向和回退方案。',
       acceptance: '迁移前备份可恢复，关键页面和业务记录有对应检查。'
     }] : []),
-    ...executionGaps.map(c => ({
-      id: c.id, stage: 'integration', action: `${verb}：${c.name}`, guide: c.guide, acceptance: `按照${c.guide}的业务路径取得实际验证记录。`
+    ...(routeRefs.steps.length ? [playbookTask({
+      id: 'route-playbook', stage: plan.route.execution === 'guided' ? 'integration' : 'build', prefix: '执行路线手册：', name: plan.route.name,
+      guide: plan.route.guide, refs: routeRefs
+    })] : []),
+    ...executionGaps.map(c => playbookTask({
+      id: c.id, stage: 'integration', prefix: verb, name: c.name, guide: c.guide, refs: refsOf(pb, `capability:${c.id}`)
     })),
     { id: 'content', stage: 'build', action: '整理经确认的文字、产品或服务内容；逐语言提供译文。', acceptance: '不编造价格、资质、图片授权或翻译。' },
-    { id: 'delivery', stage: 'acceptance', action: '核对页面、联系或交易路径、域名与交付责任。', acceptance: '以当前版本的实测证据记录，不能用代码存在代替上线。' }
+    {
+      id: 'delivery', stage: 'acceptance', action: '核对页面、联系或交易路径、域名与交付责任。', acceptance: '以当前版本的实测证据记录，不能用代码存在代替上线。',
+      ...(delivery.length ? { steps: delivery.flatMap(r => r.steps), acceptanceIds: delivery.flatMap(r => r.acceptanceIds) } : {})
+    }
   ];
 }
 
@@ -95,6 +122,8 @@ export function planSite(input) {
     questions, conflicts, capabilities: capabilityPlan, gaps, warnings,
     readiness: readinessOf(route, questions, conflicts, executionGaps)
   };
+  const playbookGaps = [...executionGaps, ...gaps.filter(c => c.status === 'manual_verification')];
+  plan.playbook = composePlaybook([getPlaybook({ route: route.id }), ...playbookGaps.map(c => getPlaybook({ capability: c.id }))]);
   plan.tasks = tasksFor(plan, brief, executionGaps);
   plan.checklist = ['客户确认内容准确', '各目标语言与手机页面可读', '咨询或业务路径实测成功', '域名、HTTPS与目标地区访问验证', '交接资料和维护责任确认'];
   return plan;
@@ -130,7 +159,8 @@ export function planMarkdown(plan) {
     `## 能力与缺口\n\n| 能力 | 状态 | 实现或指引 |\n|---|---|---|\n${capabilityRows}`,
     `## 执行任务\n\n${tasks}`,
     `## 验收\n\n${plan.checklist.map(x => `- [ ] ${x}`).join('\n')}`,
-    `## 条件与边界\n\n${plan.warnings.map(x => `- ${x}`).join('\n')}\n`
+    `## 条件与边界\n\n${plan.warnings.map(x => `- ${x}`).join('\n')}`,
+    `${playbookSections(plan.playbook)}\n`
   ].join('\n\n');
 }
 

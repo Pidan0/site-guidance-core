@@ -33,6 +33,16 @@
 - knowledge：forms与media需求不再阻塞本地构建，新增表单送达与图片授权提醒；原先断言阻塞的测试改为正向测试，并保留缺内容即拒绝的负向测试。
 - 行为变化：所有站点多出`404.html`与少量CSS，页面HTML不变。不含图片的项目版本ID不变：此前0.2.0开发版已记录的同一资料版本仍按原样通过核对（没有404页），修改资料后重建才会带上404页；公开准备包重新渲染，总是包含404页。
 
+### 结构化实施手册与连接器契约
+
+- 新增`knowledge/playbooks.json`：13条路线和10个非implemented能力各一份手册（阶段与步骤含执行方、输入、产出、决策与阻塞项，选型标准、验收用例、风险、交接物）；候选供应商仅为待核实线索，不含价格。guides文末注明结构化版本。
+- `planSite`新增`playbook`（路线手册加缺口能力手册，去重、按阶段排序）；integration任务改为引用具体步骤ID与验收用例ID（新增`steps`、`acceptanceIds`，保留`补充或接入：`措辞与原有字段）；新增`route-playbook`任务。`planMarkdown`在原有各节之后追加「实施手册」「验收用例」。
+- `validateCatalog`校验手册引用的路线／能力存在、每条路线和每个非implemented能力都有手册、ID全局唯一、阶段顺序、guide一致、不含价格；返回值新增`playbooks`计数。
+- 新增CLI`playbook --route <id>|--capability <id> [--json]`。
+- 新增`adapters/contracts/`下forms、commerce、tickets、booking、cms五份契约（操作、事件、状态机、幂等与签名、错误语义、自测样例）和`src/contracts.mjs`：`loadContract`、`validateContract`、`verifyConnector`。`capabilities.json`相关能力增加`contract`字段，状态保持不变（契约不等于已接通）。
+- 新增`test/in-memory-connector.testdouble.mjs`（仅测试用的内存替身）及行为测试，证明harness能识别合规与违规实现。
+
+
 ## 0.1.0
 
 - 需求格式、关键追问、约束冲突与13类路线。

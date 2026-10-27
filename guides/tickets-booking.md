@@ -19,3 +19,5 @@
 ## 交付
 
 页面信息、入口或连接器、状态映射、异常处理、通知和业务验收记录。只有入口点击时，统计入口点击；取得真实订单和匹配标识后，再报告相应成交数据。
+
+结构化版本见 knowledge/playbooks.json（路线ticketing-integration、tourism-referral、booking-referral、managed-booking，能力tickets、booking）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。

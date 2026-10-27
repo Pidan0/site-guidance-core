@@ -17,3 +17,5 @@
 ## 交付与验收
 
 网站文件、内容源（含图片原件）、当前版本、检查结果和维护说明齐全。表单页面存在不等于线索送达，需真实提交证据；外链购票或购买只证明入口存在，订单与收入需要外部系统回传证据。
+
+结构化版本见 knowledge/playbooks.json（路线static-owned）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。

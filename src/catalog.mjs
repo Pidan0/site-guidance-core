@@ -3,6 +3,8 @@ import { invariant } from './errors.mjs';
 import { briefSchema, validateSchema } from './schema.mjs';
 import { isPlainObject } from './patch.mjs';
 import { SCOPES, checkCondition, refsOf, schemaAt } from './rules.mjs';
+import { playbooks, validatePlaybooks } from './playbooks.mjs';
+import { CONTRACT_KINDS, loadContract } from './contracts.mjs';
 
 const read = name => JSON.parse(readFileSync(new URL(`../knowledge/${name}.json`, import.meta.url), 'utf8'));
 export const capabilities = read('capabilities').capabilities;
@@ -100,9 +102,18 @@ function checkRules(set, known) {
   }
 }
 
+// A capability's contract field must point at the contract file of the same kind; having a contract never changes its status.
+function checkContracts(list) {
+  for (const item of list.filter(c => c.contract !== undefined)) {
+    const kind = CONTRACT_KINDS.find(k => item.contract === `adapters/contracts/${k}.contract.json`);
+    check(kind === item.id, item.id, `contract需指向adapters/contracts/${item.id}.contract.json`);
+    check(loadContract(kind).capability === item.id, item.id, '契约的capability与能力ID不一致');
+  }
+}
+
 // Pass a partial catalog to validate a candidate change; omitted parts use the loaded knowledge files.
 export function validateCatalog(catalog = {}) {
-  const set = { capabilities, routes, rules, ...catalog };
+  const set = { capabilities, routes, rules, playbooks, ...catalog };
   uniqueIds(set.capabilities, 'capabilities');
   for (const item of set.capabilities) check(STATUSES.includes(item.status), item.id, '能力状态无效');
   const known = {
@@ -111,7 +122,13 @@ export function validateCatalog(catalog = {}) {
   };
   checkRoutes(set.routes, known);
   checkRules(set.rules, known);
+  checkContracts(set.capabilities);
+  const lookup = { routes: new Map(set.routes.map(r => [r.id, r])), capabilities: new Map(set.capabilities.map(c => [c.id, c])) };
+  const playbookCount = validatePlaybooks(set.playbooks, lookup);
   const ruleCount = set.routes.reduce((sum, r) => sum + r.when.length, 0);
-  return { capabilities: set.capabilities.length, routes: set.routes.length, routeRules: ruleCount, questions: set.rules.questions.length };
+  return {
+    capabilities: set.capabilities.length, routes: set.routes.length, routeRules: ruleCount, questions: set.rules.questions.length,
+    playbooks: playbookCount
+  };
 }
 validateCatalog();

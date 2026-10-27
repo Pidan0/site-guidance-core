@@ -26,3 +26,5 @@ commerce-referral只介绍商品并连接已有商城。必须明确本站不收
 ## 完成依据
 
 测试商户／环境、交易标识和验证记录可回查；成功、失败、取消、重复回调、退款和库存路径都对应实际结果。连接器代码、配置说明和测试证据落实后，才登记可执行交易能力。当前仓库只提供这条实施契约，不包含这些后台。
+
+结构化版本见 knowledge/playbooks.json（路线commerce-referral、owned-commerce、hybrid-commerce、managed-commerce，能力commerce）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。

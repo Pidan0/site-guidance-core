@@ -16,12 +16,13 @@
       "implementation": "src/form.mjs", "evidence": "test/forms.test.mjs", "guide": "guides/integrations.md",
       "boundary": "核心只负责渲染无脚本POST表单（label、必填、蜜罐）并把CSP form-action限定到接收地址的origin。送达、反垃圾、限流、数据保存与导出由用户自选的接收服务负责；上线前用review form记录真实提交与收件证据。",
       "candidates": ["Formspree", "Getform", "自建HTTPS接收端点"],
-      "candidatesNote": "候选仅为常见类型示例，不构成背书；地区、费用、数据保存与隐私条款需按实际账号核实。"
+      "candidatesNote": "候选仅为常见类型示例，不构成背书；地区、费用、数据保存与隐私条款需按实际账号核实。",
+      "contract": "adapters/contracts/forms.contract.json"
     },
-    { "id": "commerce", "name": "商品交易、支付、订单与库存后台", "status": "integration_required", "guide": "guides/commerce.md" },
-    { "id": "tickets", "name": "场次容量、票务、核销与退款", "status": "integration_required", "guide": "guides/tickets-booking.md" },
-    { "id": "booking", "name": "预约时段、容量、改期与取消", "status": "integration_required", "guide": "guides/tickets-booking.md" },
-    { "id": "cms", "name": "客户可登录的内容管理后台", "status": "integration_required", "guide": "guides/content-app.md" },
+    { "id": "commerce", "name": "商品交易、支付、订单与库存后台", "status": "integration_required", "guide": "guides/commerce.md", "contract": "adapters/contracts/commerce.contract.json" },
+    { "id": "tickets", "name": "场次容量、票务、核销与退款", "status": "integration_required", "guide": "guides/tickets-booking.md", "contract": "adapters/contracts/tickets.contract.json" },
+    { "id": "booking", "name": "预约时段、容量、改期与取消", "status": "integration_required", "guide": "guides/tickets-booking.md", "contract": "adapters/contracts/booking.contract.json" },
+    { "id": "cms", "name": "客户可登录的内容管理后台", "status": "integration_required", "guide": "guides/content-app.md", "contract": "adapters/contracts/cms.contract.json" },
     { "id": "application", "name": "会员、权限和业务应用后台", "status": "integration_required", "guide": "guides/content-app.md" },
     { "id": "live-deployment", "name": "公网部署、DNS与运行验收", "status": "manual_verification", "guide": "guides/publishing.md" },
     {

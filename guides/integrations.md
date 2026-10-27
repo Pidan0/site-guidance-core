@@ -19,3 +19,5 @@
 在本仓库保留可公开或团队可共享的接口契约、模拟测试；实际账号验证记录放在项目工作区。能力目录标integration_required，直到对应实现和约定范围的验证齐备。
 
 模拟回执与真实回执分别标明。外部工具返回的“已发布”“已付款”必须可回查，不能由适配层自己补上成功字段。
+
+结构化版本见 knowledge/playbooks.json（能力forms）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。
