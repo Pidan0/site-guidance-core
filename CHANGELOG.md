@@ -20,6 +20,19 @@
 - 路径安全：`--root <目录>`或`SITE_CORE_ROOT`；workspace与out必须是root内的相对路径，拒绝`..`、绝对路径、符号链接；未配置root时只提供判断类工具。
 - 核心错误以`isError:true`的工具结果返回错误码、信息和details。新增`src/mcp-tools.mjs`、`src/mcp-paths.mjs`、`test/mcp.test.mjs`、`adapters/mcp.md`；核心API与渲染输出不变。
 
+### 执行能力：图片、询盘表单与GitHub Pages
+
+让“企业展示 + 产品图 + 询盘表单 + 发布到GitHub Pages”端到端可跑通。详见docs/API.md「图片、询盘表单与GitHub Pages发布包」。
+
+- 工作区改为Buffer全链路：站点文件读取、指纹、完整性核对与导出不再按utf8转码；`checkFiles`只对.html/.xml/.txt/.css做文本检查，图片按魔数与哈希文件名核对，未知类型报`file-type`。
+- 图片（`media-assets` → implemented）：`addMedia`／CLI`media add`按魔数识别png/jpeg/webp/avif（拒绝SVG，5MB上限）；`site.media`登记逐语言alt与自报授权，`heroImage`与条目`image`引用；输出`assets/media/<哈希前缀>.<ext>`，带尺寸与lazy。版本源快照记录`mediaFingerprints`，换图即新版本；版本目录保存原件，回退恢复，手改即`REVISION_CHANGED`；交付包source/含原件。
+- 询盘表单（`forms` → implemented，送达人工验收）：`site.form`渲染无脚本POST表单（label、必填、蜜罐），CSP`form-action`只放行接收地址origin；需求确认forms=true才接受表单，确认了却没提供即拒绝。新增review检查项`form`（仅有表单时），公开包需要它通过，且接收地址不能是占位域名。
+- 404页：每次构建输出，链接各语言首页，始终noindex，纳入检查。
+- GitHub Pages发布包（新增`github-pages-package`，implemented）：`export`／`prepare-publish --target github-pages [--cname]`产出`repository/`（site/、.nojekyll、CNAME、固定提交SHA的pages.yml），校验用户站／项目站／自定义域名与cname一致；HANDOFF写明Settings→Pages、推送、DNS与上线实测；回执仍`published:false`并记录target。`live-deployment`仍为manual_verification。
+- 示例`examples/b2b-full.*`与两张自制纯色PNG；demo额外构建该示例并导出Pages草稿包，plans列出其路线为ready。
+- knowledge：forms与media需求不再阻塞本地构建，新增表单送达与图片授权提醒；原先断言阻塞的测试改为正向测试，并保留缺内容即拒绝的负向测试。
+- 行为变化：所有站点多出`404.html`与少量CSS，页面HTML不变。不含图片的项目版本ID不变：此前0.2.0开发版已记录的同一资料版本仍按原样通过核对（没有404页），修改资料后重建才会带上404页；公开准备包重新渲染，总是包含404页。
+
 ## 0.1.0
 
 - 需求格式、关键追问、约束冲突与13类路线。

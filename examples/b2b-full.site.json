@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "baseUrl": "https://fictional-demo-factory.github.io/b2b-full/",
+  "defaultLocale": "en",
+  "contact": { "email": "demo@example.com" },
+  "theme": { "primary": "#244bb8" },
+  "media": [
+    {
+      "id": "factory", "file": "factory.png",
+      "alt": { "en": "Solid blue placeholder standing in for a factory photo", "zh-CN": "代替工厂照片的纯蓝色占位图" },
+      "license": { "source": "示例自制：用Node写出的纯色像素", "holder": "Site Guidance Core示例", "terms": "示例自制，仅用于演示与测试" }
+    },
+    {
+      "id": "sample-bottle", "file": "sample-bottle.png",
+      "alt": { "en": "Solid orange placeholder standing in for a product photo", "zh-CN": "代替产品照片的纯橙色占位图" },
+      "license": { "source": "示例自制：用Node写出的纯色像素", "holder": "Site Guidance Core示例", "terms": "示例自制，仅用于演示与测试" }
+    }
+  ],
+  "form": {
+    "endpoint": "https://forms.example.net/f/demo-inquiry",
+    "fields": [
+      { "id": "name", "type": "text", "required": true, "label": { "en": "Name", "zh-CN": "姓名" } },
+      { "id": "email", "type": "email", "required": true, "label": { "en": "Email", "zh-CN": "邮箱" } },
+      { "id": "phone", "type": "tel", "label": { "en": "Phone (optional)", "zh-CN": "电话（选填）" } },
+      { "id": "message", "type": "textarea", "required": true, "label": { "en": "What do you need?", "zh-CN": "需求说明" } }
+    ]
+  },
+  "locales": {
+    "en": {
+      "brand": "Demo Factory",
+      "headline": "See the factory and products, then send an inquiry.",
+      "summary": "A fictional product and inquiry website with images and a form. All information is supplied for testing only.",
+      "about": "This company and its products are fictional examples.\n\nReplace every piece of content, image and licence record before real use.",
+      "heroImage": "factory",
+      "products": [{
+        "id": "sample-bottle", "name": "Sample bottle", "image": "sample-bottle",
+        "summary": "A fictional product used to demonstrate a catalog page with an image.",
+        "description": "No capacity, certification, price or delivery promise is implied. Provide confirmed customer information here."
+      }],
+      "faq": [{
+        "question": "Can I buy on this site?",
+        "answer": "No. This demonstration only collects inquiries through a form service; it has no checkout or order processing."
+      }]
+    },
+    "zh-CN": {
+      "brand": "演示工厂",
+      "headline": "先看工厂和产品，再提交询盘。",
+      "summary": "这是带图片和询盘表单的虚构产品站示例。内容仅用于展示生成与交付流程。",
+      "about": "公司和产品均为虚构示例。\n\n用于真实客户前，请逐项替换文字、图片和授权记录并完成核对。",
+      "heroImage": "factory",
+      "products": [{
+        "id": "sample-bottle", "name": "示例水杯", "image": "sample-bottle",
+        "summary": "用于演示带图片产品页的虚构商品。",
+        "description": "此处没有默认容量、认证、价格或发货承诺。请填写客户确认过的实际资料。"
+      }],
+      "faq": [{ "question": "这个站点可以直接购买吗？", "answer": "不可以。示例只通过表单服务收集询盘，不包含收款和订单处理。" }]
+    }
+  }
+}

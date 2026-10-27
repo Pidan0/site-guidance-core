@@ -111,6 +111,14 @@
     { "id": "mainland", "if": { "field": "constraints.hostingRegion", "is": "mainland" }, "text": "内地访问、备案与业务资质、地图和外部资源需按实际接入条件核实。" },
     { "id": "migration", "if": { "field": "existing.migrationRequired", "is": true }, "text": "迁移前导出内容与资源，保留URL映射、重定向、业务数据与回退方案。" },
     {
+      "id": "form-delivery", "if": { "capability": "forms" },
+      "text": "表单只提交到用户自选的接收服务；送达、反垃圾和数据保存由该服务负责。上线前做真实提交并用review form记录收件证据。"
+    },
+    {
+      "id": "media-license", "if": { "capability": "media-assets" },
+      "text": "图片授权记录（来源、权利人、使用条件）属于自报，核心不核实；替代文本需逐语言由用户确认。"
+    },
+    {
       "id": "transaction-acceptance", "text": "交易、预约或会员能力需独立验收；生成页面不等于交易后台已经接通。",
       "if": { "any": [{ "capability": "commerce" }, { "capability": "tickets" }, { "capability": "booking" }, { "capability": "application" }] }
     }
