@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "engines": { "node": ">=22" },
-  "bin": { "site-core": "bin/site-core.mjs" },
+  "bin": { "site-core": "bin/site-core.mjs", "site-core-mcp": "bin/site-core-mcp.mjs" },
   "exports": "./src/index.mjs",
   "scripts": {
     "test": "node --test test/*.test.mjs",

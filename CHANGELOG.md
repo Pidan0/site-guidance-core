@@ -13,6 +13,12 @@
 - 行为变化：业务应用等其他路线下，若卖货／票务／预约已由外部入口承接，同样只追加external-checkout而不追加对应交易能力。
 - 代码按小函数拆分，单行控制在约160字符内；渲染输出逐字节不变。
 
+### MCP服务
+
+- 新增`bin/site-core-mcp.mjs`（package.json bin：`site-core-mcp`）：零依赖MCP服务，stdio，按行分隔JSON-RPC 2.0。依据当前规范2026-07-28实现无状态请求（`_meta`携带版本与能力、`server/discover`、`-32022`），并兼容`initialize`握手的2025-11-25、2025-06-18、2025-03-26、2024-11-05，按客户端请求的版本回退。serverInfo版本取自`ENGINE_VERSION`。
+- 11个工具：`intake`、`plan`、`answer`、`catalog`、`workspace_init/build/update/check/rollback/review/export`，均带inputSchema、中文边界说明和annotations。不提供上传、部署、付款、DNS工具；回执保持`published:false`，`workspace_review`结果恒为`selfReported:true`。
+- 路径安全：`--root <目录>`或`SITE_CORE_ROOT`；workspace与out必须是root内的相对路径，拒绝`..`、绝对路径、符号链接；未配置root时只提供判断类工具。
+- 核心错误以`isError:true`的工具结果返回错误码、信息和details。新增`src/mcp-tools.mjs`、`src/mcp-paths.mjs`、`test/mcp.test.mjs`、`adapters/mcp.md`；核心API与渲染输出不变。
 
 ## 0.1.0
 
