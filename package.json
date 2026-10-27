@@ -4,7 +4,7 @@
   "description": "需求驱动的建站指导、能力判断与可交付静态站核心",
   "type": "module",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": { "node": ">=22" },
   "bin": { "site-core": "bin/site-core.mjs", "site-core-mcp": "bin/site-core-mcp.mjs" },
   "exports": "./src/index.mjs",

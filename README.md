@@ -4,6 +4,8 @@
 
 这是一套可独立放入GitHub的建站核心，包含可运行代码、需求格式、路线规则、能力清单、执行指引和测试。它不依赖原有业务插件，也不调用收费模型或远程服务。
 
+**当前是0.1基础版，适合同事共享试用、需求初筛和静态站原型。** 完整生产交付还缺媒体资源、真实表单与后台、部署接入和真实客户验证；预算与工期目前只记录，不自动参与选型。首次使用看[同事上手指南](docs/QUICKSTART.md)，完整度判断看[当前能力与差距](docs/MATURITY.md)。
+
 ## 一次使用会拿到什么
 
 用户说“我想建一个网站”后，先整理需求，再得到：
@@ -138,14 +140,13 @@ claude mcp add site-core -- node /path/to/site-guidance-core/bin/site-core-mcp.m
 
 提供`intake`、`plan`、`answer`、`catalog`和`workspace_init/build/update/check/rollback/review/export`；不提供上传、部署、付款或DNS工具，回执仍是`published:false`，验收记录仍是人工自报。接入方式、安全边界与推荐工作流见[adapters/mcp.md](adapters/mcp.md)。
 
-## 团队私有仓库
+## 开源仓库与协作
 
-仓库：[Pidan0/site-guidance-core](https://github.com/Pidan0/site-guidance-core)，可见性为Private。2026-10-27用户确认采用团队私有方式；具体成员由所有者按需授权，当前没有代为邀请成员。
+仓库：[Pidan0/site-guidance-core](https://github.com/Pidan0/site-guidance-core)。按所有者2026-10-27的最新要求公开，方便同事查看和复用。
 
-包含Node测试CI、需求示例、贡献规则、能力目录、版本及安全说明。`UNLICENSED`表示尚未授予公开分发许可。所有代码均为本次独立编写，未复制原业务插件代码。
+代码与随附文档采用[MIT许可证](LICENSE)。所有代码均为本项目独立编写，未复制原业务插件代码。公开查看、克隆与Fork不需要单独邀请；直接推送仍需要所有者授权，也可通过Pull Request提交修改。
 
 ```sh
-# 使用已获仓库访问权限的GitHub账号：
 git clone https://github.com/Pidan0/site-guidance-core.git
 cd site-guidance-core
 npm test
@@ -153,13 +154,18 @@ npm test
 
 GitHub保存核心代码和指导资料；客户网站仍按独立项目交付和部署。请勿将真实客户资料、凭据或构建工作区提交到核心仓库。
 
+`package.json`保留`private:true`以防误发npm包，它不影响GitHub公开和MIT授权。本轮没有向npm发布软件包。
+
 ## 继续看
 
+- [同事上手指南](docs/QUICKSTART.md)
+- [当前完整度与适用范围](docs/MATURITY.md)
 - [能力重新评估与产品目标](docs/PRODUCT.md)
+- [待办清单](TODO.md)
 - [当前实现、接入项与后续路线](docs/ROADMAP.md)
 - [API与数据格式](docs/API.md)
 - [接入其他宿主](adapters/README.md)
 - [知识来源与更新](knowledge/SOURCES.md)
 - [贡献规则](CONTRIBUTING.md)
 
-当前版本：0.2.0。完整含义是“需求指导、本地静态执行、版本交付以及外部能力接入契约”的闭环；支付、票务、预约、客户后台和拖拽编辑器均按能力目录中的状态处理。
+当前版本：0.2.0。完整含义是“需求指导、本地静态执行、版本交付以及外部能力接入契约”的闭环；支付、票务、预约、客户后台和拖拽编辑器均按能力目录中的状态处理。测试通过不代表所有建站场景已可上线。
