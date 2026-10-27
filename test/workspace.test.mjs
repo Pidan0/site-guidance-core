@@ -42,7 +42,7 @@ test('有未构建草稿时，交付和回退不静默丢弃', async t => {
   await assert.rejects(() => rollbackWorkspace(workspace, a.revision), { code: 'UNBUILT_CHANGES' });
   assert.equal((await checkWorkspace(workspace)).unbuiltChanges, true);
 });
-test('生成不能绕过交易缺口或需要表单的需求', async t => {
+test('生成不能绕过交易缺口', async t => {
   const temp = await temporary(t), workspace = join(temp, 'commerce'); await createWorkspace(workspace, await example('commerce'), await content());
   await assert.rejects(() => buildWorkspace(workspace), { code: 'BUILD_NOT_SUPPORTED' });
   assert.ok((await readFile(join(workspace, 'GUIDANCE.md'), 'utf8')).includes('成熟平台建店'));

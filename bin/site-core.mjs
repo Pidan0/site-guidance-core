@@ -36,17 +36,19 @@ const HELP = `Site Guidance Core ${ENGINE_VERSION}
 
 本地静态站闭环：
   node bin/site-core.mjs init --brief 需求.json --site 内容.json --out 新工作区
+  node bin/site-core.mjs media add --workspace 工作区 --file 图片.png --id 图片ID [--replace]
   node bin/site-core.mjs build --workspace 工作区
   node bin/site-core.mjs update --workspace 工作区 --patch 修改.json
   node bin/site-core.mjs check --workspace 工作区
   node bin/site-core.mjs rollback --workspace 工作区 --revision r-版本 [--discard-draft]
-  node bin/site-core.mjs export --workspace 工作区 --out 新交付目录
+  node bin/site-core.mjs export --workspace 工作区 --out 新交付目录 [--target github-pages [--cname 域名]]
 
 上线准备（不执行上传、DNS、付款或发布）：
   node bin/site-core.mjs review --workspace 工作区 --check content --status pass --note "实际核对证据"
   node bin/site-core.mjs review --workspace 工作区 --check contact --status pass --note "实际联系路径证据"
   node bin/site-core.mjs review --workspace 工作区 --check domain --status pass --note "实际域名核对证据"
-  node bin/site-core.mjs prepare-publish --workspace 工作区 --out 新上线准备目录
+  node bin/site-core.mjs review --workspace 工作区 --check form --status pass --note "真实提交与收件证据"（仅有表单时）
+  node bin/site-core.mjs prepare-publish --workspace 工作区 --out 新上线准备目录 [--target github-pages [--cname 域名]]
 
 演示：node bin/site-core.mjs demo --out 新演示目录
 `;
@@ -64,19 +66,33 @@ async function answer(options) {
   return { file, ...summary };
 }
 
+// Full example: two self-made PNGs, an inquiry form and a draft GitHub Pages package (no review records, so no public package).
+async function demoFull(out, examples) {
+  const workspace = join(out, 'full-workspace');
+  await core.createWorkspace(workspace, await load(join(examples, 'b2b-full.brief.json')), await load(join(examples, 'b2b-full.site.json')));
+  for (const id of ['factory', 'sample-bottle']) await core.addMedia(workspace, join(examples, 'media', `${id}.png`), { id });
+  const built = await core.buildWorkspace(workspace);
+  const pages = await core.exportWorkspace(workspace, join(out, 'full-pages-draft'), { target: 'github-pages' });
+  return { revision: built.revision, checks: built.checks.passed, package: pages.destination, target: pages.target, media: pages.media.length };
+}
+
 export async function runCLI(args, { stdout = text => process.stdout.write(`${text}\n`) } = {}) {
-  const [command, ...rest] = args, options = argsOf(rest);
+  const [first, ...tail] = args, command = first === 'media' && tail[0] === 'add' ? 'media add' : first;
+  const rest = command === 'media add' ? tail.slice(1) : tail, options = argsOf(rest);
   const print = value => stdout(typeof value === 'string' ? value : JSON.stringify(value, null, 2));
   const allowed = {
     help: [], intake: ['text'], plan: ['brief', 'out'], answer: ['brief', 'answers', 'out'], catalog: [],
     init: ['brief', 'site', 'out'], build: ['workspace'], update: ['workspace', 'patch'], check: ['workspace'],
     rollback: ['workspace', 'revision', 'discard-draft'], review: ['workspace', 'check', 'status', 'note'],
-    export: ['workspace', 'out'], 'prepare-publish': ['workspace', 'out'], demo: ['out']
+    export: ['workspace', 'out', 'target', 'cname'], 'prepare-publish': ['workspace', 'out', 'target', 'cname'], demo: ['out'],
+    'media add': ['workspace', 'file', 'id', 'replace']
   };
   const cmd = command ?? 'help';
   if (!Object.hasOwn(allowed, cmd)) throw fail('INVALID_ARGUMENTS', `未知命令：${cmd}`);
   for (const key of Object.keys(options)) if (!allowed[cmd].includes(key)) throw fail('INVALID_ARGUMENTS', `未知选项：--${key}`);
-  if (options['discard-draft'] !== undefined && options['discard-draft'] !== true) throw fail('INVALID_ARGUMENTS', '--discard-draft是独立开关，不接受参数值');
+  for (const flag of ['discard-draft', 'replace']) {
+    if (options[flag] !== undefined && options[flag] !== true) throw fail('INVALID_ARGUMENTS', `--${flag}是独立开关，不接受参数值`);
+  }
   if (cmd === 'help') return print(HELP);
   if (cmd === 'intake') return print(core.intakeRequest(required(options, 'text')));
   if (cmd === 'catalog') return print({ ...core.validateCatalog(), routes: core.routes, capabilities: core.capabilities, rules: core.rules });
@@ -96,6 +112,9 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
     return print(await core.createWorkspace(required(options, 'out'), await load(required(options, 'brief')), site));
   }
   const workspace = () => required(options, 'workspace');
+  if (cmd === 'media add') {
+    return print(await core.addMedia(workspace(), required(options, 'file'), { id: required(options, 'id'), replace: options.replace === true }));
+  }
   if (cmd === 'build') return print(await core.buildWorkspace(workspace()));
   if (cmd === 'update') return print(await core.updateWorkspace(workspace(), await load(required(options, 'patch'))));
   if (cmd === 'check') return print(await core.checkWorkspace(workspace()));
@@ -106,7 +125,9 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
     return print(await core.recordReview(workspace(), required(options, 'check'), required(options, 'status'), required(options, 'note')));
   }
   if (cmd === 'export' || cmd === 'prepare-publish') {
-    return print(await core.exportWorkspace(workspace(), required(options, 'out'), { forPublication: cmd === 'prepare-publish' }));
+    const target = options.target === undefined ? undefined : required(options, 'target');
+    const cname = options.cname === undefined ? undefined : required(options, 'cname');
+    return print(await core.exportWorkspace(workspace(), required(options, 'out'), { forPublication: cmd === 'prepare-publish', target, cname }));
   }
   if (cmd === 'demo') {
     const out = await newDir(required(options, 'out')), examples = fileURLToPath(new URL('../examples/', import.meta.url));
@@ -114,7 +135,8 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
     await core.createWorkspace(join(out, 'workspace'), brief, site);
     const built = await core.buildWorkspace(join(out, 'workspace'));
     const bundle = await core.exportWorkspace(join(out, 'workspace'), join(out, 'handoff'));
-    const scenarios = ['b2b', 'commerce', 'self-hosted-commerce', 'tourism', 'booking', 'content', 'unknown'];
+    const full = await demoFull(out, examples);
+    const scenarios = ['b2b', 'b2b-full', 'commerce', 'self-hosted-commerce', 'tourism', 'booking', 'content', 'unknown'];
     const plans = [];
     await mkdir(join(out, 'plans'));
     for (const name of scenarios) {
@@ -122,7 +144,7 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
       await writeFile(join(out, 'plans', `${name}.md`), core.planMarkdown(plan));
       plans.push({ example: name, route: plan.route.id, localBuild: plan.readiness.localBuild });
     }
-    return print({ ...built, runtime: process.version, handoff: bundle.destination, scenarios: plans });
+    return print({ ...built, runtime: process.version, handoff: bundle.destination, full, scenarios: plans });
   }
 }
 

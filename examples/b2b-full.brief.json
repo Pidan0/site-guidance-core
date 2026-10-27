@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "演示工厂完整询盘站（图片、表单、GitHub Pages）",
+  "request": "做一个中英文企业展示站，有工厂和产品图片，访客可以直接在网页上留询盘，发布到GitHub Pages。",
+  "goals": ["brand", "inquiry"],
+  "languages": ["en", "zh-CN"],
+  "features": {
+    "catalog": true, "onlinePayment": false, "internalOrders": false, "contentEditor": "developer", "forms": true, "media": true
+  },
+  "ownership": { "sourceCode": true, "selfHost": false },
+  "operations": { "technicalTeam": true, "maintenanceOwner": "演示交付团队" },
+  "constraints": { "hostingRegion": "overseas" }
+}

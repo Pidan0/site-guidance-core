@@ -1,16 +1,20 @@
 import { posix } from 'node:path';
 import { httpsUrl } from './schema.mjs';
-import { invariant } from './errors.mjs';
+import { fail, invariant } from './errors.mjs';
+import { inspectImage, extensionMatches, mediaOutputPath, mediaIdPattern, mediaFilePattern } from './media.mjs';
+import { normalizeForm, renderForm } from './form.mjs';
 
 export const supportedLocales = ['zh-CN', 'en'];
 const labels = {
   'zh-CN': {
     home: '首页', catalog: '产品与服务', about: '关于我们', contact: '联系我们', more: '了解详情', inquiry: '发送咨询',
-    purchase: '前往购买入口', booking: '前往预约入口', faq: '常见问题', language: '语言', back: '返回目录'
+    purchase: '前往购买入口', booking: '前往预约入口', faq: '常见问题', language: '语言', back: '返回目录',
+    notFound: '页面不存在', notFoundText: '找不到这个地址，可以回到首页继续浏览。'
   },
   en: {
     home: 'Home', catalog: 'Products & services', about: 'About', contact: 'Contact', more: 'Details', inquiry: 'Contact us',
-    purchase: 'Go to purchase', booking: 'Go to booking', faq: 'Questions', language: 'Language', back: 'Back to catalog'
+    purchase: 'Go to purchase', booking: 'Go to booking', faq: 'Questions', language: 'Language', back: 'Back to catalog',
+    notFound: 'Page not found', notFoundText: 'This address does not exist. Continue from the home page.'
   }
 };
 const ENTITIES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -31,22 +35,28 @@ function itemList(raw, field, product = false) {
   const seen = new Set();
   return raw.map((item, i) => {
     const at = `${field}[${i}]`;
-    keys(item, ['id', 'name', 'summary', 'description'], at);
+    keys(item, ['id', 'name', 'summary', 'description', 'image'], at);
     invariant(typeof item.id === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(item.id), 'INVALID_CONTENT', `${at}.id 不允许路径或特殊字符`);
     invariant(!seen.has(item.id), 'INVALID_CONTENT', `${field} 出现重复ID`); seen.add(item.id);
     return {
       id: item.id, name: text(item.name, `${at}.name`, true), summary: text(item.summary, `${at}.summary`, true),
-      description: text(item.description, `${at}.description`, product)
+      description: text(item.description, `${at}.description`, product), image: mediaRef(item.image, `${at}.image`)
     };
   });
 }
 
+const mediaRef = (value, field) => {
+  invariant(value === undefined || (typeof value === 'string' && mediaIdPattern.test(value)), 'INVALID_CONTENT', `${field} 必须是site.media中的图片ID`);
+  return value ?? null;
+};
+
 function normalizeLocale(locale, code) {
-  keys(locale, ['brand', 'headline', 'summary', 'about', 'products', 'services', 'faq'], `locales.${code}`);
+  keys(locale, ['brand', 'headline', 'summary', 'about', 'products', 'services', 'faq', 'heroImage'], `locales.${code}`);
   const out = {
     brand: text(locale.brand, `${code}.brand`, true), headline: text(locale.headline, `${code}.headline`, true),
     summary: text(locale.summary, `${code}.summary`, true), about: text(locale.about, `${code}.about`, true),
-    products: itemList(locale.products, `${code}.products`, true), services: itemList(locale.services, `${code}.services`)
+    products: itemList(locale.products, `${code}.products`, true), services: itemList(locale.services, `${code}.services`),
+    heroImage: mediaRef(locale.heroImage, `${code}.heroImage`)
   };
   if (locale.faq !== undefined) invariant(Array.isArray(locale.faq) && locale.faq.length <= 30, 'INVALID_CONTENT', `${code}.faq 必须为数组`);
   out.faq = (locale.faq ?? []).map((q, i) => {
@@ -84,8 +94,45 @@ function normalizeTheme(theme) {
   return { primary };
 }
 
+// Every image needs alt text in each brief language and a self-reported licence record; nothing is silently dropped.
+function normalizeMediaItem(item, i, languages) {
+  const at = `media[${i}]`;
+  keys(item, ['id', 'file', 'alt', 'license'], at);
+  invariant(typeof item.id === 'string' && mediaIdPattern.test(item.id), 'INVALID_CONTENT', `${at}.id 不允许路径或特殊字符`);
+  invariant(typeof item.file === 'string' && mediaFilePattern.test(item.file), 'INVALID_CONTENT', `${at}.file 需为media/下的png/jpg/webp/avif文件名`);
+  invariant(item.alt && typeof item.alt === 'object' && !Array.isArray(item.alt), 'MISSING_ALT', `${at}.alt 需要按语言提供替代文本`);
+  const alt = Object.fromEntries(languages.map(lang => {
+    invariant(typeof item.alt[lang] === 'string' && item.alt[lang].trim(), 'MISSING_ALT', `${at}.alt.${lang} 缺少替代文本`);
+    return [lang, text(item.alt[lang], `${at}.alt.${lang}`)];
+  }));
+  invariant(item.license && typeof item.license === 'object', 'MISSING_LICENSE', `${at}.license 需要来源、权利人和使用条件（自报）`);
+  keys(item.license, ['source', 'holder', 'terms'], `${at}.license`);
+  const license = {};
+  for (const key of ['source', 'holder', 'terms']) {
+    invariant(typeof item.license[key] === 'string' && item.license[key].trim(), 'MISSING_LICENSE', `${at}.license.${key} 缺少授权记录`);
+    license[key] = text(item.license[key], `${at}.license.${key}`);
+  }
+  return { id: item.id, file: item.file, alt, license };
+}
+
+function normalizeMedia(raw, languages) {
+  if (raw === undefined) return [];
+  invariant(Array.isArray(raw) && raw.length <= 200, 'INVALID_CONTENT', 'media 必须是最多200项的数组');
+  const list = raw.map((item, i) => normalizeMediaItem(item, i, languages));
+  invariant(new Set(list.map(x => x.id)).size === list.length, 'INVALID_CONTENT', 'media 出现重复ID');
+  invariant(new Set(list.map(x => x.file)).size === list.length, 'INVALID_CONTENT', 'media 出现重复文件');
+  return list;
+}
+
+function mediaReferences(locales) {
+  return Object.entries(locales).flatMap(([code, t]) => [
+    ...(t.heroImage ? [[`${code}.heroImage`, t.heroImage]] : []),
+    ...['products', 'services'].flatMap(field => t[field].filter(x => x.image).map(x => [`${code}.${field}.${x.id}.image`, x.image]))
+  ]);
+}
+
 export function normalizeContent(input, brief) {
-  keys(input, ['schemaVersion', 'baseUrl', 'defaultLocale', 'locales', 'contact', 'theme'], 'site');
+  keys(input, ['schemaVersion', 'baseUrl', 'defaultLocale', 'locales', 'contact', 'theme', 'media', 'form'], 'site');
   invariant(input.schemaVersion === 1, 'INVALID_CONTENT', 'site.schemaVersion 必须为1');
   const url = httpsUrl(input.baseUrl, 'baseUrl');
   invariant(!url.search && !url.hash, 'INVALID_CONTENT', 'baseUrl 不允许查询参数或片段');
@@ -108,7 +155,13 @@ export function normalizeContent(input, brief) {
   }
   const contact = normalizeContact(input.contact);
   if (brief.goals.includes('inquiry')) invariant(contact.email || contact.whatsapp || contact.phone, 'MISSING_CONTACT', '咨询目标至少需要一个有效联系方式');
-  return { schemaVersion: 1, baseUrl, defaultLocale: input.defaultLocale, locales, contact, theme: normalizeTheme(input.theme) };
+  const media = normalizeMedia(input.media, languages), declared = new Set(media.map(x => x.id)), references = mediaReferences(locales);
+  for (const [field, id] of references) invariant(declared.has(id), 'MISSING_MEDIA', `${field} 引用的图片 ${id} 未在site.media登记`);
+  if (brief.features?.media === true) invariant(references.length, 'MISSING_CONTENT', '需求确认需要图片，至少引用一张已登记图片，不能降级成纯文本站');
+  const form = normalizeForm(input.form, brief, languages);
+  return {
+    schemaVersion: 1, baseUrl, defaultLocale: input.defaultLocale, locales, contact, theme: normalizeTheme(input.theme), media, form
+  };
 }
 
 function relative(from, to) { return posix.relative(posix.dirname(from), to) || posix.basename(to); }
@@ -129,9 +182,16 @@ const CSS = [
   '.draft{padding:7px 25px;background:#fff3df;color:#6f4814;font-size:14px}.contact{display:grid;gap:12px;justify-items:start}',
   'details{margin:12px 0;background:white;border:1px solid #dce3ef;border-radius:8px;padding:15px}summary{cursor:pointer;font-weight:bold}',
   'a[aria-current=page]{font-weight:bold}@media(max-width:600px){.wrap{padding:20px}h1{font-size:31px}.lead{font-size:18px}',
-  'nav{gap:13px;font-size:14px}.card{padding:20px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}'
+  'nav{gap:13px;font-size:14px}.card{padding:20px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}',
+  'img{display:block;max-width:100%;height:auto}.hero{margin:0 0 25px}.hero img,.card img{border-radius:12px}.card img{margin-bottom:15px}',
+  '.inquiry{display:grid;gap:15px;max-width:640px;margin-top:15px}.field{display:grid;gap:5px}',
+  '.field input,.field textarea{font:inherit;padding:10px;border:1px solid #9aa7bd;border-radius:8px;background:#fff}',
+  '.inquiry button{justify-self:start;font:inherit;background:var(--primary);color:#fff;border:0;border-radius:8px;padding:10px 20px;cursor:pointer}',
+  '.hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}.note{font-size:14px;color:#52617a}'
 ].join('');
-const CSP = "default-src 'none'; style-src 'self'; img-src 'self'; script-src 'none'; base-uri 'none'; form-action 'none'";
+// The origin comes from a parsed https URL, so it cannot contain quotes or separators.
+const csp = site => "default-src 'none'; style-src 'self'; img-src 'self'; script-src 'none'; base-uri 'none'; "
+  + `form-action ${site.form ? site.form.origin : "'none'"}`;
 
 function pageRoutes(site) {
   const routes = [];
@@ -150,10 +210,18 @@ function actions(site, brief, file, lang) {
     + (links.externalBookingUrl ? `<a class="cta" href="${escapeHtml(links.externalBookingUrl)}" rel="noopener">${l.booking}</a>` : '');
 }
 
+function image(site, id, lang, file) {
+  if (!id) return '';
+  const img = site.images.get(id);
+  return `<img src="${relative(file, img.path)}" width="${img.width}" height="${img.height}" alt="${escapeHtml(img.alt[lang])}"`
+    + ' loading="lazy" decoding="async">';
+}
+
 function catalogGrid(site, t, l, file, lang) {
-  const products = t.products.map(p => `<article class="card"><h2>${escapeHtml(p.name)}</h2><p>${escapeHtml(p.summary)}</p>`
+  const products = t.products.map(p => `<article class="card">${image(site, p.image, lang, file)}<h2>${escapeHtml(p.name)}</h2><p>${escapeHtml(p.summary)}</p>`
     + `<a href="${relative(file, `${prefix(site, lang)}products/${p.id}.html`)}">${l.more}</a></article>`);
-  const services = t.services.map(s => `<article class="card"><h2>${escapeHtml(s.name)}</h2>${paragraph(s.summary)}${paragraph(s.description)}</article>`);
+  const services = t.services.map(s => `<article class="card">${image(site, s.image, lang, file)}<h2>${escapeHtml(s.name)}</h2>`
+    + `${paragraph(s.summary)}${paragraph(s.description)}</article>`);
   return `<div class="grid">${products.join('')}${services.join('')}</div>`;
 }
 
@@ -170,20 +238,22 @@ function pageBody(site, brief, route, product) {
   if (kind === 'home') {
     const faqItems = t.faq.map(q => `<details><summary>${escapeHtml(q.question)}</summary>${paragraph(q.answer)}</details>`).join('');
     const faq = t.faq.length ? `<h2>${l.faq}</h2>${faqItems}` : '';
-    return `<p class="lead">${escapeHtml(t.summary)}</p>${actions(site, brief, file, lang)}${catalogGrid(site, t, l, file, lang)}${faq}`;
+    const hero = t.heroImage ? `<figure class="hero">${image(site, t.heroImage, lang, file)}</figure>` : '';
+    return `${hero}<p class="lead">${escapeHtml(t.summary)}</p>${actions(site, brief, file, lang)}${catalogGrid(site, t, l, file, lang)}${faq}`;
   }
   if (kind === 'catalog') return catalogGrid(site, t, l, file, lang);
   if (kind === 'about') return paragraph(t.about);
-  if (kind === 'contact') return contactLinks(site.contact);
+  if (kind === 'contact') return contactLinks(site.contact) + (site.form ? renderForm(site.form, lang, escapeHtml) : '');
   const back = `<p><a href="${relative(file, `${prefix(site, lang)}catalog.html`)}">${l.back}</a></p>`;
-  return `<p class="lead">${escapeHtml(product.summary)}</p>${paragraph(product.description)}${actions(site, brief, file, lang)}${back}`;
+  const picture = product.image ? `<figure class="hero">${image(site, product.image, lang, file)}</figure>` : '';
+  return `${picture}<p class="lead">${escapeHtml(product.summary)}</p>${paragraph(product.description)}${actions(site, brief, file, lang)}${back}`;
 }
 
-function pageHead({ title, description, canonical, alternates, jsonld, file, publication }) {
+function pageHead({ site, title, description, canonical, alternates, jsonld, file, publication }) {
   return '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     + `<title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}">`
     + `<meta name="robots" content="${publication ? 'index,follow' : 'noindex,nofollow'}">`
-    + `<meta http-equiv="Content-Security-Policy" content="${CSP}"><link rel="canonical" href="${escapeHtml(canonical)}">${alternates}`
+    + `<meta http-equiv="Content-Security-Policy" content="${csp(site)}"><link rel="canonical" href="${escapeHtml(canonical)}">${alternates}`
     + `<meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}">`
     + `<meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="website">`
     + `<link rel="stylesheet" href="${relative(file, 'assets/site.css')}"><script type="application/ld+json">${jsonld}</script></head>`;
@@ -200,12 +270,13 @@ function renderPage(site, brief, route, routes, publication) {
   const languageLinks = siblings.map(r => `<a href="${relative(file, r.file)}" lang="${r.lang}">${r.lang}</a>`).join('');
   const structured = {
     '@context': 'https://schema.org', '@type': kind === 'product' ? 'Product' : 'Organization',
-    name: kind === 'product' ? product.name : t.brand, description, url: canonical
+    name: kind === 'product' ? product.name : t.brand, description, url: canonical,
+    ...(kind === 'product' && product.image ? { image: new URL(site.images.get(product.image).path, site.baseUrl).href } : {})
   };
   const jsonld = JSON.stringify(structured).replace(/</g, '\\u003c');
   const navLinks = ['home', 'catalog', 'about', 'contact']
     .map(k => `<a href="${relative(file, pageFile(site, lang, k))}"${kind === k ? ' aria-current="page"' : ''}>${l[k]}</a>`).join('');
-  const html = `<!doctype html><html lang="${lang}">${pageHead({ title, description, canonical, alternates, jsonld, file, publication })}`
+  const html = `<!doctype html><html lang="${lang}">${pageHead({ site, title, description, canonical, alternates, jsonld, file, publication })}`
     + `<body>${publication ? '' : '<div class="draft">Draft / 预览草稿</div>'}`
     + `<header><div class="wrap nav"><strong>${escapeHtml(t.brand)}</strong><nav aria-label="Navigation">${navLinks}</nav></div></header>`
     + `<main class="wrap"><h1>${escapeHtml(heading)}</h1>${pageBody(site, brief, route, product)}</main>`
@@ -214,8 +285,40 @@ function renderPage(site, brief, route, routes, publication) {
   return { html, page: { file, lang, canonical, title } };
 }
 
-export function renderSite(brief, rawContent, { publication = false } = {}) {
+// 404.html is served for any missing path (e.g. by GitHub Pages), so its links and stylesheet use absolute URLs from baseUrl.
+// It is never indexed, in drafts or publication packages, and is not listed in the sitemap.
+function renderNotFound(site) {
+  const lang = site.defaultLocale, t = site.locales[lang], l = labels[lang], title = `${l.notFound} | ${t.brand}`;
+  const homes = Object.keys(site.locales).map(code => `<p lang="${code}">${labels[code].notFoundText} `
+    + `<a href="${escapeHtml(new URL(pageFile(site, code, 'home'), site.baseUrl).href)}">${labels[code].home} (${code})</a></p>`).join('');
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">`
+    + `<title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(l.notFoundText)}"><meta name="robots" content="noindex,nofollow">`
+    + `<meta http-equiv="Content-Security-Policy" content="${csp(site)}">`
+    + `<link rel="stylesheet" href="${escapeHtml(new URL('assets/site.css', site.baseUrl).href)}"></head><body>`
+    + `<header><div class="wrap nav"><strong>${escapeHtml(t.brand)}</strong></div></header>`
+    + `<main class="wrap"><h1>${escapeHtml(l.notFound)}</h1>${homes}</main></body></html>`;
+}
+
+// media: Map of media/ file name -> Buffer. Images are identified by content, renamed by hash and sized from their headers.
+function placeImages(site, media, files) {
+  site.images = new Map();
+  const used = new Set(mediaReferences(site.locales).map(([, id]) => id)), out = [];
+  for (const item of site.media) {
+    const bytes = media?.get(item.file);
+    if (!Buffer.isBuffer(bytes)) throw fail('MISSING_MEDIA', `media/${item.file} 不存在；先用media add加入图片`);
+    const info = inspectImage(bytes, `media/${item.file}`);
+    invariant(extensionMatches(item.file, info.format), 'INVALID_MEDIA', `media/${item.file} 实际格式为${info.format}，扩展名不符`);
+    if (!used.has(item.id)) continue;
+    const path = mediaOutputPath(info);
+    files.set(path, bytes); site.images.set(item.id, { path, width: info.width, height: info.height, alt: item.alt });
+    out.push({ id: item.id, file: item.file, path, format: info.format, width: info.width, height: info.height, sha256: info.sha256, license: item.license });
+  }
+  return out;
+}
+
+export function renderSite(brief, rawContent, { publication = false, media } = {}) {
   const site = normalizeContent(rawContent, brief), files = new Map(), pages = [], routes = pageRoutes(site);
+  const images = placeImages(site, media, files);
   for (const route of routes) {
     const { html, page } = renderPage(site, brief, route, routes, publication);
     files.set(route.file, html); pages.push(page);
@@ -224,7 +327,8 @@ export function renderSite(brief, rawContent, { publication = false } = {}) {
   const urls = pages.map(p => `<url><loc>${escapeHtml(p.canonical)}</loc></url>`).join('');
   files.set('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
   files.set('robots.txt', `User-agent: *\n${publication ? 'Allow: /' : 'Disallow: /'}\nSitemap: ${new URL('sitemap.xml', site.baseUrl).href}\n`);
-  return { files, pages, site, publication };
+  files.set('404.html', renderNotFound(site));
+  return { files, pages, site, publication, media: images };
 }
 
 export function isPlaceholderUrl(value) {

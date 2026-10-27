@@ -163,3 +163,56 @@ CLI：`node bin/site-core.mjs answer --brief 需求.json --answers 回答.json [
 `INVALID_BRIEF`检查需求字段；`BUILD_NOT_SUPPORTED`补信息或按guide实施外部能力；`LANGUAGE_MISMATCH`补对应译文；`REVISION_CHANGED`保留并核对手工修改，不能强行覆盖；`UNBUILT_CHANGES`先构建草稿；`REVIEW_REQUIRED`补当前版本真实证据；`PLACEHOLDER_DOMAIN`替换演示域名；`WORKSPACE_BUSY`确认并发操作状态；`INVALID_PATCH`检查patch对象；`INVALID_ANSWER`按问题ID和选项ID改回答；`INVALID_CATALOG`修正knowledge规则；`REVISION_CONFLICT`表示`revisions/<id>`被非本核心目录占用，需人工移走。
 
 工作区锁异常残留时，不自动按时间删除。先确认没有运行操作，再手工移除`.site-core/lock`。不要跳过文件完整性检查。
+
+## 图片、询盘表单与GitHub Pages发布包（0.2.0执行阶段）
+
+本节扩展上文的内容格式、工作区接口与检查；上文表格中未提及的选项以本节为准。
+
+### 图片
+
+- 原件放在工作区`media/`。`addMedia(workspace, filePath, { id, replace? })`／CLI`media add --workspace 工作区 --file 图片 --id 图片ID [--replace]`：只按文件头魔数识别png/jpeg/webp/avif，拒绝SVG与其他格式（`UNSUPPORTED_MEDIA`），单张上限5MB（`MEDIA_TOO_LARGE`），不跟随符号链接；在工作区锁内原子写入`media/<id>.<ext>`，已存在且未给replace时`TARGET_EXISTS`。返回`{ id, file, format, width, height, bytes, sha256, entry, next, published:false }`，`entry`是待补alt与授权的登记骨架，核心不自动写入project.json。
+- `inspectImage(buffer)`返回`{ format, ext, width, height, bytes, sha256 }`，尺寸取自文件头（PNG IHDR、JPEG SOFn、WebP VP8/VP8L/VP8X、AVIF ispe）。
+- site新增`media: [{ id, file, alt: { <语言>: 文本 }, license: { source, holder, terms } }]`。`file`是media/下的文件名，扩展名须与实际格式一致（`INVALID_MEDIA`）；每种需求语言都要有alt（`MISSING_ALT`）；授权三项必填（`MISSING_LICENSE`），属于自报，核心不核实。
+- `locales.<语言>.heroImage`与products/services条目的`image`引用media id；未登记的id或缺少的原件为`MISSING_MEDIA`。brief`features.media=true`时至少引用一张图片，否则`MISSING_CONTENT`。
+- 输出到`assets/media/<sha256前16位>.<ext>`，`<img>`带width/height、`loading="lazy"`、`decoding="async"`和当前语言alt；产品JSON-LD带image地址。CSP`img-src 'self'`不变。
+- `renderSite(brief, site, { publication, media })`的`media`为`Map<文件名, Buffer>`；结果多出`media`列表（id、file、path、format、尺寸、sha256、license）。
+
+### 版本与图片字节
+
+- 版本源快照（`revisions/<id>/source.json`）= project.json + `mediaFingerprints: { 文件名: sha256 }`（只在登记了图片时出现，无图片项目的版本ID与之前相同）。版本ID仍为`sha256({engine, source})`，因此只换图片字节也会得到新版本，`check`显示`unbuiltChanges:true`。
+- 版本目录另存所用原件`revisions/<id>/media/`；完整性核对要求它与指纹完全一致，生成站点里的图片也在`build.json`指纹内，任一被手改即`REVISION_CHANGED`。
+- 回退把目标版本的原件写回`media/`并返回`mediaRestored`；若会覆盖`media/`中未构建登记的不同文件，按未构建修改处理（`UNBUILT_CHANGES`，details列出文件），需显式`discardDraft`。
+- `project.json`不得自带`mediaFingerprints`（`INVALID_WORKSPACE`）。
+
+### 询盘表单
+
+- site新增`form: { endpoint, fields: [{ id, type, required?, label: { <语言>: 文本 } }] }`；endpoint为HTTPS地址（`INVALID_URL`），type为text/email/tel/textarea，id为小写字母开头的简短标识且不能与蜜罐`_gotcha`重名，最多20个字段，至少一个email或tel字段。
+- 只有brief确认`features.forms=true`才接受form；`forms=true`却没有form是`MISSING_CONTENT`，没确认却提供form是`INVALID_CONTENT`。
+- 联系页渲染无脚本`<form method="post">`：label/for关联、required、autocomplete、视觉隐藏的蜜罐`_gotcha`（Formspree约定名；其他服务需自行配置丢弃该字段非空的提交）。所有页面的CSP`form-action`只放行endpoint的origin；无表单时仍为`'none'`。
+- 送达、反垃圾、限流与数据保存由用户自选的接收服务负责（Formspree、Getform或自建端点等仅为候选，不作背书）。
+
+### 审核与公开准备包
+
+- `recordReview`的check新增`form`，仅当当前版本有表单时允许（否则`INVALID_REVIEW`）。`checkWorkspace`返回`requiredReviews`。有表单时公开准备包还需要form通过，缺失时`REVIEW_REQUIRED`的details包含`form`。
+- 公开准备包的占位域名检查增加`site.form.endpoint`。
+- 回执新增`media`（id、file、sha256、license、`licenseSelfReported:true`）和`form`（endpoint、`deliveryVerified:false`）。交付包`source/`同时包含`project.json`与`media/`原件。
+
+### 404页
+
+每次构建都输出`404.html`：默认语言标题、各语言首页链接，始终`noindex`（草稿和公开包相同），不进站点地图。因为托管方会在任意缺失路径返回它，链接与样式表使用baseUrl的绝对地址。`checkFiles`要求它存在且结构合格（`not-found`等问题）。
+
+### GitHub Pages发布包
+
+- `exportWorkspace(path, out, { forPublication?, target: 'github-pages', cname? })`；CLI`export`／`prepare-publish`加`--target github-pages [--cname 域名]`。其他target为`INVALID_TARGET`，无target的cname也是`INVALID_TARGET`。
+- 地址校验`pagesTarget(baseUrl, cname?)`（`PAGES_URL_MISMATCH`）：`https://<用户>.github.io/`为用户站（仓库须为`<用户>.github.io`），`https://<用户>.github.io/<仓库>/`为项目站，更深路径拒绝；github.io地址不能带cname；其他主机必须提供与baseUrl主机一致的`--cname`，且baseUrl只能是域名根。
+- 目录：`repository/`即仓库内容——`repository/site/`（含`.nojekyll`，有自定义域名时含`CNAME`）与`repository/.github/workflows/pages.yml`；HANDOFF、GUIDANCE、checks、receipt与`source/`留在仓库目录之外，避免把资料源推进公开仓库。
+- 工作流：push到main或手动触发；权限`contents: read`、`pages: write`、`id-token: write`；依次使用actions/checkout、configure-pages、upload-pages-artifact（`path: site`，`include-hidden-files: true`）、deploy-pages，均以提交SHA固定并注释版本与核对日期（`PAGES_ACTIONS`）。
+- 回执记录`target`与`pages: { kind, repository, cname, url }`，仍为`published:false`。草稿也可生成Pages包（保留noindex，仅供预览部署）。
+
+### 检查
+
+`checkFiles`接受字符串或Buffer。只对.html/.xml/.txt/.css做文本检查；图片按魔数核对扩展名、按内容核对哈希文件名（`media`），其他类型报`file-type`；页面中的`<img>`必须带alt、width、height与`loading="lazy"`（`img`）。
+
+### 新增错误码
+
+`UNSUPPORTED_MEDIA`换成png/jpeg/webp/avif；`MEDIA_TOO_LARGE`压缩到5MB内；`INVALID_MEDIA`检查文件头、扩展名或id；`MEDIA_NOT_FOUND`检查路径；`MISSING_MEDIA`先media add并在site.media登记；`MISSING_ALT`逐语言补alt；`MISSING_LICENSE`补授权记录；`INVALID_TARGET`改用github-pages；`PAGES_URL_MISMATCH`按Pages规则改baseUrl或cname。
