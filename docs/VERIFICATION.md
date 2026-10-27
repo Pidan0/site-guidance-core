@@ -13,6 +13,8 @@
 
 已发布到团队私有仓库[Pidan0/site-guidance-core](https://github.com/Pidan0/site-guidance-core)。首批完整源码提交为`65defc40e5d90257207a56e45837f5ec540691a2`，其51个文件的Git树与本地源文件一致。
 
+以上记录对应首次私有发布。所有者后续要求公开分享，当前可见性以GitHub仓库页面为准；许可证见仓库根目录LICENSE。
+
 [Core checks运行记录](https://github.com/Pidan0/site-guidance-core/actions/runs/40435763223)中，Node.js 22与24两组任务均已成功，分别执行了`npm test`、能力目录校验与完整demo。此记录来自实际GitHub Actions结果，区别于本地验证。
 
 ## 尚未执行
