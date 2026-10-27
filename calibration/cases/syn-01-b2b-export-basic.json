@@ -1,0 +1,38 @@
+{
+  "id": "syn-01-b2b-export-basic",
+  "source": "synthetic",
+  "request": "我们是做不锈钢保温杯的工厂，想做个英文官网给海外客户看产品，客户能留言询价就行。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "保温杯工厂官网",
+    "request": "我们是做不锈钢保温杯的工厂，想做个英文官网给海外客户看产品，客户能留言询价就行。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "inquiry"
+    ],
+    "languages": [
+      "en"
+    ],
+    "features": {
+      "catalog": true,
+      "forms": true
+    }
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "forms",
+      "static-site"
+    ]
+  },
+  "rationale": "场景：外贸B2B。纯展示加询盘，无交易，静态站最合适；表单需要接收服务，故需forms能力。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

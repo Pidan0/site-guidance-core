@@ -1,0 +1,35 @@
+{
+  "id": "syn-25-content-cms-blog",
+  "source": "synthetic",
+  "request": "做一个行业资讯站，编辑每天发文章，编辑不懂代码，要后台录入。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "行业资讯站",
+    "request": "做一个行业资讯站，编辑每天发文章，编辑不懂代码，要后台录入。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "content"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "contentEditor": "client"
+    }
+  },
+  "expected": {
+    "route": "cms-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "cms"
+    ]
+  },
+  "rationale": "场景：内容/CMS。高频内容更新且由非技术编辑完成，需要CMS。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

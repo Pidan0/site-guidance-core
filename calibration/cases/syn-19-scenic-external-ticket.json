@@ -1,0 +1,39 @@
+{
+  "id": "syn-19-scenic-external-ticket",
+  "source": "synthetic",
+  "request": "景区官网介绍景点和路线，买票直接跳转到我们现有的票务平台。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "景区官网",
+    "request": "景区官网介绍景点和路线，买票直接跳转到我们现有的票务平台。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "tickets"
+    ],
+    "languages": [
+      "zh-CN",
+      "en"
+    ],
+    "features": {
+      "externalCheckoutUrl": "https://example.com/tickets",
+      "onlinePayment": false,
+      "internalOrders": false
+    }
+  },
+  "expected": {
+    "route": "tourism-referral",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "external-checkout"
+    ]
+  },
+  "rationale": "场景：文旅门票。购票完全由现有票务系统承接，站点只引导。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

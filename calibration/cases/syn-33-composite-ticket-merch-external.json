@@ -1,0 +1,38 @@
+{
+  "id": "syn-33-composite-ticket-merch-external",
+  "source": "synthetic",
+  "request": "景区官网要卖门票也要卖文创周边，都放到我们现有的小程序商城里结账。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "景区门票加周边",
+    "request": "景区官网要卖门票也要卖文创周边，都放到我们现有的小程序商城里结账。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "tickets",
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "externalCheckoutUrl": "https://example.com/mall",
+      "onlinePayment": false,
+      "internalOrders": false
+    }
+  },
+  "expected": {
+    "route": "tourism-referral",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "external-checkout"
+    ]
+  },
+  "rationale": "场景：复合需求。门票与周边共用同一个外部结账入口，站内都只引导。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

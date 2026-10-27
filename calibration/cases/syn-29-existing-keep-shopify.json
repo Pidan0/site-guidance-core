@@ -1,0 +1,39 @@
+{
+  "id": "syn-29-existing-keep-shopify",
+  "source": "synthetic",
+  "request": "我们店在 Shopify 上跑得挺好，只是想改改外观和加几个页面，不想重做。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "保留现有店铺",
+    "request": "我们店在 Shopify 上跑得挺好，只是想改改外观和加几个页面，不想重做。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "existing": {
+      "platform": "Shopify",
+      "meetsNeeds": true,
+      "migrationRequired": false
+    },
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true
+    }
+  },
+  "expected": {
+    "route": "existing-platform",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": []
+  },
+  "rationale": "场景：已有平台保留。现有平台已满足需求，应优先配置改进而非重建。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "syn-16-retail-sales-path-unknown",
+  "source": "synthetic",
+  "request": "想在网上卖我们的手工皮具，具体怎么收款还没想好。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "手工皮具",
+    "request": "想在网上卖我们的手工皮具，具体怎么收款还没想好。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ]
+  },
+  "expected": {
+    "route": "managed-commerce",
+    "acceptableAlternatives": [
+      "commerce-referral"
+    ],
+    "mustAsk": [
+      "sales-path"
+    ],
+    "mustConflict": [],
+    "mustHaveCapabilities": []
+  },
+  "rationale": "场景：零售电商。承接方式未定，路线暂按成熟平台，但必须追问是外部商城还是本站商城。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27",
+  "knownMismatch": "规则缺陷疑似：sales-path追问条件要求onlinePayment与internalOrders严格等于false，需求未填这两个字段（undefined）时反而不触发追问，恰好在“承接方式未定”时问不出来。需业务/规则负责人确认是否改为“未为true”。"
+}

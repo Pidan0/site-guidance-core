@@ -1,0 +1,36 @@
+{
+  "id": "syn-26-content-docs-static",
+  "source": "synthetic",
+  "request": "开源项目文档站，文档放在代码仓库里，开发者直接提交更新。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "项目文档站",
+    "request": "开源项目文档站，文档放在代码仓库里，开发者直接提交更新。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "content"
+    ],
+    "languages": [
+      "en"
+    ],
+    "features": {
+      "contentEditor": "developer"
+    }
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "static-site",
+      "source-editing"
+    ]
+  },
+  "rationale": "场景：内容/CMS。开发者维护、内容在仓库，静态站最合适。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "syn-35-composite-booking-shop",
+  "source": "synthetic",
+  "request": "瑜伽馆既要课程预约，也要在线卖瑜伽垫和课程包。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "瑜伽馆预约加商城",
+    "request": "瑜伽馆既要课程预约，也要在线卖瑜伽垫和课程包。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "booking",
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true
+    }
+  },
+  "expected": {
+    "route": "managed-booking",
+    "acceptableAlternatives": [
+      "managed-commerce"
+    ],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "booking",
+      "commerce"
+    ]
+  },
+  "rationale": "场景：复合需求。两条都是托管平台路线，哪条主导可商量，但预约与商城两项能力义务都要保留。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

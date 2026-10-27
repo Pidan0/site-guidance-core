@@ -1,0 +1,35 @@
+{
+  "id": "syn-06-local-store-booking",
+  "source": "synthetic",
+  "request": "美容院想让顾客在线预约项目和技师，预约成功要有提醒，还要能预付定金。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "美容院预约",
+    "request": "美容院想让顾客在线预约项目和技师，预约成功要有提醒，还要能预付定金。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "booking"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true
+    }
+  },
+  "expected": {
+    "route": "managed-booking",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "booking"
+    ]
+  },
+  "rationale": "场景：国内门店。预约加预付，需要预约系统和支付，应走成熟预约平台而非静态站。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

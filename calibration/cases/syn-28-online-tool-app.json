@@ -1,0 +1,35 @@
+{
+  "id": "syn-28-online-tool-app",
+  "source": "synthetic",
+  "request": "做一个在线报价计算器，客户填参数后保存方案，下次登录继续用。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "在线报价工具",
+    "request": "做一个在线报价计算器，客户填参数后保存方案，下次登录继续用。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "application"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "customerLogin": true
+    }
+  },
+  "expected": {
+    "route": "custom-app",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "application"
+    ]
+  },
+  "rationale": "场景：会员/应用。有保存状态的业务应用，需要应用开发。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

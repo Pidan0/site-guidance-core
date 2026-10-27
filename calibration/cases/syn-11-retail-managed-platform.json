@@ -1,0 +1,41 @@
+{
+  "id": "syn-11-retail-managed-platform",
+  "source": "synthetic",
+  "request": "想开个网上店卖茶叶，要在线付款、库存管理和订单，不需要自己的代码，用成熟平台就行。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "茶叶网店",
+    "request": "想开个网上店卖茶叶，要在线付款、库存管理和订单，不需要自己的代码，用成熟平台就行。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true,
+      "inventory": true
+    },
+    "ownership": {
+      "sourceCode": false,
+      "selfHost": false
+    }
+  },
+  "expected": {
+    "route": "managed-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "commerce"
+    ]
+  },
+  "rationale": "场景：零售电商。明确接受成熟平台，交易由平台承担。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

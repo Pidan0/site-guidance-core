@@ -1,0 +1,37 @@
+{
+  "id": "syn-20-scenic-onsite-ticket",
+  "source": "synthetic",
+  "request": "想在自己官网直接卖门票，选日期场次、在线支付、入园扫码核销。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "景区自营售票",
+    "request": "想在自己官网直接卖门票，选日期场次、在线支付、入园扫码核销。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "tickets"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true,
+      "inventory": true
+    }
+  },
+  "expected": {
+    "route": "ticketing-integration",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "tickets"
+    ]
+  },
+  "rationale": "场景：文旅门票。日期场次、容量、核销属专用票务能力，不能当普通商品。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

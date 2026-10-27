@@ -1,0 +1,38 @@
+{
+  "id": "syn-22-scenic-ticket-with-capacity",
+  "source": "synthetic",
+  "request": "博物馆有预约限流，每个时段只能放固定人数，购票链接在另一个系统，但我们要在官网显示余票。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "博物馆限流票务",
+    "request": "博物馆有预约限流，每个时段只能放固定人数，购票链接在另一个系统，但我们要在官网显示余票。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "tickets"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "externalCheckoutUrl": "https://example.com/tickets",
+      "inventory": true,
+      "onlinePayment": false,
+      "internalOrders": false
+    }
+  },
+  "expected": {
+    "route": "ticketing-integration",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "tickets"
+    ]
+  },
+  "rationale": "场景：文旅门票。要展示容量/余票意味着需要实时库存数据对接，不是简单外链；待专家复核是否可降级为外链。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

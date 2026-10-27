@@ -1,0 +1,40 @@
+{
+  "id": "syn-02-b2b-multilang-many",
+  "source": "synthetic",
+  "request": "做中东和欧洲市场，网站要英语、西班牙语、德语、阿拉伯语，主要是收询盘。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "多语外贸站",
+    "request": "做中东和欧洲市场，网站要英语、西班牙语、德语、阿拉伯语，主要是收询盘。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "inquiry"
+    ],
+    "languages": [
+      "en",
+      "es",
+      "de",
+      "ar"
+    ],
+    "features": {
+      "forms": true
+    }
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "multilingual",
+      "additional-locales",
+      "forms"
+    ]
+  },
+  "rationale": "场景：外贸B2B。无交易；多语言且超出zh-CN/en，应提示额外语言（含阿拉伯语RTL）的校对义务。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

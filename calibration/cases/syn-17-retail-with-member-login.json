@@ -1,0 +1,42 @@
+{
+  "id": "syn-17-retail-with-member-login",
+  "source": "synthetic",
+  "request": "开一个服装网店，顾客要能注册登录查看自己的订单和收货地址，用成熟平台的会员功能即可。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "服装网店（含会员）",
+    "request": "开一个服装网店，顾客要能注册登录查看自己的订单和收货地址，用成熟平台的会员功能即可。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true,
+      "customerLogin": true
+    },
+    "ownership": {
+      "sourceCode": false,
+      "selfHost": false
+    }
+  },
+  "expected": {
+    "route": "managed-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "commerce"
+    ]
+  },
+  "rationale": "场景：零售电商。成熟电商平台通常自带顾客账号，登录不应让项目沦为定制应用；待业务专家复核。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27",
+  "knownMismatch": "规则缺陷疑似：custom-app（needsApplication含customerLogin）优先于商城路线，成熟电商平台自带顾客账号的常见零售需求被判成业务应用专项设计。需业务专家确认。"
+}

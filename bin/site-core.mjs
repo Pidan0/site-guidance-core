@@ -33,6 +33,7 @@ const HELP = `Site Guidance Core ${ENGINE_VERSION}
   node bin/site-core.mjs plan --brief examples/b2b.brief.json [--out 新目录]
   node bin/site-core.mjs answer --brief 需求.json --answers 回答.json [--out 新需求文件]
   node bin/site-core.mjs catalog
+  node bin/site-core.mjs calibrate [--dir calibration/cases] [--json]
   node bin/site-core.mjs playbook --route managed-commerce|--capability commerce [--json]
 
 本地静态站闭环：
@@ -82,7 +83,7 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
   const rest = command === 'media add' ? tail.slice(1) : tail, options = argsOf(rest);
   const print = value => stdout(typeof value === 'string' ? value : JSON.stringify(value, null, 2));
   const allowed = {
-    help: [], intake: ['text'], plan: ['brief', 'out'], answer: ['brief', 'answers', 'out'], catalog: [], playbook: ['route', 'capability', 'json'],
+    help: [], intake: ['text'], plan: ['brief', 'out'], answer: ['brief', 'answers', 'out'], catalog: [], calibrate: ['dir', 'json'], playbook: ['route', 'capability', 'json'],
     init: ['brief', 'site', 'out'], build: ['workspace'], update: ['workspace', 'patch'], check: ['workspace'],
     rollback: ['workspace', 'revision', 'discard-draft'], review: ['workspace', 'check', 'status', 'note'],
     export: ['workspace', 'out', 'target', 'cname'], 'prepare-publish': ['workspace', 'out', 'target', 'cname'], demo: ['out'],
@@ -97,6 +98,13 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
   if (cmd === 'help') return print(HELP);
   if (cmd === 'intake') return print(core.intakeRequest(required(options, 'text')));
   if (cmd === 'catalog') return print({ ...core.validateCatalog(), routes: core.routes, capabilities: core.capabilities, rules: core.rules });
+  if (cmd === 'calibrate') {
+    if (options.dir !== undefined && typeof options.dir !== 'string') throw fail('INVALID_ARGUMENTS', '需要 --dir 的值');
+    const report = core.runCalibration(await core.loadCases(options.dir === undefined ? undefined : resolve(options.dir)));
+    print(options.json === true ? report : core.calibrationMarkdown(report));
+    if (!report.ok) throw fail('CALIBRATION_FAILED', '存在未标注knownMismatch的校准失败', { failed: report.cases.filter(r => r.status === 'fail').map(r => r.id) });
+    return;
+  }
   if (cmd === 'playbook') {
     for (const key of ['route', 'capability']) {
       if (options[key] !== undefined && typeof options[key] !== 'string') throw fail('INVALID_ARGUMENTS', `需要 --${key} 的值`);

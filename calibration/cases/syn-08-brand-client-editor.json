@@ -1,0 +1,36 @@
+{
+  "id": "syn-08-brand-client-editor",
+  "source": "synthetic",
+  "request": "品牌官网做完后市场部同事要自己改新闻和活动，没有程序员。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "品牌官网（可自助编辑）",
+    "request": "品牌官网做完后市场部同事要自己改新闻和活动，没有程序员。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "content"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "contentEditor": "client"
+    }
+  },
+  "expected": {
+    "route": "cms-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "cms"
+    ]
+  },
+  "rationale": "场景：品牌官网。非技术人员需自行编辑，必须有内容管理后台。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

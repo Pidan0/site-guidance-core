@@ -1,0 +1,41 @@
+{
+  "id": "syn-30-existing-migrate-away",
+  "source": "synthetic",
+  "request": "现在网站建在 Wix 上，访问慢又不好改，想整体迁出来做成自己可控的静态站，内容和链接要保留。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "Wix迁出",
+    "request": "现在网站建在 Wix 上，访问慢又不好改，想整体迁出来做成自己可控的静态站，内容和链接要保留。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "inquiry"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "existing": {
+      "platform": "Wix",
+      "meetsNeeds": false,
+      "migrationRequired": true
+    },
+    "features": {
+      "forms": true
+    }
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "static-site"
+    ]
+  },
+  "rationale": "场景：迁移。已有平台不满足且要求迁移，不应走保留路线；需URL映射与重定向（由迁移提醒承担）。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

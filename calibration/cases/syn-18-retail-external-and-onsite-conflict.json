@@ -1,0 +1,38 @@
+{
+  "id": "syn-18-retail-external-and-onsite-conflict",
+  "source": "synthetic",
+  "request": "我们有外部商城链接，但又想在官网直接用微信支付收款。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "外链与本站收款并存",
+    "request": "我们有外部商城链接，但又想在官网直接用微信支付收款。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "externalCheckoutUrl": "https://example.com/shop",
+      "onlinePayment": true
+    }
+  },
+  "expected": {
+    "route": "managed-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [
+      "ownership"
+    ],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "commerce"
+    ]
+  },
+  "rationale": "场景：相互冲突的约束。既要外链又要站内支付，站内支付优先，按交易能力处理；理想上应提示承接方式冲突，目前冲突规则没有对应ID，需专家确认是否应新增。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

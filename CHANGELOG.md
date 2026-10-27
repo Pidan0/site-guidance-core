@@ -1,5 +1,16 @@
 # 版本记录
 
+## 0.3.0（开发中）
+
+### 路线校准与手册复核
+
+- 新增`calibration/`：`case.schema.json`、36个`synthetic`校准案例（覆盖外贸B2B、国内门店、品牌官网、零售电商、外链商城、文旅门票、服务预约、内容、会员应用、已有平台与迁移、目标不明、复合与冲突约束）、`_TEMPLATE.real.json`与收集说明`README.md`。合成案例标注为`synthetic-draft`，待业务专家复核；`real-anonymized`只提供模板，不含任何真实数据。
+- 新增`src/calibration.mjs`（`loadCases`／`validateCase`／`scoreCase`／`runCalibration`／`calibrationMarkdown`）、CLI`calibrate [--dir] [--json]`与`npm run calibrate`：路线命中／可接受／错误，追问、冲突、能力覆盖，路线混淆矩阵，按source分开统计。存在未标注`knownMismatch`的失败时以`CALIBRATION_FAILED`退出。CI步骤（`- run: node bin/site-core.mjs calibrate`）待有workflow权限者添加到`.github/workflows/ci.yml`。
+- 当前3个案例标为`knownMismatch`（疑似规则缺陷，未改规则迎合）：sales-path追问在未填支付／订单字段时不触发；customerLogin使custom-app抢先于商城与票务路线（见各案例说明）。
+- `knowledge/playbooks.json`每份手册新增`review`（当前全部`draft`），关键步骤可带`sources:[{url,claim,checkedAt?}]`；为Stripe Webhook／退款与GitHub Pages自定义工作流／域名的8个步骤补充了已核对的官方出处。`validatePlaybooks`校验新字段；`playbookMarkdown`标题标注“草稿·待专家复核”；`planSite`／`planMarkdown`不变。
+- 新增`docs/REVIEW.md`：专家复核流程与案例校准接入CI。
+- 修复：`playbooks.json`的`notes`曾被误写成逐字符对象，改回字符串。
+
 ## 0.2.0（底座阶段）
 
 规则数据化与追问闭环，为后续图片／表单／GitHub Pages渲染、结构化实施手册和MCP服务提供稳定接口。

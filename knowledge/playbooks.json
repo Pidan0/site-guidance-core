@@ -1,156 +1,13 @@
 {
   "version": "1.0.0",
-  "notes": {
-    "0": "实",
-    "1": "施",
-    "2": "手",
-    "3": "册",
-    "4": "：",
-    "5": "每",
-    "6": "条",
-    "7": "路",
-    "8": "线",
-    "9": "和",
-    "10": "每",
-    "11": "个",
-    "12": "非",
-    "13": "i",
-    "14": "m",
-    "15": "p",
-    "16": "l",
-    "17": "e",
-    "18": "m",
-    "19": "e",
-    "20": "n",
-    "21": "t",
-    "22": "e",
-    "23": "d",
-    "24": "能",
-    "25": "力",
-    "26": "一",
-    "27": "份",
-    "28": "。",
-    "29": "p",
-    "30": "h",
-    "31": "a",
-    "32": "s",
-    "33": "e",
-    "34": "s",
-    "35": "的",
-    "36": "i",
-    "37": "d",
-    "38": "取",
-    "39": "自",
-    "40": "s",
-    "41": "c",
-    "42": "o",
-    "43": "p",
-    "44": "e",
-    "45": "/",
-    "46": "s",
-    "47": "e",
-    "48": "l",
-    "49": "e",
-    "50": "c",
-    "51": "t",
-    "52": "/",
-    "53": "d",
-    "54": "e",
-    "55": "s",
-    "56": "i",
-    "57": "g",
-    "58": "n",
-    "59": "/",
-    "60": "b",
-    "61": "u",
-    "62": "i",
-    "63": "l",
-    "64": "d",
-    "65": "/",
-    "66": "v",
-    "67": "e",
-    "68": "r",
-    "69": "i",
-    "70": "f",
-    "71": "y",
-    "72": "/",
-    "73": "h",
-    "74": "a",
-    "75": "n",
-    "76": "d",
-    "77": "o",
-    "78": "f",
-    "79": "f",
-    "80": "且",
-    "81": "按",
-    "82": "此",
-    "83": "顺",
-    "84": "序",
-    "85": "；",
-    "86": "步",
-    "87": "骤",
-    "88": "、",
-    "89": "验",
-    "90": "收",
-    "91": "、",
-    "92": "选",
-    "93": "型",
-    "94": "标",
-    "95": "准",
-    "96": "的",
-    "97": "i",
-    "98": "d",
-    "99": "全",
-    "100": "局",
-    "101": "唯",
-    "102": "一",
-    "103": "。",
-    "104": "候",
-    "105": "选",
-    "106": "供",
-    "107": "应",
-    "108": "商",
-    "109": "只",
-    "110": "作",
-    "111": "待",
-    "112": "核",
-    "113": "实",
-    "114": "线",
-    "115": "索",
-    "116": "，",
-    "117": "不",
-    "118": "含",
-    "119": "价",
-    "120": "格",
-    "121": "。",
-    "122": "格",
-    "123": "式",
-    "124": "见",
-    "125": "d",
-    "126": "o",
-    "127": "c",
-    "128": "s",
-    "129": "/",
-    "130": "A",
-    "131": "P",
-    "132": "I",
-    "133": ".",
-    "134": "m",
-    "135": "d",
-    "136": "「",
-    "137": "实",
-    "138": "施",
-    "139": "手",
-    "140": "册",
-    "141": "」",
-    "142": "。"
-  },
+  "notes": "实施手册：每条路线和每个非implemented能力一份。phases的id取自scope/select/design/build/verify/handoff且按此顺序；步骤、验收、选型标准的id全局唯一。候选供应商只作待核实线索，不含价格。格式见docs/API.md「实施手册」。",
   "routes": [
     {
       "route": "existing-platform",
       "title": "保留并改进已有平台",
       "summary": "已确认现有平台可满足目标时，先核验、配置和改进，并记录退出方式；不为重建而重建。",
       "guide": "guides/migration.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -252,6 +109,7 @@
       "title": "先澄清目标",
       "summary": "信息不足时只追问会改变路线的问题，把确认结果写回brief后重新判断。",
       "guide": "guides/intake.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -315,6 +173,7 @@
       "title": "业务应用专项设计",
       "summary": "静态页面无法承担账号与权限职责时，先设计业务应用范围和首条流程，再决定采购或自研。",
       "guide": "guides/content-app.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -377,6 +236,7 @@
       "title": "票务系统专项接入",
       "summary": "需要站内票务交易或承接方式未明确时，先确认承接方与票务系统，再进入tickets能力手册。",
       "guide": "guides/tickets-booking.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -448,6 +308,7 @@
       "title": "文旅内容站与已有购票入口",
       "summary": "本站介绍体验与票品，购买、订单与核销全部由客户已有购票入口承接。",
       "guide": "guides/tickets-booking.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -533,6 +394,7 @@
       "title": "服务展示与已有预约入口",
       "summary": "本站介绍服务并引导到客户已有预约入口，预约成功与状态由外部系统确认。",
       "guide": "guides/tickets-booking.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -606,6 +468,7 @@
       "title": "预约服务接入",
       "summary": "需要时段、容量与预约状态时，先接入实际预约系统；平台配置在此，规则验证见booking能力手册。",
       "guide": "guides/tickets-booking.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -683,6 +546,7 @@
       "title": "展示站与已有商城入口",
       "summary": "本站介绍商品并链接客户已有商城，支付、订单、库存与售后全部在外部商城完成。",
       "guide": "guides/commerce.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -764,6 +628,7 @@
       "title": "自托管电商底座",
       "summary": "必须自托管时评估开源或自部署电商底座的许可证、支付连接器和长期运维；候选均需核实，具体交易验收见commerce手册。",
       "guide": "guides/commerce.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "select",
@@ -863,6 +728,7 @@
       "title": "自有店面与外部交易后台",
       "summary": "保留自有前台代码，把交易交给成熟的外部后台API；重点是购物车、结账、客户身份和事件的连接器。",
       "guide": "guides/commerce.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "select",
@@ -968,6 +834,7 @@
       "title": "成熟平台建店",
       "summary": "在成熟电商平台配置店面、支付、订单和履约；平台为待核实候选，交易能力验收见commerce手册。",
       "guide": "guides/commerce.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "select",
@@ -1096,6 +963,7 @@
       "title": "带内容后台的网站",
       "summary": "客户需要自行登录改内容时，选定CMS、内容模型和发布到站点的流水；编辑与发布验收见cms手册。",
       "guide": "guides/content-app.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -1167,6 +1035,7 @@
       "title": "自有展示与询盘站",
       "summary": "用可持久化内容源生成多页展示站，保留版本，联系路径需实测。",
       "guide": "guides/static-site.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -1256,6 +1125,7 @@
       "title": "真实表单收集与送达",
       "summary": "服务端接收、校验、防垃圾并投递到指定位置；页面提交成功只说明前台状态，送达以接收端记录为准。",
       "guide": "guides/integrations.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -1433,6 +1303,7 @@
       "title": "商品交易、支付、订单与库存后台",
       "summary": "把商品、价格、库存、订单、支付与退款交给可信交易后台，并以连接器契约验证状态、事件与幂等。",
       "guide": "guides/commerce.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -1506,6 +1377,10 @@
             },
             {
               "id": "commerce.event-contract",
+              "sources": [
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：Stripe用Stripe-Signature头签名每个Webhook事件，验签需要未被改动的原始请求体；官方库对时间戳默认容忍5分钟。", "checkedAt": "2026-10-27" },
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：不保证事件按生成顺序送达；同一事件可能重复送达，应记录已处理的事件ID去重；处理复杂逻辑前先快速返回2xx。", "checkedAt": "2026-10-27" }
+              ],
               "action": "列出需处理的支付与退款事件，约定验签、按事件ID去重、乱序挂起与失败重放。",
               "owner": "delivery",
               "inputs": ["状态映射表", "支付服务商事件文档"],
@@ -1534,6 +1409,10 @@
             },
             {
               "id": "commerce.webhook-handler",
+              "sources": [
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：Stripe用Stripe-Signature头签名每个Webhook事件，验签需要未被改动的原始请求体；官方库对时间戳默认容忍5分钟。", "checkedAt": "2026-10-27" },
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：不保证事件按生成顺序送达；同一事件可能重复送达，应记录已处理的事件ID去重；处理复杂逻辑前先快速返回2xx。", "checkedAt": "2026-10-27" }
+              ],
               "action": "实现事件接收：验签、事件ID去重、状态机校验、失败可重放，并记录处理日志。",
               "owner": "delivery",
               "inputs": ["事件处理说明"],
@@ -1541,6 +1420,9 @@
             },
             {
               "id": "commerce.refund-flow",
+              "sources": [
+                { "url": "https://docs.stripe.com/refunds", "claim": "以Stripe为例：一笔支付可多次退款，但退款总额不能超过原支付金额；退款只能退回原支付方式。", "checkedAt": "2026-10-27" }
+              ],
               "action": "实现全额与部分退款，退款累计不得超过实付，并保留可对账字段。",
               "owner": "delivery",
               "inputs": ["状态映射表"],
@@ -1699,6 +1581,7 @@
       "title": "场次容量、票务、核销与退款",
       "summary": "把票种、日期场次、容量、订单、凭证、核销、改退与对账落到专用票务系统，不能用普通商品页代替。",
       "guide": "guides/tickets-booking.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -1774,6 +1657,10 @@
             },
             {
               "id": "tickets.event-contract",
+              "sources": [
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：Stripe用Stripe-Signature头签名每个Webhook事件，验签需要未被改动的原始请求体；官方库对时间戳默认容忍5分钟。", "checkedAt": "2026-10-27" },
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：不保证事件按生成顺序送达；同一事件可能重复送达，应记录已处理的事件ID去重；处理复杂逻辑前先快速返回2xx。", "checkedAt": "2026-10-27" }
+              ],
               "action": "约定支付、退款事件的验签、去重、乱序与重放处理。",
               "owner": "delivery",
               "inputs": ["状态映射表", "供应商事件文档"],
@@ -1808,6 +1695,9 @@
             },
             {
               "id": "tickets.refund-reschedule",
+              "sources": [
+                { "url": "https://docs.stripe.com/refunds", "claim": "以Stripe为例：一笔支付可多次退款，但退款总额不能超过原支付金额；退款只能退回原支付方式。", "checkedAt": "2026-10-27" }
+              ],
               "action": "实现取消退款与改期，释放或转移容量，并保证退款不超过实付。",
               "owner": "delivery",
               "inputs": ["状态映射表", "票务规则说明"],
@@ -1944,6 +1834,7 @@
       "title": "预约时段、容量、改期与取消",
       "summary": "以预约系统确认时段、容量与状态，覆盖时区、重叠、改期、取消释放与通知；页面提示不等于预约成功。",
       "guide": "guides/tickets-booking.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -2031,6 +1922,10 @@
             },
             {
               "id": "booking.event-handling",
+              "sources": [
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：Stripe用Stripe-Signature头签名每个Webhook事件，验签需要未被改动的原始请求体；官方库对时间戳默认容忍5分钟。", "checkedAt": "2026-10-27" },
+                { "url": "https://docs.stripe.com/webhooks", "claim": "以Stripe为例：不保证事件按生成顺序送达；同一事件可能重复送达，应记录已处理的事件ID去重；处理复杂逻辑前先快速返回2xx。", "checkedAt": "2026-10-27" }
+              ],
               "action": "实现预约、支付、取消事件的验签、去重与重放处理，并发出booking.cancelled等通知事件。",
               "owner": "delivery",
               "inputs": ["状态映射表", "通知规则"],
@@ -2154,6 +2049,7 @@
       "title": "客户可登录的内容管理后台",
       "summary": "让客户在后台编辑、预览、审核和发布内容，并驱动站点更新；覆盖权限、历史版本、多语言与冲突处理。",
       "guide": "guides/content-app.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -2349,6 +2245,7 @@
       "title": "会员、权限和业务应用后台",
       "summary": "先设计用户、权限、数据、操作与异常状态，再从一条关键业务流程开始实施并用越权与隔离用例验收。",
       "guide": "guides/content-app.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -2541,6 +2438,7 @@
       "title": "公网部署、DNS与运行验收",
       "summary": "把通过准备检查的site/上传到客户授权的托管，配置域名与HTTPS，并用实测回执关联到同一版本。",
       "guide": "guides/publishing.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -2592,6 +2490,9 @@
             },
             {
               "id": "live-deployment.upload-site",
+              "sources": [
+                { "url": "https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages", "claim": "GitHub Pages自定义工作流发布：作业至少需要pages: write与id-token: write权限；用upload-pages-artifact打包、deploy-pages部署，并需设置environment以执行分支/部署保护规则。", "checkedAt": "2026-10-27" }
+              ],
               "action": "只把site/作为静态网站根上传到托管；内部source与回执不公开；保留部署ID与时间。",
               "owner": "vendor",
               "inputs": ["公开准备包", "部署授权记录"],
@@ -2600,6 +2501,9 @@
             },
             {
               "id": "live-deployment.dns-https",
+              "sources": [
+                { "url": "https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site", "claim": "GitHub Pages：以Actions工作流发布时，仓库内已有的CNAME文件被忽略（自定义域名在Settings→Pages设置）；DNS变更最长可能需24小时生效，启用强制HTTPS选项也可能需等待最长24小时。", "checkedAt": "2026-10-27" }
+              ],
               "action": "按供应商官方步骤配置域名记录与HTTPS证书，记录变更时间与前后值。",
               "owner": "vendor",
               "inputs": ["部署回执", "域名持有人授权"],
@@ -2703,6 +2607,7 @@
       "title": "可视化拖拽编辑器",
       "summary": "规划项：受控组件的可视化编辑，必须与内容源和版本机制一致；当前未实现。",
       "guide": "docs/ROADMAP.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -2813,6 +2718,7 @@
       "title": "图片资源与授权记录",
       "summary": "已实现：png/jpeg/webp/avif图片导入（media add）、逐语言alt、自报授权记录、按内容哈希进入版本与回退。视频、多尺寸裁剪压缩、授权到期拦截未实现，按本手册人工处理。",
       "guide": "guides/static-site.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",
@@ -2915,6 +2821,7 @@
       "title": "中文英文之外的界面翻译与审核",
       "summary": "规划项：新增语言的界面词典、译文与审核；译文由客户或经授权的翻译流程提供，核心不编造。",
       "guide": "docs/ROADMAP.md",
+      "review": { "status": "draft" },
       "phases": [
         {
           "id": "scope",

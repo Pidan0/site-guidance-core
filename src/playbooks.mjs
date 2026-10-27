@@ -15,7 +15,29 @@ const PRICE = /[¥￥$€£]\s*\d|\d\s*(元|美元|USD|CNY|RMB)/i;
 const check = (condition, where, message) => invariant(condition, 'INVALID_CATALOG', `playbooks.${where}: ${message}`);
 const text = value => typeof value === 'string' && value.trim().length > 0;
 const texts = (value, min = 1) => Array.isArray(value) && value.length >= min && value.every(text);
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+export const REVIEW_STATUSES = ['draft', 'expert-reviewed'];
 const keyOf = pb => (pb.route !== undefined ? pb.route : pb.capability);
+
+// sources: 可核验的出处。url必须是HTTPS，claim写明该出处支持的具体事实。
+function checkSources(sources, where) {
+  check(Array.isArray(sources) && sources.length > 0, where, 'sources必须是非空数组');
+  for (const item of sources) {
+    check(text(item?.url) && /^https:\/\/[^\s/]+\//.test(item.url), where, 'sources.url需要HTTPS地址');
+    check(text(item.claim), where, 'sources.claim需要说明出处支持的事实');
+    check(item.checkedAt === undefined || DATE.test(item.checkedAt), where, 'sources.checkedAt需要YYYY-MM-DD');
+  }
+}
+
+// review: 手册的审核状态。expert-reviewed必须有复核人与日期；草稿不得冒充已复核。
+function checkReview(review, ref) {
+  check(review && typeof review === 'object' && !Array.isArray(review), ref, '需要review对象{status,reviewedBy?,reviewedAt?,notes?}');
+  check(REVIEW_STATUSES.includes(review.status), ref, `review.status需为${REVIEW_STATUSES.join('|')}`);
+  for (const key of ['reviewedBy', 'notes']) check(review[key] === undefined || text(review[key]), ref, `review.${key}需为非空文本`);
+  check(review.reviewedAt === undefined || DATE.test(review.reviewedAt), ref, 'review.reviewedAt需要YYYY-MM-DD');
+  if (review.status === 'expert-reviewed') check(text(review.reviewedBy) && review.reviewedAt !== undefined, ref, 'expert-reviewed需要reviewedBy和reviewedAt');
+  else check(review.reviewedBy === undefined && review.reviewedAt === undefined, ref, 'draft不应填写reviewedBy/reviewedAt');
+}
 
 function checkStep(step, ref, ids) {
   const where = step?.id ?? ref;
@@ -25,6 +47,7 @@ function checkStep(step, ref, ids) {
   check(text(step.action) && OWNERS.includes(step.owner), where, '需要action和owner(client|delivery|vendor)');
   check(texts(step.inputs) && texts(step.outputs), where, 'inputs和outputs需要非空文本数组');
   check(step.blocking === undefined || typeof step.blocking === 'boolean', where, 'blocking必须是布尔值');
+  if (step.sources !== undefined) checkSources(step.sources, where);
   if (step.decision !== undefined) check(text(step.decision.question) && texts(step.decision.criteria), where, 'decision需要question和criteria');
 }
 
@@ -43,6 +66,7 @@ function checkPhases(pb, ref, ids) {
 function checkPlaybook(pb, ref, guide, ids) {
   check(text(pb.title) && text(pb.summary), ref, '需要title和summary');
   check(text(pb.guide) && (!guide || pb.guide === guide), ref, `guide需存在并与目录一致(${guide ?? '未指定'})`);
+  checkReview(pb.review, ref);
   checkPhases(pb, ref, ids);
   check(Array.isArray(pb.vendorCriteria), ref, 'vendorCriteria必须是数组');
   for (const item of pb.vendorCriteria) {
@@ -137,7 +161,10 @@ export function playbookSections(composed, level = 2) {
   ].join('\n\n');
 }
 
+const reviewBadge = review => (review?.status === 'expert-reviewed'
+  ? `（专家已复核：${line(review.reviewedBy)}，${review.reviewedAt}）` : '（草稿·待专家复核）');
+
 export function playbookMarkdown(pb) {
   const composed = composePlaybook([pb]);
-  return `# ${line(pb.title)}（${keyOf(pb)}）\n\n${line(pb.summary)}\n\n${playbookSections(composed)}\n`;
+  return `# ${line(pb.title)}（${keyOf(pb)}）${reviewBadge(pb.review)}\n\n${line(pb.summary)}\n\n${playbookSections(composed)}\n`;
 }

@@ -1,0 +1,45 @@
+{
+  "id": "syn-14-retail-selfhost-no-team",
+  "source": "synthetic",
+  "request": "要把商城完整装在自己服务器上，我们没有程序员，预算也不多。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "无团队自托管",
+    "request": "要把商城完整装在自己服务器上，我们没有程序员，预算也不多。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "老板本人"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true
+    },
+    "ownership": {
+      "sourceCode": true,
+      "selfHost": true
+    },
+    "constraints": {
+      "budget": "预算有限"
+    }
+  },
+  "expected": {
+    "route": "owned-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [
+      "operations-owner"
+    ],
+    "mustHaveCapabilities": [
+      "commerce"
+    ]
+  },
+  "rationale": "场景：零售电商。自托管但无技术维护，是典型“要求与能力矛盾”，必须报冲突而非静默通过。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

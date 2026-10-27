@@ -1,0 +1,21 @@
+{
+  "id": "real-000-示例请改名",
+  "source": "real-anonymized",
+  "request": "（客户原话，已脱敏：不含姓名、联系方式、公司名、域名。保留原有口吻与含糊之处，不要润色。）",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "（脱敏后的项目代称）",
+    "goals": ["brand"],
+    "languages": ["zh-CN"]
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": []
+  },
+  "rationale": "（业务专家的判断理由：为什么是这条路线、哪些信息会改变判断。）",
+  "labeledBy": "（标注人的角色，如 业务专家-电商；不要写真实姓名）",
+  "labeledAt": "2026-01-01"
+}

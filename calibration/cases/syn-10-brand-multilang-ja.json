@@ -1,0 +1,35 @@
+{
+  "id": "syn-10-brand-multilang-ja",
+  "source": "synthetic",
+  "request": "品牌官网要中文、英文、日文三个版本，日本市场也要用。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "三语品牌站",
+    "request": "品牌官网要中文、英文、日文三个版本，日本市场也要用。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand"
+    ],
+    "languages": [
+      "zh-CN",
+      "en",
+      "ja"
+    ]
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "multilingual",
+      "additional-locales"
+    ]
+  },
+  "rationale": "场景：品牌官网。日文超出内置语言，需额外校对；其余为静态展示。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

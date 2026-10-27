@@ -315,3 +315,18 @@ CLI：`node bin/site-core.mjs playbook --route managed-commerce`或`--capability
 | `signature.*` | 错误密钥、正文被篡改、缺少签名头抛`SIGNATURE_INVALID`，时间戳超窗抛`SIGNATURE_EXPIRED`，状态均不变 |
 
 边界：harness只验证契约行为，不验证库存并发、真实支付或第三方网络；这些由手册中的验收用例在测试环境取证。被测连接器需要允许重复创建同一样例对象（测试环境容量足够）。
+
+## 校准与复核
+
+### 校准案例与运行器
+
+`calibration/cases/*.json`是路线校准案例（格式见`calibration/case.schema.json`，收集与脱敏要求见`calibration/README.md`）：`{ id, source: "synthetic"|"real-anonymized", request, brief, expected: { route, acceptableAlternatives[], mustAsk[], mustConflict[], mustHaveCapabilities[] }, rationale, labeledBy, labeledAt, knownMismatch? }`。`id`与文件名一致；以`_`开头的文件是模板，不运行。`expected`里的路线、追问、冲突、能力ID必须存在于当前目录。
+
+- `loadCases(dir?)`读取并校验（错误码`INVALID_CALIBRATION`）；`validateCase(c)`；`scoreCase(case, plan)`单案例评分；`runCalibration(cases)`返回`{ cases, bySource, ok }`；`calibrationMarkdown(report)`渲染文字报告。
+- 单案例`verdict`：`hit`（等于期望路线）、`acceptable`（在可接受备选内）、`wrong`、`error`（规划抛错）。`status`：`pass`、`fail`（路线错误或缺少必须的追问／冲突／能力）、`known`（带`knownMismatch`的失败）、`resolved`（带`knownMismatch`却通过了，应移除标记）。`ok`＝没有`fail`。
+- `bySource.<source>`：`total/hit/acceptable/wrong/hitRate/acceptableRate/pass/fail/knownMismatch/knownMismatchResolved`，`questions/conflicts/capabilities`（`{cases, covered}`，只统计声明了该项的案例），`confusion`（期望路线→实际路线计数）。`synthetic`与`real-anonymized`分开统计，不混算；合成案例只证明自洽，不证明对真实客户有效。
+- CLI：`node bin/site-core.mjs calibrate [--dir calibration/cases] [--json]`，`npm run calibrate`。存在`fail`时先输出报告，再以`CALIBRATION_FAILED`（details.failed为案例ID）退出。
+
+### 手册审核状态与出处
+
+`knowledge/playbooks.json`每份手册必须有`review`：`{ status: "draft"|"expert-reviewed", reviewedBy?, reviewedAt?, notes? }`。`expert-reviewed`必须有`reviewedBy`与`reviewedAt`（YYYY-MM-DD）；`draft`不得填这两项。步骤可选`sources: [{ url, claim, checkedAt? }]`：`url`为HTTPS，`claim`写明该出处支持的具体事实（出处范围若是某个供应商，要在claim里写明）。`validatePlaybooks`负责校验；`playbookMarkdown`在标题后标注“（草稿·待专家复核）”或“（专家已复核：人，日期）”。`planSite`／`planMarkdown`输出不变。流程见`docs/REVIEW.md`。

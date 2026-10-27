@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "路线校准案例",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "source", "request", "brief", "expected", "rationale", "labeledBy", "labeledAt"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,80}$" },
+    "source": { "enum": ["synthetic", "real-anonymized"] },
+    "request": { "type": "string", "minLength": 1, "maxLength": 10000 },
+    "brief": { "type": "object" },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "acceptableAlternatives", "mustAsk", "mustConflict", "mustHaveCapabilities"],
+      "properties": {
+        "route": { "type": "string", "minLength": 1 },
+        "acceptableAlternatives": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "mustAsk": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "mustConflict": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "mustHaveCapabilities": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "rationale": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "labeledBy": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "labeledAt": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "knownMismatch": { "type": "string", "minLength": 1, "maxLength": 2000 }
+  }
+}

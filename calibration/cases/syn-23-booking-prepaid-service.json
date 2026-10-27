@@ -1,0 +1,36 @@
+{
+  "id": "syn-23-booking-prepaid-service",
+  "source": "synthetic",
+  "request": "我们是家政公司，客户在线选服务时间、预付订金，取消可退款。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "家政预约",
+    "request": "我们是家政公司，客户在线选服务时间、预付订金，取消可退款。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "booking"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true
+    }
+  },
+  "expected": {
+    "route": "managed-booking",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "booking"
+    ]
+  },
+  "rationale": "场景：服务预约。预约加支付加取消退款，需要成熟预约系统。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

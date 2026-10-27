@@ -1,0 +1,38 @@
+{
+  "id": "syn-15-retail-external-store",
+  "source": "synthetic",
+  "request": "我们已经在第三方商城开店了，官网只负责展示，商品点“购买”跳到商城去付款。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "展示站加外链商城",
+    "request": "我们已经在第三方商城开店了，官网只负责展示，商品点“购买”跳到商城去付款。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "externalCheckoutUrl": "https://example.com/shop",
+      "onlinePayment": false,
+      "internalOrders": false
+    }
+  },
+  "expected": {
+    "route": "commerce-referral",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "external-checkout"
+    ]
+  },
+  "rationale": "场景：外链商城。交易由外部商城承接，站内不需要购物车与订单。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

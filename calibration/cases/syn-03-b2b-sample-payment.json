@@ -1,0 +1,40 @@
+{
+  "id": "syn-03-b2b-sample-payment",
+  "source": "synthetic",
+  "request": "客户想在线付样品费，其余走询盘，网站要英文，最好能直接用信用卡付款。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "样品在线付款",
+    "request": "客户想在线付样品费，其余走询盘，网站要英文，最好能直接用信用卡付款。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "inquiry",
+      "sales"
+    ],
+    "languages": [
+      "en"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "forms": true
+    }
+  },
+  "expected": {
+    "route": "managed-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [
+      "ownership"
+    ],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "commerce",
+      "forms"
+    ]
+  },
+  "rationale": "场景：外贸B2B。在线收款属于交易能力，成熟平台/托管结账优先；需追问是否必须自有代码。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

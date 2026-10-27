@@ -1,0 +1,35 @@
+{
+  "id": "syn-05-local-store-brand",
+  "source": "synthetic",
+  "request": "我们是社区里的烘焙店，想有个官网介绍门店、招牌产品和地址，面向本地顾客，服务器要国内能访问。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "社区烘焙店",
+    "request": "我们是社区里的烘焙店，想有个官网介绍门店、招牌产品和地址，面向本地顾客，服务器要国内能访问。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "constraints": {
+      "hostingRegion": "mainland"
+    }
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "live-deployment"
+    ]
+  },
+  "rationale": "场景：国内门店。纯品牌展示，无交易；内地访问需在上线手册里核实备案与访问。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

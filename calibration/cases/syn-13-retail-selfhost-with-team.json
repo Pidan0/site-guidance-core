@@ -1,0 +1,41 @@
+{
+  "id": "syn-13-retail-selfhost-with-team",
+  "source": "synthetic",
+  "request": "我们有技术团队，要求整套商城系统部署在自己服务器上，数据完全自己掌握。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "自托管商城",
+    "request": "我们有技术团队，要求整套商城系统部署在自己服务器上，数据完全自己掌握。",
+    "operations": {
+      "technicalTeam": true,
+      "maintenanceOwner": "内部技术团队"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true,
+      "inventory": true
+    },
+    "ownership": {
+      "sourceCode": true,
+      "selfHost": true
+    }
+  },
+  "expected": {
+    "route": "owned-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "commerce"
+    ]
+  },
+  "rationale": "场景：零售电商。明确自托管且有维护团队，不应出现冲突。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

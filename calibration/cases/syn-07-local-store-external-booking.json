@@ -1,0 +1,38 @@
+{
+  "id": "syn-07-local-store-external-booking",
+  "source": "synthetic",
+  "request": "我们已经在一个预约小程序里收预约了，官网只要介绍服务，加个“立即预约”跳过去就行，不要在官网收钱。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "门店服务展示",
+    "request": "我们已经在一个预约小程序里收预约了，官网只要介绍服务，加个“立即预约”跳过去就行，不要在官网收钱。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "booking"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "externalBookingUrl": "https://example.com/book",
+      "onlinePayment": false,
+      "internalOrders": false
+    }
+  },
+  "expected": {
+    "route": "booking-referral",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "external-checkout"
+    ]
+  },
+  "rationale": "场景：国内门店。预约已由现有系统承接且明确不在站内收款，仅需展示加跳转。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

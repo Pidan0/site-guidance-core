@@ -1,0 +1,39 @@
+{
+  "id": "syn-36-composite-ticket-with-login",
+  "source": "synthetic",
+  "request": "景区官网卖门票，游客要注册登录后查看自己买过的票和订单，本站出票核销。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "景区票务含账号",
+    "request": "景区官网卖门票，游客要注册登录后查看自己买过的票和订单，本站出票核销。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "tickets"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true,
+      "customerLogin": true
+    }
+  },
+  "expected": {
+    "route": "ticketing-integration",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "tickets",
+      "application"
+    ]
+  },
+  "rationale": "场景：复合需求。票务是主业务，账号是支撑；理想上同时保留tickets与application两项义务。待业务专家复核。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27",
+  "knownMismatch": "路线优先级疑似缺陷：customerLogin使needsApplication成立，custom-app抢先于ticketing-integration，票务专项（日期场次、核销、对账）被业务应用路线覆盖。需业务专家确认票务+账号应由谁主导。"
+}

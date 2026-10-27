@@ -1,0 +1,35 @@
+{
+  "id": "syn-27-member-app",
+  "source": "synthetic",
+  "request": "做一个会员中心，会员登录后看自己的积分和优惠券，后台要能发券。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "会员中心",
+    "request": "做一个会员中心，会员登录后看自己的积分和优惠券，后台要能发券。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "membership"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "customerLogin": true
+    }
+  },
+  "expected": {
+    "route": "custom-app",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "application"
+    ]
+  },
+  "rationale": "场景：会员/应用。账号、权限、积分数据，静态站无法承担。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

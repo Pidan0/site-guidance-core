@@ -1,0 +1,41 @@
+{
+  "id": "syn-34-composite-ticket-merch-onsite",
+  "source": "synthetic",
+  "request": "景区自己官网同时卖门票和文创周边，周边要库存和快递，门票要核销。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "景区门票加周边自营",
+    "request": "景区自己官网同时卖门票和文创周边，周边要库存和快递，门票要核销。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "tickets",
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true,
+      "inventory": true
+    }
+  },
+  "expected": {
+    "route": "ticketing-integration",
+    "acceptableAlternatives": [
+      "managed-commerce"
+    ],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "tickets",
+      "commerce"
+    ]
+  },
+  "rationale": "场景：复合需求。门票是更专用的能力应主导路线，但周边商城的commerce能力义务同样必须保留。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

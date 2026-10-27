@@ -1,0 +1,27 @@
+{
+  "id": "syn-32-unclear-goal",
+  "source": "synthetic",
+  "request": "想做个网站，具体做什么还没想好，你们给点建议。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "待定网站",
+    "request": "想做个网站，具体做什么还没想好，你们给点建议。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": []
+  },
+  "expected": {
+    "route": "discovery",
+    "acceptableAlternatives": [],
+    "mustAsk": [
+      "primary-goal"
+    ],
+    "mustConflict": [],
+    "mustHaveCapabilities": []
+  },
+  "rationale": "场景：目标不明。目标缺失，先澄清而不是猜路线。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

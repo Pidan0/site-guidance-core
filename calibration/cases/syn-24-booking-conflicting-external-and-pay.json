@@ -1,0 +1,36 @@
+{
+  "id": "syn-24-booking-conflicting-external-and-pay",
+  "source": "synthetic",
+  "request": "预约还在原来的系统做，但官网也要能直接付预约定金。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "预约承接冲突",
+    "request": "预约还在原来的系统做，但官网也要能直接付预约定金。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "booking"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "features": {
+      "externalBookingUrl": "https://example.com/book",
+      "onlinePayment": true
+    }
+  },
+  "expected": {
+    "route": "managed-booking",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "booking"
+    ]
+  },
+  "rationale": "场景：相互冲突的约束。外部预约系统不在站内收款；要站内付款则预约必须由能处理支付的系统承接，按预约系统路线。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

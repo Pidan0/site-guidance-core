@@ -1,0 +1,41 @@
+{
+  "id": "syn-12-retail-own-frontend",
+  "source": "synthetic",
+  "request": "我们要自己的前台代码和独特页面设计，但订单支付交给平台的后台。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "自有前台商城",
+    "request": "我们要自己的前台代码和独特页面设计，但订单支付交给平台的后台。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN",
+      "en"
+    ],
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true
+    },
+    "ownership": {
+      "sourceCode": true,
+      "selfHost": false
+    }
+  },
+  "expected": {
+    "route": "hybrid-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "commerce"
+    ]
+  },
+  "rationale": "场景：零售电商。需要自有前台源码但后台托管，对应前台自建加平台后端。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

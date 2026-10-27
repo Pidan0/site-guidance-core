@@ -1,0 +1,41 @@
+{
+  "id": "syn-04-b2b-catalog-only",
+  "source": "synthetic",
+  "request": "想把三百个产品型号放上网站给买家查，不卖，买家看完发邮件。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "产品目录站",
+    "request": "想把三百个产品型号放上网站给买家查，不卖，买家看完发邮件。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "inquiry"
+    ],
+    "languages": [
+      "en"
+    ],
+    "features": {
+      "catalog": true,
+      "forms": true,
+      "onlinePayment": false,
+      "internalOrders": false
+    }
+  },
+  "expected": {
+    "route": "static-owned",
+    "acceptableAlternatives": [
+      "cms-owned"
+    ],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "forms"
+    ]
+  },
+  "rationale": "场景：外贸B2B。目录规模较大可能需要可编辑后台，故cms-owned可接受；默认静态站由开发者维护。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

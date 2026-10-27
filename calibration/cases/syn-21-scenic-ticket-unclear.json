@@ -1,0 +1,33 @@
+{
+  "id": "syn-21-scenic-ticket-unclear",
+  "source": "synthetic",
+  "request": "我们是一个古镇，希望游客能在官网买票。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "古镇官网",
+    "request": "我们是一个古镇，希望游客能在官网买票。",
+    "operations": {
+      "technicalTeam": false,
+      "maintenanceOwner": "客户运营"
+    },
+    "goals": [
+      "brand",
+      "tickets"
+    ],
+    "languages": [
+      "zh-CN"
+    ]
+  },
+  "expected": {
+    "route": "ticketing-integration",
+    "acceptableAlternatives": [],
+    "mustAsk": [
+      "ticket-fulfillment"
+    ],
+    "mustConflict": [],
+    "mustHaveCapabilities": []
+  },
+  "rationale": "场景：文旅门票。承接方式未明，不能生成可能误导的售票页，必须先追问是本站票务还是外部入口。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}

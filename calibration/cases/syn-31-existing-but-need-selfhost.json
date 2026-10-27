@@ -1,0 +1,44 @@
+{
+  "id": "syn-31-existing-but-need-selfhost",
+  "source": "synthetic",
+  "request": "店铺在现成平台上，也还行，但公司规定交易系统必须自己部署。",
+  "brief": {
+    "schemaVersion": 1,
+    "name": "合规要求自托管",
+    "request": "店铺在现成平台上，也还行，但公司规定交易系统必须自己部署。",
+    "operations": {
+      "technicalTeam": true,
+      "maintenanceOwner": "信息部"
+    },
+    "goals": [
+      "sales"
+    ],
+    "languages": [
+      "zh-CN"
+    ],
+    "existing": {
+      "platform": "某SaaS商城",
+      "meetsNeeds": true
+    },
+    "features": {
+      "onlinePayment": true,
+      "internalOrders": true
+    },
+    "ownership": {
+      "sourceCode": true,
+      "selfHost": true
+    }
+  },
+  "expected": {
+    "route": "owned-commerce",
+    "acceptableAlternatives": [],
+    "mustAsk": [],
+    "mustConflict": [],
+    "mustHaveCapabilities": [
+      "commerce"
+    ]
+  },
+  "rationale": "场景：已有平台保留。自托管硬约束否决“保留现有平台”。【合成草稿，待业务专家复核】",
+  "labeledBy": "synthetic-draft",
+  "labeledAt": "2026-10-27"
+}
