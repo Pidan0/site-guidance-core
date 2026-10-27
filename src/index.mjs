@@ -1,6 +1,10 @@
 export { planSite, planMarkdown, intakeRequest } from './planner.mjs';
-export { routes, capabilities, validateCatalog } from './catalog.mjs';
+export { answerQuestions } from './answers.mjs';
+export { routes, capabilities, rules, validateCatalog } from './catalog.mjs';
+export { evaluate as evaluateCondition, explain as explainCondition } from './rules.mjs';
 export { validateBrief, briefSchema } from './schema.mjs';
-export { normalizeContent, renderSite, supportedLocales } from './renderer.mjs';
+export { mergePatch } from './patch.mjs';
+export { normalizeContent, renderSite, supportedLocales, isPlaceholderUrl } from './renderer.mjs';
 export { checkFiles } from './checker.mjs';
 export { createWorkspace, buildWorkspace, updateWorkspace, checkWorkspace, rollbackWorkspace, recordReview, exportWorkspace } from './workspace.mjs';
+export { ENGINE_VERSION } from './version.mjs';

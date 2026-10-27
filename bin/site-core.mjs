@@ -4,6 +4,7 @@ import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import * as core from '../src/index.mjs';
 import { fail } from '../src/errors.mjs';
+import { ENGINE_VERSION } from '../src/version.mjs';
 
 function argsOf(args) {
   const options = {};
@@ -15,18 +16,22 @@ function argsOf(args) {
   }
   return options;
 }
-const required = (options, key) => { if (typeof options[key] !== 'string' || !options[key]) throw fail('INVALID_ARGUMENTS', `需要 --${key}`); return options[key]; };
+const required = (options, key) => {
+  if (typeof options[key] !== 'string' || !options[key]) throw fail('INVALID_ARGUMENTS', `需要 --${key}`);
+  return options[key];
+};
 const load = async path => JSON.parse(await readFile(resolve(path), 'utf8'));
 async function newDir(path) {
   const target = resolve(path);
   try { await lstat(target); throw fail('TARGET_EXISTS', '输出目录已存在，不覆盖'); } catch (e) { if (e.code !== 'ENOENT') throw e; }
   await mkdir(dirname(target), { recursive: true }); await mkdir(target); return target;
 }
-const HELP = `Site Guidance Core 0.1.0
+const HELP = `Site Guidance Core ${ENGINE_VERSION}
 
 需求指导：
   node bin/site-core.mjs intake --text "用户自然语言需求"
   node bin/site-core.mjs plan --brief examples/b2b.brief.json [--out 新目录]
+  node bin/site-core.mjs answer --brief 需求.json --answers 回答.json [--out 新需求文件]
   node bin/site-core.mjs catalog
 
 本地静态站闭环：
@@ -46,11 +51,24 @@ const HELP = `Site Guidance Core 0.1.0
 演示：node bin/site-core.mjs demo --out 新演示目录
 `;
 
+// Writes the answered brief only to a new file; the original brief is never overwritten.
+async function answer(options) {
+  const result = core.answerQuestions(await load(required(options, 'brief')), await load(required(options, 'answers')));
+  const { plan, ...rest } = result;
+  const summary = { route: plan.route.id, readiness: plan.readiness, questions: plan.questions, ...rest };
+  if (!options.out) return summary;
+  const file = resolve(required(options, 'out'));
+  await mkdir(dirname(file), { recursive: true });
+  try { await writeFile(file, `${JSON.stringify(result.brief, null, 2)}\n`, { flag: 'wx' }); }
+  catch (error) { if (error.code === 'EEXIST') throw fail('TARGET_EXISTS', '输出文件已存在，不覆盖'); throw error; }
+  return { file, ...summary };
+}
+
 export async function runCLI(args, { stdout = text => process.stdout.write(`${text}\n`) } = {}) {
   const [command, ...rest] = args, options = argsOf(rest);
   const print = value => stdout(typeof value === 'string' ? value : JSON.stringify(value, null, 2));
   const allowed = {
-    help: [], intake: ['text'], plan: ['brief', 'out'], catalog: [],
+    help: [], intake: ['text'], plan: ['brief', 'out'], answer: ['brief', 'answers', 'out'], catalog: [],
     init: ['brief', 'site', 'out'], build: ['workspace'], update: ['workspace', 'patch'], check: ['workspace'],
     rollback: ['workspace', 'revision', 'discard-draft'], review: ['workspace', 'check', 'status', 'note'],
     export: ['workspace', 'out'], 'prepare-publish': ['workspace', 'out'], demo: ['out']
@@ -61,7 +79,7 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
   if (options['discard-draft'] !== undefined && options['discard-draft'] !== true) throw fail('INVALID_ARGUMENTS', '--discard-draft是独立开关，不接受参数值');
   if (cmd === 'help') return print(HELP);
   if (cmd === 'intake') return print(core.intakeRequest(required(options, 'text')));
-  if (cmd === 'catalog') return print({ ...core.validateCatalog(), routes: core.routes, capabilities: core.capabilities });
+  if (cmd === 'catalog') return print({ ...core.validateCatalog(), routes: core.routes, capabilities: core.capabilities, rules: core.rules });
   if (cmd === 'plan') {
     const plan = core.planSite(await load(required(options, 'brief')));
     if (options.out) {
@@ -72,13 +90,24 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
     }
     return print(core.planMarkdown(plan));
   }
-  if (cmd === 'init') return print(await core.createWorkspace(required(options, 'out'), await load(required(options, 'brief')), options.site ? await load(required(options, 'site')) : undefined));
-  if (cmd === 'build') return print(await core.buildWorkspace(required(options, 'workspace')));
-  if (cmd === 'update') return print(await core.updateWorkspace(required(options, 'workspace'), await load(required(options, 'patch'))));
-  if (cmd === 'check') return print(await core.checkWorkspace(required(options, 'workspace')));
-  if (cmd === 'rollback') return print(await core.rollbackWorkspace(required(options, 'workspace'), required(options, 'revision'), { discardDraft: options['discard-draft'] === true }));
-  if (cmd === 'review') return print(await core.recordReview(required(options, 'workspace'), required(options, 'check'), required(options, 'status'), required(options, 'note')));
-  if (cmd === 'export' || cmd === 'prepare-publish') return print(await core.exportWorkspace(required(options, 'workspace'), required(options, 'out'), { forPublication: cmd === 'prepare-publish' }));
+  if (cmd === 'answer') return print(await answer(options));
+  if (cmd === 'init') {
+    const site = options.site ? await load(required(options, 'site')) : undefined;
+    return print(await core.createWorkspace(required(options, 'out'), await load(required(options, 'brief')), site));
+  }
+  const workspace = () => required(options, 'workspace');
+  if (cmd === 'build') return print(await core.buildWorkspace(workspace()));
+  if (cmd === 'update') return print(await core.updateWorkspace(workspace(), await load(required(options, 'patch'))));
+  if (cmd === 'check') return print(await core.checkWorkspace(workspace()));
+  if (cmd === 'rollback') {
+    return print(await core.rollbackWorkspace(workspace(), required(options, 'revision'), { discardDraft: options['discard-draft'] === true }));
+  }
+  if (cmd === 'review') {
+    return print(await core.recordReview(workspace(), required(options, 'check'), required(options, 'status'), required(options, 'note')));
+  }
+  if (cmd === 'export' || cmd === 'prepare-publish') {
+    return print(await core.exportWorkspace(workspace(), required(options, 'out'), { forPublication: cmd === 'prepare-publish' }));
+  }
   if (cmd === 'demo') {
     const out = await newDir(required(options, 'out')), examples = fileURLToPath(new URL('../examples/', import.meta.url));
     const brief = await load(join(examples, 'b2b.brief.json')), site = await load(join(examples, 'b2b.site.json'));
@@ -97,7 +126,9 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) runCLI(process.argv.slice(2)).catch(error => {
-  process.stderr.write(`${JSON.stringify({ error: error.code ?? 'FAILED', message: error.message, ...(error.details ? { details: error.details } : {}) }, null, 2)}\n`);
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+if (isMain) runCLI(process.argv.slice(2)).catch(error => {
+  const report = { error: error.code ?? 'FAILED', message: error.message, ...(error.details ? { details: error.details } : {}) };
+  process.stderr.write(`${JSON.stringify(report, null, 2)}\n`);
   process.exitCode = 1;
 });

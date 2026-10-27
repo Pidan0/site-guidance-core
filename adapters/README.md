@@ -5,7 +5,7 @@
 ## 最小调用契约
 
 1. 宿主取得用户确认的brief与site内容，不把整段聊天日志、密钥或系统提示词写入客户资料。
-2. 调用planSite，展示route、questions、conflicts、gaps和tasks。
+2. 调用planSite，展示route、decision、questions、conflicts、gaps和tasks；用户回答后调用answerQuestions写回brief。
 3. 仅本地可执行路线调用工作区API；其他路线展示相应guide并交给已授权的实施流程。
 4. 文件写入路径由宿主在用户项目范围内明确传入，不从素材中的路径自动派生。
 5. 发布由宿主或独立部署适配器执行；核心导出包不充当真实部署回执。

@@ -47,7 +47,12 @@ node bin/site-core.mjs intake --text "我想做一个卖门票的网站"
 # 对话Agent或用户确认需求后，用结构化资料做正式判断
 node bin/site-core.mjs plan --brief examples/tourism.brief.json
 node bin/site-core.mjs plan --brief examples/commerce.brief.json
+
+# 用户回答追问后写回需求（选项ID见plan的「必须先回答」）
+node bin/site-core.mjs answer --brief examples/unknown.brief.json --answers examples/unknown.answers.json --out .output/answered.brief.json
 ```
+
+路线、追问、冲突和复合需求的规则是`knowledge/routes.json`与`knowledge/rules.json`中的数据，每份计划都带`decision`判断依据（命中规则与被跳过的更高优先级规则）。
 
 可以把本仓库交给对话Agent，先让它读`AGENTS.md`。人类不需要记住JSON字段；Agent负责把确认后的自然语言需求转换成brief，再调用核心判断。CLI的关键词采集仅提供未确认线索，不冒充通用自然语言理解。
 
@@ -128,4 +133,4 @@ GitHub保存核心代码和指导资料；客户网站仍按独立项目交付�
 - [知识来源与更新](knowledge/SOURCES.md)
 - [贡献规则](CONTRIBUTING.md)
 
-当前版本：0.1.0。完整含义是“需求指导、本地静态执行、版本交付以及外部能力接入契约”的闭环；支付、票务、预约、客户后台和拖拽编辑器均按能力目录中的状态处理。
+当前版本：0.2.0。完整含义是“需求指导、本地静态执行、版本交付以及外部能力接入契约”的闭环；支付、票务、预约、客户后台和拖拽编辑器均按能力目录中的状态处理。

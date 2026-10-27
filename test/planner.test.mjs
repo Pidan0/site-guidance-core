@@ -5,7 +5,10 @@ import { example } from './helpers.mjs';
 import { access } from 'node:fs/promises';
 
 test('同一核心按真实需求返回不同路线，而非全部推荐静态站', async () => {
-  const expected = { b2b: 'static-owned', commerce: 'managed-commerce', 'self-hosted-commerce': 'owned-commerce', tourism: 'tourism-referral', booking: 'managed-booking', content: 'cms-owned', unknown: 'discovery' };
+  const expected = {
+    b2b: 'static-owned', commerce: 'managed-commerce', 'self-hosted-commerce': 'owned-commerce', tourism: 'tourism-referral',
+    booking: 'managed-booking', content: 'cms-owned', unknown: 'discovery'
+  };
   for (const [name, id] of Object.entries(expected)) assert.equal(planSite(await example(name)).route.id, id);
 });
 test('信息不足不把未知写成false或宣称可开始生成', async () => {
@@ -40,7 +43,8 @@ test('客户需要账号时优先考虑业务后台', async () => {
 test('现有平台已可满足时保留，明确迁移则不隐去迁移任务', async () => {
   const b = await example('commerce'); b.existing = { platform: '已有商城', meetsNeeds: true };
   assert.equal(planSite(b).route.id, 'existing-platform');
-  b.existing.migrationRequired = true; const p = planSite(b); assert.notEqual(p.route.id, 'existing-platform'); assert.ok(p.warnings.some(x => x.includes('重定向')));
+  b.existing.migrationRequired = true; const p = planSite(b);
+  assert.notEqual(p.route.id, 'existing-platform'); assert.ok(p.warnings.some(x => x.includes('重定向')));
 });
 test('自有前台代码和自托管交易系统是不同约束', async () => {
   const b = await example('commerce'); b.ownership.sourceCode = true;
@@ -81,5 +85,7 @@ test('能力目录状态有区分，每条本地实现可追溯测试', () => {
   assert.ok(capabilities.some(c => c.status === 'planned'));
 });
 test('每条目录指向真实实现、测试或指引文件', async () => {
-  for (const item of [...capabilities, ...routes]) for (const key of ['implementation', 'evidence', 'guide']) if (item[key]) await access(new URL(`../${item[key]}`, import.meta.url));
+  for (const item of [...capabilities, ...routes]) for (const key of ['implementation', 'evidence', 'guide']) {
+    if (item[key]) await access(new URL(`../${item[key]}`, import.meta.url));
+  }
 });

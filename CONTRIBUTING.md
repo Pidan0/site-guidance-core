@@ -1,7 +1,7 @@
 # 贡献与扩展
 
 1. 先描述用户需求、当前失败或缺口、预期结果。
-2. 新路线更新knowledge/routes.json与planner，提供能区分不同目标和约束的行为测试。
+2. 新路线或追问只改knowledge/routes.json、knowledge/rules.json中的规则数据（DSL见docs/API.md），通过validateCatalog，并提供能区分不同目标和约束的行为测试；只有新增算子才改src/rules.mjs。
 3. 新能力补实现、guide、数据输入与验收记录；只改介绍不算完成能力。
 4. 文件操作必须保留版本，不能静默覆盖客户文件；网络和账号动作与纯指导分离。
 5. 不提交真实客户资料、密钥、原业务私有代码或测试工作区。

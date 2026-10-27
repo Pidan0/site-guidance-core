@@ -1,6 +1,6 @@
 {
   "name": "site-guidance-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "需求驱动的建站指导、能力判断与可交付静态站核心",
   "type": "module",
   "private": true,

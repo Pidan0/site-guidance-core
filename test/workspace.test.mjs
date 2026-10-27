@@ -2,15 +2,21 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, symlink, access } from 'node:fs/promises';
 import { join } from 'node:path';
-import { createWorkspace, buildWorkspace, updateWorkspace, checkWorkspace, rollbackWorkspace, recordReview, exportWorkspace } from '../src/index.mjs';
+import {
+  createWorkspace, buildWorkspace, updateWorkspace, checkWorkspace, rollbackWorkspace, recordReview, exportWorkspace, ENGINE_VERSION
+} from '../src/index.mjs';
 import { temporary, example, content } from './helpers.mjs';
 
-async function setup(t) { const temp = await temporary(t), workspace = join(temp, 'customer'); await createWorkspace(workspace, await example(), await content()); return { temp, workspace }; }
+async function setup(t) {
+  const temp = await temporary(t), workspace = join(temp, 'customer');
+  await createWorkspace(workspace, await example(), await content()); return { temp, workspace };
+}
 
 test('建立工作区、构建、重复构建保持同一版本，交付包可查', async t => {
   const { temp, workspace } = await setup(t), first = await buildWorkspace(workspace), second = await buildWorkspace(workspace);
   assert.equal(first.revision, second.revision); assert.equal(second.unchanged, true);
-  const result = await exportWorkspace(workspace, join(temp, 'handoff')); assert.equal(result.published, false); assert.equal(result.preparedForPublication, false);
+  const result = await exportWorkspace(workspace, join(temp, 'handoff'));
+  assert.equal(result.published, false); assert.equal(result.preparedForPublication, false);
   await access(join(result.destination, 'site/index.html')); await access(join(result.destination, 'source/project.json'));
 });
 test('局部修改保留其他资料，新版本保留旧文件，可回退', async t => {
@@ -63,11 +69,56 @@ test('占位域名无法生成公开包，即使人工审核全部通过', async
   await assert.rejects(() => exportWorkspace(workspace, join(temp, 'public'), { forPublication: true }), { code: 'PLACEHOLDER_DOMAIN' });
 });
 test('当前版本审核齐全才能生成公开准备包，新版本不能继承旧审核', async t => {
-  const { temp, workspace } = await setup(t); await updateWorkspace(workspace, { site: { baseUrl: 'https://customer-owned-domain.tld/project/' } }); await buildWorkspace(workspace);
+  const { temp, workspace } = await setup(t);
+  await updateWorkspace(workspace, { site: { baseUrl: 'https://customer-owned-domain.tld/project/' } }); await buildWorkspace(workspace);
   await assert.rejects(() => exportWorkspace(workspace, join(temp, 'no-review'), { forPublication: true }), { code: 'REVIEW_REQUIRED' });
   for (const check of ['content', 'contact', 'domain']) await recordReview(workspace, check, 'pass', '受控测试记录，不代表真实公网验证');
   const result = await exportWorkspace(workspace, join(temp, 'public'), { forPublication: true });
-  assert.equal(result.published, false); assert.equal(result.preparedForPublication, true); assert.ok(!(await readFile(join(result.destination, 'site/index.html'), 'utf8')).includes('content="noindex'));
+  assert.equal(result.published, false); assert.equal(result.preparedForPublication, true);
+  assert.ok(!(await readFile(join(result.destination, 'site/index.html'), 'utf8')).includes('content="noindex'));
   await updateWorkspace(workspace, { site: { locales: { en: { headline: 'Changed again' } } } }); await buildWorkspace(workspace);
   await assert.rejects(() => exportWorkspace(workspace, join(temp, 'new-public'), { forPublication: true }), { code: 'REVIEW_REQUIRED' });
+});
+test('公开包同样拒绝占位的外部购买或预约入口', async t => {
+  for (const [field, url] of [['externalCheckoutUrl', 'https://shop.example.com/item'], ['externalBookingUrl', 'https://book.test/slot']]) {
+    const { temp, workspace } = await setup(t);
+    await updateWorkspace(workspace, { site: { baseUrl: 'https://customer-owned-domain.tld/' }, brief: { features: { [field]: url } } });
+    await buildWorkspace(workspace);
+    for (const check of ['content', 'contact', 'domain']) await recordReview(workspace, check, 'pass', '受控测试记录，不代表真实公网验证');
+    const expected = { code: 'PLACEHOLDER_DOMAIN', details: [`features.${field}`] };
+    await assert.rejects(() => exportWorkspace(workspace, join(temp, `public-${field}`), { forPublication: true }), expected);
+  }
+});
+test('崩溃留下的staging与未登记版本目录在构建时清理，其他目录保持不动', async t => {
+  const { workspace } = await setup(t), first = await buildWorkspace(workspace);
+  const markerPath = join(workspace, '.site-core/manifest.json'), manifest = JSON.parse(await readFile(markerPath, 'utf8'));
+  // Simulate a crash after rename(staging -> revisions/<id>) but before the manifest was written.
+  delete manifest.revisions[first.revision]; manifest.current = null; await writeFile(markerPath, JSON.stringify(manifest));
+  const staging = join(workspace, 'revisions/staging-0b8e2d5c-8a51-4a4b-9a2e-9f4f1f3a6c11');
+  await mkdir(join(staging, 'site'), { recursive: true });
+  await mkdir(join(workspace, 'revisions/keep-me')); await writeFile(join(workspace, 'revisions/r-notes.txt'), 'x');
+  const again = await buildWorkspace(workspace);
+  assert.equal(again.revision, first.revision); assert.equal(again.unchanged, false);
+  assert.deepEqual(again.cleaned.sort(), [first.revision, 'staging-0b8e2d5c-8a51-4a4b-9a2e-9f4f1f3a6c11'].sort());
+  await access(join(workspace, 'revisions/keep-me')); await access(join(workspace, 'revisions/r-notes.txt'));
+  assert.equal((await checkWorkspace(workspace)).revision, first.revision);
+});
+test('构建失败时删除本次staging，不留下半成品', async t => {
+  const { workspace } = await setup(t), first = await buildWorkspace(workspace);
+  const markerPath = join(workspace, '.site-core/manifest.json'), manifest = JSON.parse(await readFile(markerPath, 'utf8'));
+  delete manifest.revisions[first.revision]; manifest.current = null; await writeFile(markerPath, JSON.stringify(manifest));
+  const { rm } = await import('node:fs/promises'); await rm(join(workspace, 'revisions', first.revision), { recursive: true });
+  await writeFile(join(workspace, 'revisions', first.revision), 'not a directory created by the core');
+  await assert.rejects(() => buildWorkspace(workspace), { code: 'REVISION_CONFLICT' });
+  const { readdir } = await import('node:fs/promises');
+  assert.deepEqual(await readdir(join(workspace, 'revisions')), [first.revision]);
+});
+test('null或数组patch返回INVALID_PATCH而不是原生错误', async t => {
+  const { workspace } = await setup(t);
+  for (const patch of [null, [], ['brief'], 'brief']) await assert.rejects(() => updateWorkspace(workspace, patch), { code: 'INVALID_PATCH' });
+});
+test('计划、回执与版本号统一来自package.json', async t => {
+  const { temp, workspace } = await setup(t), pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.equal(ENGINE_VERSION, pkg.version); assert.equal(JSON.parse(await readFile(join(workspace, 'plan.json'), 'utf8')).engineVersion, pkg.version);
+  await buildWorkspace(workspace); assert.equal((await exportWorkspace(workspace, join(temp, 'handoff'))).engineVersion, pkg.version);
 });

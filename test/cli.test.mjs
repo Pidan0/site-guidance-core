@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runCLI } from '../bin/site-core.mjs';
@@ -22,4 +22,13 @@ test('拼错参数、重复参数和未知命令失败而不猜测意图', async
   await assert.rejects(() => runCLI(['plan', '--biref', 'x']), { code: 'INVALID_ARGUMENTS' });
   await assert.rejects(() => runCLI(['plan', '--brief', 'x', '--brief', 'y']), { code: 'INVALID_ARGUMENTS' });
   await assert.rejects(() => runCLI(['deploy']), { code: 'INVALID_ARGUMENTS' });
+});
+test('answer命令把回答写入新的需求文件，不覆盖已有文件', async t => {
+  const root = await temporary(t), output = [], brief = fileURLToPath(new URL('../examples/unknown.brief.json', import.meta.url));
+  const answers = join(root, 'answers.json'), out = join(root, 'answered.brief.json');
+  await writeFile(answers, JSON.stringify({ 'primary-goal': 'brand', languages: 'zh-CN', maintenance: 'client' }));
+  await runCLI(['answer', '--brief', brief, '--answers', answers, '--out', out], { stdout: x => output.push(x) });
+  const result = JSON.parse(output[0]); assert.equal(result.route, 'static-owned'); assert.equal(result.readiness.localBuild, 'ready');
+  assert.deepEqual(JSON.parse(await readFile(out, 'utf8')).goals, ['brand']);
+  await assert.rejects(() => runCLI(['answer', '--brief', brief, '--answers', answers, '--out', out]), { code: 'TARGET_EXISTS' });
 });
