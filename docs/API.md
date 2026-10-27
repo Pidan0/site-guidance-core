@@ -163,3 +163,11 @@ CLI：`node bin/site-core.mjs answer --brief 需求.json --answers 回答.json [
 `INVALID_BRIEF`检查需求字段；`BUILD_NOT_SUPPORTED`补信息或按guide实施外部能力；`LANGUAGE_MISMATCH`补对应译文；`REVISION_CHANGED`保留并核对手工修改，不能强行覆盖；`UNBUILT_CHANGES`先构建草稿；`REVIEW_REQUIRED`补当前版本真实证据；`PLACEHOLDER_DOMAIN`替换演示域名；`WORKSPACE_BUSY`确认并发操作状态；`INVALID_PATCH`检查patch对象；`INVALID_ANSWER`按问题ID和选项ID改回答；`INVALID_CATALOG`修正knowledge规则；`REVISION_CONFLICT`表示`revisions/<id>`被非本核心目录占用，需人工移走。
 
 工作区锁异常残留时，不自动按时间删除。先确认没有运行操作，再手工移除`.site-core/lock`。不要跳过文件完整性检查。
+
+## MCP服务接口
+
+`bin/site-core-mcp.mjs`把上述API包装为MCP工具，详见[adapters/mcp.md](../adapters/mcp.md)。工具与API对应：`intake`→`intakeRequest`；`plan`→`planSite`+`planMarkdown`；`answer`→`answerQuestions`（附Markdown）；`catalog`→`validateCatalog`+路线概要+能力清单；`workspace_init/build/update/check/rollback/review/export`→`createWorkspace/buildWorkspace/updateWorkspace/checkWorkspace/rollbackWorkspace/recordReview/exportWorkspace`（`workspace_export.forPublication`对应同名选项）。
+
+- 路径参数`workspace`、`out`是相对`--root`（或`SITE_CORE_ROOT`）的相对路径，由`src/mcp-paths.mjs`在调用核心前校验；核心本身的路径行为不变。
+- 工具的核心错误返回`{ error, message, details? }`并标`isError:true`；服务自身增加`INVALID_ARGUMENTS`、`ROOT_NOT_CONFIGURED`、`INVALID_PATH`、`PATH_NOT_RELATIVE`、`PATH_ESCAPES_ROOT`、`PATH_SYMLINK`、`PATH_NOT_FOUND`、`PATH_OVERLAP`、`IO_ERROR`、`INTERNAL_ERROR`。
+- `workspace_review`的结果恒含`selfReported:true`；所有导出回执保持`published:false`。

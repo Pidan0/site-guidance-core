@@ -109,6 +109,16 @@ if (plan.readiness.localBuild === 'ready') {
 
 各接口的输入、输出和错误见[接口说明](docs/API.md)，不同路线见[指引目录](guides/README.md)。现有插件可通过适配层调用核心；不需要复制客户项目或把业务源码带入此仓库。
 
+## 作为MCP工具使用
+
+Claude Code等Agent宿主可直接把本核心当工具：用户用自然语言提需求，Agent调用工具追问、判断并在受限目录内本地建站。
+
+```sh
+claude mcp add site-core -- node /path/to/site-guidance-core/bin/site-core-mcp.mjs --root /path/projects
+```
+
+提供`intake`、`plan`、`answer`、`catalog`和`workspace_init/build/update/check/rollback/review/export`；不提供上传、部署、付款或DNS工具，回执仍是`published:false`，验收记录仍是人工自报。接入方式、安全边界与推荐工作流见[adapters/mcp.md](adapters/mcp.md)。
+
 ## 团队私有仓库
 
 仓库：[Pidan0/site-guidance-core](https://github.com/Pidan0/site-guidance-core)，可见性为Private。2026-10-27用户确认采用团队私有方式；具体成员由所有者按需授权，当前没有代为邀请成员。
