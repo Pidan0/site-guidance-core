@@ -20,3 +20,5 @@
 将本核心代码放到GitHub，是分享与维护建站依据；将客户生成的网站发布到GitHub Pages，是客户站部署。两者的仓库、隐私、域名、费用与权限分别确认。
 
 GitHub Pages支持方式按当前官方文档核实。代码仓库中不能包含客户真实资料、凭据、私有源码或完整项目工作区。公开代码前由所有者选定许可证。
+
+结构化版本见 knowledge/playbooks.json（能力live-deployment）；`node bin/site-core.mjs playbook --route <路线id>` 或 `--capability <能力id>` 可输出带步骤、验收用例和交接物的手册。

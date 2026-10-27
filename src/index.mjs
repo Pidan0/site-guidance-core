@@ -1,6 +1,8 @@
 export { planSite, planMarkdown, intakeRequest } from './planner.mjs';
 export { answerQuestions } from './answers.mjs';
 export { routes, capabilities, rules, validateCatalog } from './catalog.mjs';
+export { playbooks, getPlaybook, composePlaybook, playbookMarkdown, PHASES } from './playbooks.mjs';
+export { CONTRACT_KINDS, loadContract, validateContract, verifyConnector } from './contracts.mjs';
 export { evaluate as evaluateCondition, explain as explainCondition } from './rules.mjs';
 export { validateBrief, briefSchema } from './schema.mjs';
 export { mergePatch } from './patch.mjs';

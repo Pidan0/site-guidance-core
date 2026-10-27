@@ -1,0 +1,3013 @@
+{
+  "version": "1.0.0",
+  "notes": {
+    "0": "实",
+    "1": "施",
+    "2": "手",
+    "3": "册",
+    "4": "：",
+    "5": "每",
+    "6": "条",
+    "7": "路",
+    "8": "线",
+    "9": "和",
+    "10": "每",
+    "11": "个",
+    "12": "非",
+    "13": "i",
+    "14": "m",
+    "15": "p",
+    "16": "l",
+    "17": "e",
+    "18": "m",
+    "19": "e",
+    "20": "n",
+    "21": "t",
+    "22": "e",
+    "23": "d",
+    "24": "能",
+    "25": "力",
+    "26": "一",
+    "27": "份",
+    "28": "。",
+    "29": "p",
+    "30": "h",
+    "31": "a",
+    "32": "s",
+    "33": "e",
+    "34": "s",
+    "35": "的",
+    "36": "i",
+    "37": "d",
+    "38": "取",
+    "39": "自",
+    "40": "s",
+    "41": "c",
+    "42": "o",
+    "43": "p",
+    "44": "e",
+    "45": "/",
+    "46": "s",
+    "47": "e",
+    "48": "l",
+    "49": "e",
+    "50": "c",
+    "51": "t",
+    "52": "/",
+    "53": "d",
+    "54": "e",
+    "55": "s",
+    "56": "i",
+    "57": "g",
+    "58": "n",
+    "59": "/",
+    "60": "b",
+    "61": "u",
+    "62": "i",
+    "63": "l",
+    "64": "d",
+    "65": "/",
+    "66": "v",
+    "67": "e",
+    "68": "r",
+    "69": "i",
+    "70": "f",
+    "71": "y",
+    "72": "/",
+    "73": "h",
+    "74": "a",
+    "75": "n",
+    "76": "d",
+    "77": "o",
+    "78": "f",
+    "79": "f",
+    "80": "且",
+    "81": "按",
+    "82": "此",
+    "83": "顺",
+    "84": "序",
+    "85": "；",
+    "86": "步",
+    "87": "骤",
+    "88": "、",
+    "89": "验",
+    "90": "收",
+    "91": "、",
+    "92": "选",
+    "93": "型",
+    "94": "标",
+    "95": "准",
+    "96": "的",
+    "97": "i",
+    "98": "d",
+    "99": "全",
+    "100": "局",
+    "101": "唯",
+    "102": "一",
+    "103": "。",
+    "104": "候",
+    "105": "选",
+    "106": "供",
+    "107": "应",
+    "108": "商",
+    "109": "只",
+    "110": "作",
+    "111": "待",
+    "112": "核",
+    "113": "实",
+    "114": "线",
+    "115": "索",
+    "116": "，",
+    "117": "不",
+    "118": "含",
+    "119": "价",
+    "120": "格",
+    "121": "。",
+    "122": "格",
+    "123": "式",
+    "124": "见",
+    "125": "d",
+    "126": "o",
+    "127": "c",
+    "128": "s",
+    "129": "/",
+    "130": "A",
+    "131": "P",
+    "132": "I",
+    "133": ".",
+    "134": "m",
+    "135": "d",
+    "136": "「",
+    "137": "实",
+    "138": "施",
+    "139": "手",
+    "140": "册",
+    "141": "」",
+    "142": "。"
+  },
+  "routes": [
+    {
+      "route": "existing-platform",
+      "title": "保留并改进已有平台",
+      "summary": "已确认现有平台可满足目标时，先核验、配置和改进，并记录退出方式；不为重建而重建。",
+      "guide": "guides/migration.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "核验现状",
+          "steps": [
+            {
+              "id": "existing-platform.capability-audit",
+              "action": "逐项核验已有平台对当前目标的实际支持：表单、支付、预约、多语言、搜索结构、导出。",
+              "owner": "delivery",
+              "inputs": ["平台账号权限", "当前目标清单"],
+              "outputs": ["能力核验表"],
+              "decision": { "question": "已有平台是否真能满足每项目标？", "criteria": ["每项目标有可验证的功能", "没有与自托管或源码要求冲突", "数据可导出"] },
+              "blocking": true
+            },
+            {
+              "id": "existing-platform.grant-access",
+              "action": "按最小权限和有限期限授予平台访问，不通过聊天明文传递密码。",
+              "owner": "client",
+              "inputs": ["平台账号"],
+              "outputs": ["授权记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "配置与改进",
+          "steps": [
+            {
+              "id": "existing-platform.configure",
+              "action": "在平台内完成配置或改进，逐项记录变更前后状态，便于回退。",
+              "owner": "delivery",
+              "inputs": ["能力核验表", "授权记录"],
+              "outputs": ["变更记录"]
+            },
+            {
+              "id": "existing-platform.exit-plan",
+              "action": "记录数据导出方式与触发迁移的条件，即使当前不迁移。",
+              "owner": "delivery",
+              "inputs": ["能力核验表"],
+              "outputs": ["退出方案"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "existing-platform.verify-flows",
+              "action": "在平台上实测关键内容与业务路径，并保存结果。",
+              "owner": "delivery",
+              "inputs": ["验收用例"],
+              "outputs": ["验证记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接",
+          "steps": [
+            {
+              "id": "existing-platform.revoke-access",
+              "action": "完成后撤销临时授权，并确认保留的账号归属。",
+              "owner": "client",
+              "inputs": ["授权记录"],
+              "outputs": ["撤销记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "existing-platform.data-export", "category": "数据导出", "criterion": "现有平台能导出内容、资源与业务记录，且格式可被其他系统读取。", "verify": "一次测试导出结果" },
+        { "id": "existing-platform.feature-coverage", "category": "功能覆盖", "criterion": "目标功能由平台原生支持，而非依赖已停更的第三方插件。", "verify": "功能清单与版本核对" },
+        { "id": "existing-platform.ops-requirements", "category": "维护", "criterion": "平台与插件的升级、备份和权限由明确责任人负责。", "verify": "运维分工说明" }
+      ],
+      "acceptance": [
+        {
+          "id": "existing-platform.flow-works",
+          "scenario": "在现有平台上走一遍关键内容与业务路径",
+          "expected": "每项目标均有真实结果，缺口被记录为待办而非省略。",
+          "evidence": "路径记录与截图"
+        },
+        { "id": "existing-platform.export-works", "scenario": "执行一次数据导出", "expected": "内容、资源和业务记录可导出并抽样核对。", "evidence": "导出文件与抽样核对表" },
+        { "id": "existing-platform.config-reversible", "scenario": "按变更记录回退一项配置", "expected": "平台恢复到变更前状态。", "evidence": "回退前后状态对照" },
+        { "id": "existing-platform.access-revoked", "scenario": "检查临时授权", "expected": "授权已撤销，访问列表与记录一致。", "evidence": "授权列表" }
+      ],
+      "risks": [
+        { "risk": "平台限制被低估，改进后仍不能满足目标。", "mitigation": "先做能力核验，不满足的目标回到路线判断。" },
+        { "risk": "授权过大或遗留。", "mitigation": "最小权限、限期授权并在交接时撤销。" },
+        { "risk": "平台锁定使退出代价过高。", "mitigation": "保留退出方案并定期验证导出。" }
+      ],
+      "handoff": ["能力核验表", "变更记录与退出方案", "验证记录", "授权与撤销记录"]
+    },
+    {
+      "route": "discovery",
+      "title": "先澄清目标",
+      "summary": "信息不足时只追问会改变路线的问题，把确认结果写回brief后重新判断。",
+      "guide": "guides/intake.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "澄清",
+          "steps": [
+            {
+              "id": "discovery.capture-request",
+              "action": "保留用户原话，识别未确认线索，不替用户决定。",
+              "owner": "delivery",
+              "inputs": ["用户原话"],
+              "outputs": ["intake线索"]
+            },
+            {
+              "id": "discovery.ask-key-questions",
+              "action": "只提出最影响路线的问题：访客动作、交易承接方式、所有权约束、语言、维护方。",
+              "owner": "delivery",
+              "inputs": ["plan.questions"],
+              "outputs": ["待回答问题"],
+              "decision": { "question": "下一步先问哪一个问题？", "criteria": ["改变路线的程度", "是否阻塞执行", "用户是否已经提供线索"] }
+            },
+            {
+              "id": "discovery.confirm-answers",
+              "action": "回答问题；未确认的项保持未知，不默认选项。",
+              "owner": "client",
+              "inputs": ["待回答问题"],
+              "outputs": ["回答文件"],
+              "blocking": true
+            },
+            {
+              "id": "discovery.apply-answers",
+              "action": "用answerQuestions写回brief并重新规划，重复到没有阻塞追问。",
+              "owner": "delivery",
+              "inputs": ["回答文件", "brief"],
+              "outputs": ["更新后的brief", "新的plan"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [],
+      "acceptance": [
+        {
+          "id": "discovery.brief-confirmed",
+          "scenario": "运行plan检查更新后的brief",
+          "expected": "通过validateBrief，没有阻塞追问，route不再是discovery。",
+          "evidence": "更新后的brief与plan输出"
+        },
+        {
+          "id": "discovery.no-default-assumption",
+          "scenario": "检查brief中未回答的布尔字段",
+          "expected": "未确认的字段被省略而非写成false。",
+          "evidence": "brief内容"
+        },
+        { "id": "discovery.route-explained", "scenario": "检查向用户的说明", "expected": "说明了所选路线和decision判断依据。", "evidence": "GUIDANCE.md的判断依据一节" }
+      ],
+      "risks": [{ "risk": "把想要网站默认成商城或询盘站。", "mitigation": "未确认的信息保持未知，只问影响路线的问题。" }, { "risk": "一次问题过多导致用户放弃。", "mitigation": "每轮只提关键问题，其余放入约束。" }],
+      "handoff": ["经确认的brief", "选择依据与待解决事项", "下一条路线的指引"]
+    },
+    {
+      "route": "custom-app",
+      "title": "业务应用专项设计",
+      "summary": "静态页面无法承担账号与权限职责时，先设计业务应用范围和首条流程，再决定采购或自研。",
+      "guide": "guides/content-app.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "范围与取舍",
+          "steps": [
+            {
+              "id": "custom-app.scope-flows",
+              "action": "列出必须由账号和后台承担的流程，区分真正需要应用的部分与可保持静态的部分。",
+              "owner": "client",
+              "inputs": ["目标清单", "用户类型"],
+              "outputs": ["应用范围说明"],
+              "decision": { "question": "哪些需求必须有账号或后台？", "criteria": ["是否有个人数据", "是否需要权限区分", "是否有状态化流程"] },
+              "blocking": true
+            },
+            {
+              "id": "custom-app.compose-connectors",
+              "action": "识别应用需要的交易、预约、表单等连接器，并分别挂到对应能力手册。",
+              "owner": "delivery",
+              "inputs": ["应用范围说明"],
+              "outputs": ["连接器清单"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "方案",
+          "steps": [
+            {
+              "id": "custom-app.route-recheck",
+              "action": "若范围缩小到无需账号，回到plan重新判断路线；否则进入application能力手册。",
+              "owner": "delivery",
+              "inputs": ["应用范围说明"],
+              "outputs": ["路线复核记录"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [],
+      "acceptance": [
+        {
+          "id": "custom-app.first-flow-e2e",
+          "scenario": "用测试数据走完首条业务流程",
+          "expected": "参见application.key-flow-e2e，结果可回查。",
+          "evidence": "流程记录与状态时间线"
+        },
+        {
+          "id": "custom-app.route-narrowed",
+          "scenario": "检查范围缩小后的路线",
+          "expected": "无需账号时已回到plan重新判断，不保留无必要的应用路线。",
+          "evidence": "重新规划后的plan"
+        },
+        { "id": "custom-app.connectors-listed", "scenario": "检查连接器清单", "expected": "每个交易或预约义务都有对应能力手册和验收。", "evidence": "清单与plan.gaps对照" }
+      ],
+      "risks": [{ "risk": "范围过大使首条流程迟迟不能验收。", "mitigation": "先选择一条流程，其余分批。" }, { "risk": "各连接器之间的数据真源不清。", "mitigation": "清单中同时记录真源。" }],
+      "handoff": ["应用范围说明", "连接器清单与数据真源", "路线复核记录"]
+    },
+    {
+      "route": "ticketing-integration",
+      "title": "票务系统专项接入",
+      "summary": "需要站内票务交易或承接方式未明确时，先确认承接方与票务系统，再进入tickets能力手册。",
+      "guide": "guides/tickets-booking.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "承接方式确认",
+          "steps": [
+            {
+              "id": "ticketing-integration.fulfillment-decision",
+              "action": "确认票务订单由本站处理，还是只连接已有购票入口；用answer写回brief。",
+              "owner": "client",
+              "inputs": ["ticket-fulfillment追问"],
+              "outputs": ["已回答的brief"],
+              "decision": { "question": "票务订单由谁承接？", "criteria": ["是否已有票务系统", "是否需要站内订单与库存", "是否有可用的HTTPS购票入口"] },
+              "blocking": true
+            },
+            {
+              "id": "ticketing-integration.ticket-facts",
+              "action": "提供票种、场次、容量、实名与改退规则，供票务系统选型使用。",
+              "owner": "client",
+              "inputs": ["票务规则"],
+              "outputs": ["票务规则说明"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "系统选择",
+          "steps": [
+            {
+              "id": "ticketing-integration.existing-or-new",
+              "action": "评估客户现有票务系统或行业系统是否满足，缺口回到tickets手册的选型步骤。",
+              "owner": "delivery",
+              "inputs": ["票务规则说明"],
+              "outputs": ["系统评估记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "ticketing-integration.coverage", "category": "规则覆盖", "criterion": "候选系统支持所需的票种、场次、实名与改退规则。", "verify": "规则对照表" },
+        { "id": "ticketing-integration.integration", "category": "接入方式", "criterion": "提供API与事件，或提供可嵌入的官方购票入口。", "verify": "官方文档与沙盒记录" }
+      ],
+      "acceptance": [
+        {
+          "id": "ticketing-integration.fulfillment-answered",
+          "scenario": "检查brief与plan",
+          "expected": "承接方式已确认，不再出现ticket-fulfillment追问。",
+          "evidence": "更新后的brief与plan"
+        },
+        {
+          "id": "ticketing-integration.not-ordinary-product",
+          "scenario": "检查方案描述",
+          "expected": "票务以专用系统实现，没有用普通商品页冒充场次与核销。",
+          "evidence": "方案说明与系统评估记录"
+        },
+        {
+          "id": "ticketing-integration.referral-or-onsite",
+          "scenario": "检查最终路线",
+          "expected": "要么走外部购票入口引导路线，要么走tickets手册并有契约验证。",
+          "evidence": "plan.route与能力手册"
+        }
+      ],
+      "risks": [{ "risk": "承接方式不明就生成售票页面。", "mitigation": "追问未答前不生成可能误导的售票页面。" }, { "risk": "规则未收集齐就选系统。", "mitigation": "先取得票务规则说明。" }],
+      "handoff": ["承接方式确认记录", "票务规则说明", "系统评估记录"]
+    },
+    {
+      "route": "tourism-referral",
+      "title": "文旅内容站与已有购票入口",
+      "summary": "本站介绍体验与票品，购买、订单与核销全部由客户已有购票入口承接。",
+      "guide": "guides/tickets-booking.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "入口确认",
+          "steps": [
+            {
+              "id": "tourism-referral.confirm-entry",
+              "action": "提供实际可用的HTTPS购票入口，并确认本站不处理支付、订单与库存。",
+              "owner": "client",
+              "inputs": ["购票入口地址"],
+              "outputs": ["入口确认记录"],
+              "blocking": true
+            },
+            {
+              "id": "tourism-referral.ticket-content",
+              "action": "提供票种说明等页面内容；价格和规则以购票入口为准，未提供的不补写。",
+              "owner": "client",
+              "inputs": ["票种说明"],
+              "outputs": ["站点内容"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "生成与引导",
+          "steps": [
+            {
+              "id": "tourism-referral.build-site",
+              "action": "写入brief的externalCheckoutUrl，生成站点并检查入口链接。",
+              "owner": "delivery",
+              "inputs": ["入口确认记录", "站点内容"],
+              "outputs": ["已构建版本"]
+            },
+            {
+              "id": "tourism-referral.click-boundary",
+              "action": "说明入口点击只证明入口存在，成交数据需外部系统回传。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["报表口径说明"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "tourism-referral.click-through",
+              "action": "点击入口确认进入正确的购票页面，且为实际域名而非演示域名。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["入口测试记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "tourism-referral.entry-https", "category": "入口", "criterion": "购票入口为HTTPS，可在目标地区访问，页面内容与本站介绍一致。", "verify": "实测访问记录" },
+        { "id": "tourism-referral.reporting", "category": "回传", "criterion": "外部系统是否能提供订单或成交数据用于核对。", "verify": "后台报表样例" }
+      ],
+      "acceptance": [
+        {
+          "id": "tourism-referral.link-reaches-ticket-page",
+          "scenario": "点击站内购票入口",
+          "expected": "进入正确的购票页面，参数与票种对应。",
+          "evidence": "点击路径记录"
+        },
+        { "id": "tourism-referral.no-onsite-payment", "scenario": "检查站点页面", "expected": "没有购物车、支付表单或“已购买”提示。", "evidence": "页面检查结果" },
+        { "id": "tourism-referral.click-vs-order", "scenario": "检查报表说明", "expected": "站内只报告入口点击，成交需外部系统回传匹配后才报告。", "evidence": "报表口径说明" },
+        {
+          "id": "tourism-referral.placeholder-blocked",
+          "scenario": "用演示域名的入口生成公开准备包",
+          "expected": "被PLACEHOLDER_DOMAIN阻止。",
+          "evidence": "命令输出"
+        }
+      ],
+      "risks": [{ "risk": "入口失效导致访客无法购买。", "mitigation": "定期实测入口并在交接时说明责任人。" }, { "risk": "把点击统计成成交。", "mitigation": "报表口径区分点击与订单。" }],
+      "handoff": ["入口确认记录", "站点内容与交接包", "入口测试记录与报表口径说明"]
+    },
+    {
+      "route": "booking-referral",
+      "title": "服务展示与已有预约入口",
+      "summary": "本站介绍服务并引导到客户已有预约入口，预约成功与状态由外部系统确认。",
+      "guide": "guides/tickets-booking.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "入口确认",
+          "steps": [
+            {
+              "id": "booking-referral.confirm-entry",
+              "action": "提供实际可用的HTTPS预约入口，并确认本站不处理预约、支付与通知。",
+              "owner": "client",
+              "inputs": ["预约入口地址"],
+              "outputs": ["入口确认记录"],
+              "blocking": true
+            },
+            {
+              "id": "booking-referral.service-content",
+              "action": "提供服务说明；时段、价格与规则以预约入口为准，未提供的不补写。",
+              "owner": "client",
+              "inputs": ["服务说明"],
+              "outputs": ["站点内容"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "生成与引导",
+          "steps": [
+            {
+              "id": "booking-referral.build-site",
+              "action": "写入brief的externalBookingUrl，生成站点并检查入口链接。",
+              "owner": "delivery",
+              "inputs": ["入口确认记录", "站点内容"],
+              "outputs": ["已构建版本"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "booking-referral.click-through",
+              "action": "点击入口并完成一次测试预约，确认外部系统给出预约编号。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["入口测试记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "booking-referral.entry-https", "category": "入口", "criterion": "预约入口为HTTPS，目标地区可访问，时区展示明确。", "verify": "实测访问记录" },
+        { "id": "booking-referral.reporting", "category": "回传", "criterion": "外部系统能否提供预约数据用于核对。", "verify": "后台报表样例" }
+      ],
+      "acceptance": [
+        { "id": "booking-referral.link-reaches-booking-page", "scenario": "点击站内预约入口", "expected": "进入正确的预约页面和服务。", "evidence": "点击路径记录" },
+        { "id": "booking-referral.no-onsite-confirmation", "scenario": "检查站点页面", "expected": "站内没有预约成功提示，状态由外部系统确认。", "evidence": "页面检查结果" },
+        { "id": "booking-referral.test-booking", "scenario": "在外部系统完成一次测试预约", "expected": "得到预约编号和通知，之后可取消。", "evidence": "预约编号与通知记录" },
+        {
+          "id": "booking-referral.placeholder-blocked",
+          "scenario": "用演示域名的入口生成公开准备包",
+          "expected": "被PLACEHOLDER_DOMAIN阻止。",
+          "evidence": "命令输出"
+        }
+      ],
+      "risks": [{ "risk": "入口失效导致无法预约。", "mitigation": "定期实测入口并明确责任人。" }, { "risk": "站内展示的时段与外部系统不一致。", "mitigation": "不展示未经系统确认的实时时段。" }],
+      "handoff": ["入口确认记录", "站点内容与交接包", "入口测试记录"]
+    },
+    {
+      "route": "managed-booking",
+      "title": "预约服务接入",
+      "summary": "需要时段、容量与预约状态时，先接入实际预约系统；平台配置在此，规则验证见booking能力手册。",
+      "guide": "guides/tickets-booking.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "平台与规则",
+          "steps": [
+            {
+              "id": "managed-booking.rules-collect",
+              "action": "提供服务、资源、时区、时段、容量、提前期、取消与支付规则。",
+              "owner": "client",
+              "inputs": ["服务清单", "预约规则"],
+              "outputs": ["预约规则说明"],
+              "blocking": true
+            },
+            {
+              "id": "managed-booking.platform-fit",
+              "action": "按规则逐项对照候选平台能力，候选在核实前标注“待核实”。",
+              "owner": "delivery",
+              "inputs": ["预约规则说明"],
+              "outputs": ["平台适配表"],
+              "decision": { "question": "平台能否表达全部预约规则？", "criteria": ["时段容量模型", "多时区与夏令时", "预付与取消规则", "通知渠道"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "配置与承接",
+          "steps": [
+            {
+              "id": "managed-booking.configure-platform",
+              "action": "配置服务、资源、时段与通知，并设置站点的链接或嵌入承接。",
+              "owner": "delivery",
+              "inputs": ["平台适配表"],
+              "outputs": ["已配置的预约平台"]
+            },
+            {
+              "id": "managed-booking.connect-site",
+              "action": "在站点中提供预约入口，成功后展示系统编号。",
+              "owner": "delivery",
+              "inputs": ["已配置的预约平台"],
+              "outputs": ["站点预约入口"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "managed-booking.platform-verify",
+              "action": "按本路线验收用例确认平台配置，再按booking手册完成状态与并发验收。",
+              "owner": "delivery",
+              "inputs": ["验收用例"],
+              "outputs": ["平台验证记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "managed-booking.rule-coverage", "category": "规则覆盖", "criterion": "时段、容量、提前期、取消与预付规则可完整配置。", "verify": "规则对照表与测试账户配置" },
+        { "id": "managed-booking.region-entity", "category": "地区与主体", "criterion": "支持服务地区、语言、币种与结算主体。", "verify": "官方支持说明" }
+      ],
+      "acceptance": [
+        { "id": "managed-booking.platform-time-zone", "scenario": "配置跨时区与夏令时日期的服务", "expected": "展示和提醒时间正确。", "evidence": "测试预约的时间记录" },
+        { "id": "managed-booking.embed-or-link-works", "scenario": "从站点入口进入预约流程", "expected": "在手机与桌面均可完成测试预约。", "evidence": "设备测试记录" },
+        { "id": "managed-booking.notification-delivered", "scenario": "完成测试预约", "expected": "确认通知送达客户和服务方并有记录。", "evidence": "通知记录" },
+        { "id": "managed-booking.rules-parity", "scenario": "把规则说明逐项对照平台配置", "expected": "没有未配置或相互矛盾的规则。", "evidence": "规则对照表" }
+      ],
+      "risks": [{ "risk": "平台无法表达某项规则时被忽略。", "mitigation": "规则对照表逐项列出并由客户确认处理方式。" }, { "risk": "站点说明与平台配置不一致。", "mitigation": "以平台配置为准更新站点说明。" }],
+      "handoff": ["预约规则说明与平台适配表", "平台配置记录", "平台验证记录", "账户持有人说明（不含密钥）"]
+    },
+    {
+      "route": "commerce-referral",
+      "title": "展示站与已有商城入口",
+      "summary": "本站介绍商品并链接客户已有商城，支付、订单、库存与售后全部在外部商城完成。",
+      "guide": "guides/commerce.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "入口与商品映射",
+          "steps": [
+            {
+              "id": "commerce-referral.confirm-shop",
+              "action": "提供实际可用的HTTPS商城入口，并确认本站不收款、不管理订单与库存。",
+              "owner": "client",
+              "inputs": ["商城入口地址"],
+              "outputs": ["入口确认记录"],
+              "blocking": true
+            },
+            {
+              "id": "commerce-referral.product-mapping",
+              "action": "为每个展示商品提供对应的商城商品链接；价格与库存以商城为准，未提供的不陈列。",
+              "owner": "client",
+              "inputs": ["商品清单", "商品链接"],
+              "outputs": ["商品链接映射"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "生成与引导",
+          "steps": [
+            {
+              "id": "commerce-referral.build-site",
+              "action": "写入externalCheckoutUrl与商品内容，生成站点并检查所有外链。",
+              "owner": "delivery",
+              "inputs": ["入口确认记录", "商品链接映射"],
+              "outputs": ["已构建版本"]
+            },
+            {
+              "id": "commerce-referral.attribution-boundary",
+              "action": "如使用来源参数，只用于识别入口点击，订单归因需商城回传后才报告。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["归因口径说明"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "commerce-referral.click-through",
+              "action": "逐个商品点击外链，确认进入对应商城页面。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["链接测试记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "commerce-referral.entry-https", "category": "入口", "criterion": "商城入口为HTTPS，目标地区可访问，商品页稳定。", "verify": "实测访问记录" },
+        { "id": "commerce-referral.data-feed", "category": "商品数据", "criterion": "商品信息是否可导出供站点引用，更新时谁负责同步。", "verify": "导出样例与同步责任人" }
+      ],
+      "acceptance": [
+        { "id": "commerce-referral.product-link-correct", "scenario": "逐个点击商品外链", "expected": "均进入对应商品页面而非首页或404。", "evidence": "链接测试表" },
+        { "id": "commerce-referral.no-fake-cart", "scenario": "检查站点页面", "expected": "没有购物车、站内结账或“已加入购物车”提示。", "evidence": "页面检查结果" },
+        { "id": "commerce-referral.no-unverified-price", "scenario": "检查商品内容", "expected": "价格和库存只有在客户提供并确认后才出现。", "evidence": "内容与客户确认记录" },
+        {
+          "id": "commerce-referral.placeholder-blocked",
+          "scenario": "用演示域名的商城入口生成公开准备包",
+          "expected": "被PLACEHOLDER_DOMAIN阻止。",
+          "evidence": "命令输出"
+        }
+      ],
+      "risks": [{ "risk": "商城商品下架而站点仍链接旧页面。", "mitigation": "交接时说明链接维护责任并定期检查。" }, { "risk": "把入口点击当作销量。", "mitigation": "归因口径区分点击与订单。" }],
+      "handoff": ["入口确认记录与商品链接映射", "站点内容与交接包", "链接测试记录与归因口径说明"]
+    },
+    {
+      "route": "owned-commerce",
+      "title": "自托管电商底座",
+      "summary": "必须自托管时评估开源或自部署电商底座的许可证、支付连接器和长期运维；候选均需核实，具体交易验收见commerce手册。",
+      "guide": "guides/commerce.md",
+      "phases": [
+        {
+          "id": "select",
+          "name": "底座评估",
+          "steps": [
+            {
+              "id": "owned-commerce.license-review",
+              "action": "逐个核对候选底座的许可证、企业版边界、再分发与使用方式限制，保存引用的版本与条款。",
+              "owner": "delivery",
+              "inputs": ["候选清单", "vendorCriteria"],
+              "outputs": ["许可证核对记录"],
+              "decision": { "question": "许可证是否允许当前的使用与再分发方式？", "criteria": ["商业使用", "修改与再分发要求", "企业版功能边界", "专利与商标条款"] },
+              "blocking": true
+            },
+            {
+              "id": "owned-commerce.connector-availability",
+              "action": "核实商户主体和地区能使用的支付连接器是否存在、是否由官方或社区维护、版本是否与底座匹配。",
+              "owner": "delivery",
+              "inputs": ["支付准入结论", "候选清单"],
+              "outputs": ["连接器可用性表"],
+              "blocking": true
+            },
+            {
+              "id": "owned-commerce.ops-capacity",
+              "action": "确认部署环境、负责备份恢复、安全补丁、升级与监控的人员或供应商。",
+              "owner": "client",
+              "inputs": ["团队与供应商信息"],
+              "outputs": ["运维责任说明"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "部署",
+          "steps": [
+            {
+              "id": "owned-commerce.deploy-baseline",
+              "action": "部署选定底座到客户控制的环境，配置备份、日志、密钥管理与最小权限。",
+              "owner": "delivery",
+              "inputs": ["许可证核对记录", "运维责任说明"],
+              "outputs": ["可运行的底座实例"],
+              "blocking": true
+            },
+            {
+              "id": "owned-commerce.upgrade-path",
+              "action": "制定补丁与版本升级流程，包括预发验证与回退。",
+              "owner": "delivery",
+              "inputs": ["可运行的底座实例"],
+              "outputs": ["升级流程说明"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "owned-commerce.restore-drill",
+              "action": "用备份在新环境恢复，并核对商品、订单与客户数据。",
+              "owner": "delivery",
+              "inputs": ["备份"],
+              "outputs": ["恢复演练记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        {
+          "id": "owned-commerce.license",
+          "category": "许可证",
+          "criterion": "许可证条款允许自托管、修改与商业使用；企业版功能另行核实。",
+          "verify": "各候选所选版本的LICENSE及官方说明"
+        },
+        { "id": "owned-commerce.payment-connector", "category": "支付连接器", "criterion": "目标地区可用的支付连接器存在且维护活跃。", "verify": "连接器仓库与官方文档" },
+        { "id": "owned-commerce.ops-requirements", "category": "运维要求", "criterion": "数据库、队列、缓存等依赖与团队能力匹配，备份恢复可演练。", "verify": "部署文档与恢复演练" },
+        { "id": "owned-commerce.security-process", "category": "安全更新", "criterion": "安全公告渠道和补丁发布节奏明确，团队能及时跟进。", "verify": "官方安全公告记录" },
+        { "id": "owned-commerce.data-export", "category": "数据导出", "criterion": "商品、订单、客户可导出，迁移不依赖私有格式。", "verify": "测试数据导出" },
+        { "id": "owned-commerce.api-capability", "category": "API能力", "criterion": "提供订单、支付、库存API与事件，版本策略明确。", "verify": "官方文档与调用记录" }
+      ],
+      "acceptance": [
+        { "id": "owned-commerce.license-record", "scenario": "检查许可证核对记录", "expected": "每个候选有版本、许可证文本引用和结论。", "evidence": "核对记录" },
+        { "id": "owned-commerce.restore-verified", "scenario": "用备份在新环境恢复", "expected": "商品、订单、客户数据可恢复并抽样一致。", "evidence": "恢复演练记录与核对表" },
+        { "id": "owned-commerce.upgrade-rehearsal", "scenario": "在预发环境升级一个小版本并回退", "expected": "升级后核心流程正常，回退成功。", "evidence": "升级与回退记录" },
+        { "id": "owned-commerce.patch-process", "scenario": "模拟一条安全公告", "expected": "责任人在约定时限内评估并给出处理记录。", "evidence": "处理记录" }
+      ],
+      "risks": [
+        { "risk": "许可证条款与使用方式冲突。", "mitigation": "先核对许可证再投入实施。" },
+        { "risk": "无人负责补丁和备份。", "mitigation": "运维责任未落实则改选托管平台。" },
+        { "risk": "支付连接器不再维护。", "mitigation": "核实连接器活跃度，并准备替换方案。" }
+      ],
+      "handoff": ["许可证核对记录", "连接器可用性表", "运维责任说明与升级流程", "恢复演练记录", "实例与密钥持有人说明（不含密钥）"]
+    },
+    {
+      "route": "hybrid-commerce",
+      "title": "自有店面与外部交易后台",
+      "summary": "保留自有前台代码，把交易交给成熟的外部后台API；重点是购物车、结账、客户身份和事件的连接器。",
+      "guide": "guides/commerce.md",
+      "phases": [
+        {
+          "id": "select",
+          "name": "接口与结账方式",
+          "steps": [
+            {
+              "id": "hybrid-commerce.api-fit",
+              "action": "核对外部后台的店面API、版本策略、权限和限流，确认能表达商品、规格与库存。",
+              "owner": "delivery",
+              "inputs": ["候选后台", "vendorCriteria"],
+              "outputs": ["API适配表"],
+              "blocking": true
+            },
+            {
+              "id": "hybrid-commerce.checkout-mode",
+              "action": "确定结账方式：跳转到官方托管结账，或使用官方支持的嵌入方式。",
+              "owner": "delivery",
+              "inputs": ["API适配表"],
+              "outputs": ["结账方案"],
+              "decision": { "question": "采用托管结账还是官方支持的嵌入结账？", "criteria": ["支付合规责任归属", "品牌一致性要求", "所选后台是否开放自定义结账"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "前台连接",
+          "steps": [
+            {
+              "id": "hybrid-commerce.cart-layer",
+              "action": "前台购物车与后台购物车保持一致，价格、库存和优惠以后台为准。",
+              "owner": "delivery",
+              "inputs": ["API适配表"],
+              "outputs": ["购物车连接实现"]
+            },
+            {
+              "id": "hybrid-commerce.customer-identity",
+              "action": "确定客户身份、登录与订单查询的承接方式，不自行保存支付信息。",
+              "owner": "delivery",
+              "inputs": ["结账方案"],
+              "outputs": ["客户身份方案"]
+            },
+            {
+              "id": "hybrid-commerce.degrade-states",
+              "action": "API限流、不可用或超时时显示明确降级状态，不伪造成功。",
+              "owner": "delivery",
+              "inputs": ["购物车连接实现"],
+              "outputs": ["降级处理实现"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "hybrid-commerce.api-version-pin",
+              "action": "固定使用的API版本并记录升级计划。",
+              "owner": "delivery",
+              "inputs": ["API适配表"],
+              "outputs": ["版本记录"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        {
+          "id": "hybrid-commerce.api-capability",
+          "category": "API能力",
+          "criterion": "店面API覆盖商品、购物车、结账入口与事件，版本策略明确。",
+          "verify": "官方API文档与沙盒调用"
+        },
+        { "id": "hybrid-commerce.checkout-options", "category": "结账方式", "criterion": "托管结账或官方支持的嵌入方式可满足品牌与合规要求。", "verify": "官方文档与演示" },
+        { "id": "hybrid-commerce.rate-limit", "category": "限流", "criterion": "限流规则和错误码明确，有可行的缓存策略。", "verify": "官方文档" },
+        { "id": "hybrid-commerce.data-export", "category": "数据导出", "criterion": "商品、订单、客户可导出。", "verify": "测试导出" },
+        { "id": "hybrid-commerce.region-entity", "category": "地区与主体", "criterion": "支持商户主体所在地区、币种与销售地区。", "verify": "官方支持说明与准入结论" }
+      ],
+      "acceptance": [
+        { "id": "hybrid-commerce.cart-roundtrip", "scenario": "在前台加购、改数量、删除后与后台购物车对比", "expected": "数量、价格和库存提示一致。", "evidence": "前后台购物车对照" },
+        {
+          "id": "hybrid-commerce.checkout-handoff",
+          "scenario": "从前台进入结账并完成测试支付",
+          "expected": "走官方结账路径，价格由后台计算，前台不拼接价格。",
+          "evidence": "结账记录与订单"
+        },
+        { "id": "hybrid-commerce.api-version-pinned", "scenario": "检查请求中的API版本", "expected": "使用固定版本，升级有计划和回退。", "evidence": "请求头与版本记录" },
+        {
+          "id": "hybrid-commerce.rate-limit-degrade",
+          "scenario": "模拟API限流与超时",
+          "expected": "前台显示降级提示，不显示成功，恢复后可继续。",
+          "evidence": "模拟记录与页面截图"
+        }
+      ],
+      "risks": [
+        { "risk": "前台自行计算价格与后台不一致。", "mitigation": "价格和优惠一律以后台返回为准。" },
+        { "risk": "API版本变更导致前台失效。", "mitigation": "固定版本并跟踪弃用公告。" },
+        { "risk": "误存支付信息引入合规责任。", "mitigation": "使用官方结账，不保存支付信息。" }
+      ],
+      "handoff": ["API适配表与版本记录", "结账方案与客户身份方案", "降级处理说明", "验收记录"]
+    },
+    {
+      "route": "managed-commerce",
+      "title": "成熟平台建店",
+      "summary": "在成熟电商平台配置店面、支付、订单和履约；平台为待核实候选，交易能力验收见commerce手册。",
+      "guide": "guides/commerce.md",
+      "phases": [
+        {
+          "id": "select",
+          "name": "平台选择",
+          "steps": [
+            {
+              "id": "managed-commerce.merchant-eligibility",
+              "action": "按商户主体和地区向候选平台核实开店与支付准入，保存可回查的结论。",
+              "owner": "vendor",
+              "inputs": ["商户主体信息", "销售地区"],
+              "outputs": ["准入记录"],
+              "blocking": true
+            },
+            {
+              "id": "managed-commerce.platform-compare",
+              "action": "用vendorCriteria比较候选平台，记录选择依据与未解决条件；价格与功能以当次核实为准。",
+              "owner": "delivery",
+              "inputs": ["准入记录", "候选清单"],
+              "outputs": ["平台选型记录"],
+              "decision": { "question": "选择哪一个平台？", "criteria": ["目标地区可开店可收款", "所需功能是否原生支持", "数据可导出", "主题与语言支持"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "店铺配置",
+          "steps": [
+            {
+              "id": "managed-commerce.import-catalog",
+              "action": "提供商品、规格、图片与描述，价格和库存由客户确认。",
+              "owner": "client",
+              "inputs": ["商品清单"],
+              "outputs": ["商品数据"],
+              "blocking": true
+            },
+            {
+              "id": "managed-commerce.configure-store",
+              "action": "配置主题、商品、支付、运费、税费和政策页面，密钥与账号由客户持有。",
+              "owner": "delivery",
+              "inputs": ["商品数据", "平台选型记录"],
+              "outputs": ["测试店铺"]
+            },
+            {
+              "id": "managed-commerce.domain-setup",
+              "action": "配置域名与HTTPS，并核对与展示站的链接关系。",
+              "owner": "delivery",
+              "inputs": ["测试店铺"],
+              "outputs": ["域名配置记录"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "managed-commerce.test-order",
+              "action": "用测试订单走完付款、发货、退款，并保存记录。",
+              "owner": "delivery",
+              "inputs": ["测试店铺"],
+              "outputs": ["测试订单记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接",
+          "steps": [
+            {
+              "id": "managed-commerce.owner-transfer",
+              "action": "确认店铺、域名、支付账户的所有者和管理员，并建立备用管理员。",
+              "owner": "client",
+              "inputs": ["平台账号信息"],
+              "outputs": ["所有者确认记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "managed-commerce.region-entity", "category": "地区与主体", "criterion": "支持商户主体所在地区、销售地区、币种与支付方式。", "verify": "官方支持地区说明与准入结论" },
+        { "id": "managed-commerce.payment-access", "category": "支付准入", "criterion": "品类限制和审核流程明确，开通后的冻结与申诉规则清楚。", "verify": "准入记录" },
+        {
+          "id": "managed-commerce.feature-coverage",
+          "category": "功能覆盖",
+          "criterion": "所需的多语言、多币种、库存、运费与税费功能为原生支持。",
+          "verify": "功能核对表与测试店铺配置"
+        },
+        { "id": "managed-commerce.data-export", "category": "数据导出", "criterion": "商品、订单、客户可批量导出。", "verify": "测试导出" },
+        { "id": "managed-commerce.api-capability", "category": "API能力", "criterion": "提供订单与事件API，便于对账和自动化。", "verify": "官方文档" },
+        { "id": "managed-commerce.ops-requirements", "category": "运营要求", "criterion": "客户后台操作难度与客服渠道适合运营团队。", "verify": "演示与试用反馈" }
+      ],
+      "acceptance": [
+        {
+          "id": "managed-commerce.merchant-eligibility-record",
+          "scenario": "检查准入记录",
+          "expected": "有商户主体、地区、结论和日期，来源可回查。",
+          "evidence": "准入记录"
+        },
+        {
+          "id": "managed-commerce.test-order-flow",
+          "scenario": "用测试支付方式下单、发货、部分退款",
+          "expected": "订单状态依次变化，款项记录一致。",
+          "evidence": "订单号、支付与退款记录"
+        },
+        { "id": "managed-commerce.policy-pages", "scenario": "检查店铺的政策页面", "expected": "退换、隐私、条款和联系方式为客户确认的真实内容。", "evidence": "页面与客户确认记录" },
+        {
+          "id": "managed-commerce.domain-checkout-https",
+          "scenario": "从域名访问店铺并进入结账",
+          "expected": "全程HTTPS，域名和结账页面一致。",
+          "evidence": "访问与证书记录"
+        },
+        { "id": "managed-commerce.owner-and-backup-admin", "scenario": "检查平台管理员列表", "expected": "店铺所有者为客户，且有备用管理员。", "evidence": "管理员列表" }
+      ],
+      "risks": [
+        { "risk": "平台或支付准入不通过。", "mitigation": "选型阶段取得准入结论，不通过时更换候选。" },
+        { "risk": "账号只在交付方名下。", "mitigation": "所有者确认记录作为交接必须项。" },
+        { "risk": "政策页面用占位内容上线。", "mitigation": "政策页面由客户确认后再公开。" }
+      ],
+      "handoff": ["准入记录与平台选型记录", "店铺配置说明与测试订单记录", "域名配置记录", "所有者与管理员确认记录"]
+    },
+    {
+      "route": "cms-owned",
+      "title": "带内容后台的网站",
+      "summary": "客户需要自行登录改内容时，选定CMS、内容模型和发布到站点的流水；编辑与发布验收见cms手册。",
+      "guide": "guides/content-app.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "内容与编辑者",
+          "steps": [
+            {
+              "id": "cms-owned.editor-needs",
+              "action": "确认编辑者、内容类型、语言和审核要求，评估是否真的需要登录后台。",
+              "owner": "client",
+              "inputs": ["编辑人员名单", "内容清单"],
+              "outputs": ["编辑需求说明"],
+              "decision": { "question": "是否必须由客户登录后台编辑？", "criteria": ["改动频率", "是否有多个编辑者", "能否接受由交付方更新内容源"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "选型",
+          "steps": [
+            {
+              "id": "cms-owned.candidate-compare",
+              "action": "比较Payload、WordPress等CMS候选，记录许可证、托管与运维条件；候选均待核实。",
+              "owner": "delivery",
+              "inputs": ["编辑需求说明", "vendorCriteria"],
+              "outputs": ["CMS选型记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "连接站点",
+          "steps": [
+            {
+              "id": "cms-owned.content-pipeline",
+              "action": "建立CMS内容到站点内容源的导出与构建流水，失败时保持线上版本。",
+              "owner": "delivery",
+              "inputs": ["CMS选型记录"],
+              "outputs": ["发布流水"]
+            },
+            {
+              "id": "cms-owned.hosting-owner",
+              "action": "确认CMS的托管账户、备份与升级责任人。",
+              "owner": "client",
+              "inputs": ["CMS选型记录"],
+              "outputs": ["运维责任说明"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "cms-owned.license", "category": "许可证", "criterion": "开源许可证或商业条款允许当前使用方式。", "verify": "LICENSE与官方说明" },
+        { "id": "cms-owned.roles", "category": "角色与审核", "criterion": "支持所需角色、草稿、审核与发布。", "verify": "测试配置" },
+        { "id": "cms-owned.data-export", "category": "数据导出", "criterion": "内容与资源可批量导出。", "verify": "测试导出" },
+        { "id": "cms-owned.ops-requirements", "category": "运维要求", "criterion": "托管、备份、升级与监控责任明确。", "verify": "运维分工与恢复演练" }
+      ],
+      "acceptance": [
+        { "id": "cms-owned.model-signed-off", "scenario": "检查内容模型", "expected": "客户已确认内容类型、字段和语言。", "evidence": "客户确认记录" },
+        { "id": "cms-owned.publish-to-site", "scenario": "客户发布一篇测试内容", "expected": "构建通过后站点更新，失败时线上版本不变。", "evidence": "发布与构建记录" },
+        { "id": "cms-owned.hosting-ops-owner", "scenario": "检查运维责任说明", "expected": "托管、备份、升级责任人明确且已接受。", "evidence": "责任说明" }
+      ],
+      "risks": [{ "risk": "客户其实不需要后台，却被引入运维负担。", "mitigation": "先评估是否由内容源更新即可。" }, { "risk": "CMS无人升级，出现安全风险。", "mitigation": "指定运维责任人。" }],
+      "handoff": ["编辑需求说明与CMS选型记录", "发布流水说明", "运维责任说明"]
+    },
+    {
+      "route": "static-owned",
+      "title": "自有展示与询盘站",
+      "summary": "用可持久化内容源生成多页展示站，保留版本，联系路径需实测。",
+      "guide": "guides/static-site.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "内容准备",
+          "steps": [
+            {
+              "id": "static-owned.goals-content",
+              "action": "确认受众、首要行动、语言、页面与维护方，并提供品牌、介绍、产品或服务和联系方式。",
+              "owner": "client",
+              "inputs": ["需求说明", "品牌与内容资料"],
+              "outputs": ["站点内容资料"],
+              "blocking": true
+            },
+            {
+              "id": "static-owned.no-fabrication",
+              "action": "未提供的价格、资质、销量和译文一律不补写，保持缺口。",
+              "owner": "delivery",
+              "inputs": ["站点内容资料"],
+              "outputs": ["内容缺口清单"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "生成",
+          "steps": [
+            {
+              "id": "static-owned.init-build",
+              "action": "用init创建工作区，填写各语言内容后build并check。",
+              "owner": "delivery",
+              "inputs": ["站点内容资料"],
+              "outputs": ["已构建版本", "检查结果"],
+              "blocking": true
+            },
+            {
+              "id": "static-owned.update-loop",
+              "action": "通过update修改资料并再次build，旧版本保留。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["新版本"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "static-owned.contact-test",
+              "action": "试走联系入口并记录哪一种路径已验证；邮件客户端能打开不等于已送达。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["联系路径记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接",
+          "steps": [
+            {
+              "id": "static-owned.handoff-package",
+              "action": "导出交接包并说明维护方式，上线按live-deployment手册继续。",
+              "owner": "delivery",
+              "inputs": ["已构建版本"],
+              "outputs": ["交接包"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [],
+      "acceptance": [
+        { "id": "static-owned.build-check-pass", "scenario": "运行build与check", "expected": "检查通过且没有未构建修改。", "evidence": "命令输出" },
+        { "id": "static-owned.contact-path-delivered", "scenario": "用真实测试信息走一次联系路径", "expected": "对方确实收到，记录路径类型。", "evidence": "收到的证据与记录" },
+        { "id": "static-owned.no-fabricated-claims", "scenario": "对照客户提供的资料检查站点内容", "expected": "没有未经确认的价格、资质、销量或译文。", "evidence": "内容对照表" },
+        { "id": "static-owned.mobile-readable", "scenario": "在手机宽度查看各语言页面", "expected": "文字可读，导航可用。", "evidence": "设备检查记录" },
+        { "id": "static-owned.update-rebuild", "scenario": "修改一项资料再构建", "expected": "产生新版本，旧版本保留。", "evidence": "版本列表" }
+      ],
+      "risks": [{ "risk": "把页面可打开当作联系路径可用。", "mitigation": "联系路径单独实测。" }, { "risk": "补写客户未提供的信息。", "mitigation": "内容缺口清单交由客户补齐。" }],
+      "handoff": ["交接包（站点、内容源、检查结果）", "内容缺口清单", "联系路径记录", "维护说明"]
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "forms",
+      "title": "真实表单收集与送达",
+      "summary": "服务端接收、校验、防垃圾并投递到指定位置；页面提交成功只说明前台状态，送达以接收端记录为准。",
+      "guide": "guides/integrations.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "用途与数据范围",
+          "steps": [
+            {
+              "id": "forms.purpose-fields",
+              "action": "确认表单用途、字段、接收人、跟进流程与保存期限，只收集必要信息。",
+              "owner": "client",
+              "inputs": ["表单用途", "字段清单", "接收人与跟进流程", "保存期限"],
+              "outputs": ["表单规格"],
+              "blocking": true
+            },
+            {
+              "id": "forms.consent-text",
+              "action": "确认个人信息收集的告知与同意文案及适用地区要求，文案由客户提供或确认。",
+              "owner": "client",
+              "inputs": ["表单规格"],
+              "outputs": ["同意文案确认记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "选型",
+          "steps": [
+            {
+              "id": "forms.vendor-choice",
+              "action": "对照vendorCriteria选择表单后端或CRM；候选在核实前标注“待核实”。",
+              "owner": "delivery",
+              "inputs": ["表单规格", "vendorCriteria"],
+              "outputs": ["选型记录"],
+              "decision": { "question": "采用托管表单服务、CRM自带表单，还是自建接收端？", "criteria": ["数据存储地区", "导出与删除能力", "反垃圾与限流", "送达日志是否可查"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "规格与状态",
+          "steps": [
+            {
+              "id": "forms.state-model",
+              "action": "按forms连接器契约映射received/delivered/delivery_failed/spam/deleted状态。",
+              "owner": "delivery",
+              "inputs": ["adapters/contracts/forms.contract.json", "选型记录"],
+              "outputs": ["状态映射表"]
+            },
+            {
+              "id": "forms.field-schema",
+              "action": "为每个字段定义类型、长度、必填与校验，同一份规格用于前台和服务端。",
+              "owner": "delivery",
+              "inputs": ["表单规格"],
+              "outputs": ["字段校验规格"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "实施与配置",
+          "steps": [
+            {
+              "id": "forms.receiver",
+              "action": "实现服务端接收：校验输入、限流、防垃圾，并生成稳定的提交编号与幂等键。",
+              "owner": "delivery",
+              "inputs": ["字段校验规格"],
+              "outputs": ["接收端实现"],
+              "blocking": true
+            },
+            {
+              "id": "forms.delivery",
+              "action": "把提交投递到指定邮箱或CRM，失败可重试并保留状态与错误原因。",
+              "owner": "delivery",
+              "inputs": ["接收端实现", "选型记录"],
+              "outputs": ["投递实现", "送达日志"]
+            },
+            {
+              "id": "forms.frontend-state",
+              "action": "前台只在服务端返回received后提示“已收到”，不宣称已送达或已有人处理。",
+              "owner": "delivery",
+              "inputs": ["接收端实现"],
+              "outputs": ["前台状态说明"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "forms.run-acceptance",
+              "action": "按验收用例实测，包含成功、失败、重复、垃圾和导出权限，并保存证据。",
+              "owner": "delivery",
+              "inputs": ["验收用例"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            },
+            {
+              "id": "forms.contract-selftest",
+              "action": "对连接器运行verifyConnector(\"forms\", connector)并保存报告。",
+              "owner": "delivery",
+              "inputs": ["连接器实现"],
+              "outputs": ["契约自测报告"]
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接与运营",
+          "steps": [
+            {
+              "id": "forms.followup-owner",
+              "action": "指定线索跟进负责人、响应时限和导出删除的处理人。",
+              "owner": "client",
+              "inputs": ["验收记录"],
+              "outputs": ["跟进责任说明"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "forms.region-storage", "category": "地区与存储", "criterion": "提交数据的存储地区与客户目标地区的个人信息要求相容。", "verify": "供应商数据处理说明与客户确认" },
+        { "id": "forms.antispam", "category": "反垃圾", "criterion": "提供限流、蜜罐或人机验证，且不依赖客户端单方判断。", "verify": "垃圾提交测试结果" },
+        { "id": "forms.delivery-log", "category": "送达日志", "criterion": "可查每次提交的接收与投递状态及失败原因。", "verify": "后台日志或API查询" },
+        { "id": "forms.data-export", "category": "数据导出与删除", "criterion": "支持批量导出和按提交删除，满足保存期限。", "verify": "测试数据的导出与删除记录" },
+        { "id": "forms.api-capability", "category": "API能力", "criterion": "提供提交与状态API及签名事件，含重试和幂等机制。", "verify": "官方文档与沙盒调用记录" },
+        { "id": "forms.ops-requirements", "category": "运维要求", "criterion": "自建接收端需明确托管、备份、监控与滥用处理责任人。", "verify": "运维分工说明" }
+      ],
+      "acceptance": [
+        {
+          "id": "forms.submit-delivered",
+          "scenario": "用真实测试信息提交一次表单",
+          "expected": "提交状态依次为received与delivered，指定收件箱或CRM中可见同一条记录并有提交编号。",
+          "evidence": "提交编号、收件箱或CRM记录截图、送达日志"
+        },
+        {
+          "id": "forms.invalid-input",
+          "scenario": "提交缺少必填或超长字段的请求",
+          "expected": "服务端返回VALIDATION_FAILED并指明字段，不产生记录。",
+          "evidence": "拒绝响应与记录列表"
+        },
+        {
+          "id": "forms.spam-rate-limit",
+          "scenario": "短时间内批量提交与蜜罐字段被填写的提交",
+          "expected": "超限请求被限流，垃圾提交进入spam或被拒绝，不通知跟进人。",
+          "evidence": "请求日志与记录状态"
+        },
+        { "id": "forms.duplicate-submit", "scenario": "同一幂等键提交两次", "expected": "只产生一条记录，第二次返回同一提交编号，通知只发一次。", "evidence": "两次响应与记录数量" },
+        {
+          "id": "forms.delivery-failure-retry",
+          "scenario": "让下游邮箱或CRM暂时不可用后提交，再恢复",
+          "expected": "记录变delivery_failed并保留原因，恢复后重试变delivered，不丢失也不重复。",
+          "evidence": "失败与重试日志、最终记录"
+        },
+        {
+          "id": "forms.frontend-success-not-delivery",
+          "scenario": "下游不可用时观察前台提示",
+          "expected": "前台只显示“已收到”，不显示“已送达”或“已处理”。",
+          "evidence": "页面截图与状态日志"
+        },
+        { "id": "forms.unauthorized-export", "scenario": "未授权身份请求导出提交数据", "expected": "请求被拒绝并返回错误，数据不泄露。", "evidence": "请求与响应记录" },
+        { "id": "forms.retention-delete", "scenario": "到达保存期限或收到删除请求", "expected": "记录变deleted，导出和查询均不再返回内容。", "evidence": "删除操作记录与查询结果" }
+      ],
+      "risks": [
+        { "risk": "前台显示成功但线索从未送达。", "mitigation": "前台文案只依赖received，并要求送达日志可查。" },
+        { "risk": "垃圾提交淹没跟进人。", "mitigation": "限流、蜜罐与人工复核入口，并监控垃圾比例。" },
+        { "risk": "个人信息保存超期或跨地区存储不合规。", "mitigation": "选型时核实存储地区，设保存期限与删除流程。" },
+        { "risk": "邮件被服务商拦截而无人察觉。", "mitigation": "同时保留后台存储，投递失败时可重试并告警。" }
+      ],
+      "handoff": ["表单规格与同意文案确认记录", "选型记录与存储地区说明", "字段校验规格与状态映射表", "验收记录与契约自测报告", "跟进责任、导出与删除处理流程"]
+    },
+    {
+      "capability": "commerce",
+      "title": "商品交易、支付、订单与库存后台",
+      "summary": "把商品、价格、库存、订单、支付与退款交给可信交易后台，并以连接器契约验证状态、事件与幂等。",
+      "guide": "guides/commerce.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "交易范围确认",
+          "steps": [
+            {
+              "id": "commerce.scope-facts",
+              "action": "确认销售地区、商户主体、币种、配送范围、退换规则、SKU与库存来源。",
+              "owner": "client",
+              "inputs": ["商品清单", "商户主体信息", "销售地区与币种", "配送与退换规则"],
+              "outputs": ["交易范围说明"],
+              "blocking": true
+            },
+            {
+              "id": "commerce.truth-source",
+              "action": "确定商品、价格、库存、订单、客户五类数据各自的业务真源，其余位置只读同步。",
+              "owner": "delivery",
+              "inputs": ["交易范围说明", "现有系统清单"],
+              "outputs": ["数据真源表"],
+              "decision": { "question": "商品与库存以哪个系统为真源？", "criteria": ["每类数据只有一处可写", "同步失败时以真源为准", "同步延迟对超卖风险可接受"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "选型与准入",
+          "steps": [
+            {
+              "id": "commerce.payment-eligibility",
+              "action": "按商户主体和地区向候选支付服务商核实准入、品类限制与支持的支付方式，取得可回查的结论。",
+              "owner": "vendor",
+              "inputs": ["商户主体证明", "经营品类", "结算账户信息"],
+              "outputs": ["准入结论", "开通所需材料清单"],
+              "decision": { "question": "候选支付通道能否覆盖商户主体、地区与币种？", "criteria": ["主体与结算地区受支持", "品类不在限制范围", "所需支付方式可用", "退款与争议流程可用"] },
+              "blocking": true
+            },
+            {
+              "id": "commerce.platform-choice",
+              "action": "对照vendorCriteria比较候选，记录选择依据与未解决条件；候选只是待核实对象。",
+              "owner": "delivery",
+              "inputs": ["vendorCriteria", "候选清单", "数据真源表"],
+              "outputs": ["选型记录"],
+              "decision": {
+                "question": "采用成熟平台、自托管底座，还是自有前台加外部交易API？",
+                "criteria": ["ownership.sourceCode与selfHost约束", "运维团队能力", "许可证与数据导出", "支付连接器是否可用"]
+              },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "状态与事件设计",
+          "steps": [
+            {
+              "id": "commerce.state-model",
+              "action": "按commerce连接器契约定义订单状态机，把所选后台的订单、支付、退款状态映射到契约状态。",
+              "owner": "delivery",
+              "inputs": ["adapters/contracts/commerce.contract.json", "后台状态清单"],
+              "outputs": ["状态映射表"],
+              "blocking": true
+            },
+            {
+              "id": "commerce.inventory-policy",
+              "action": "定义库存预占时点、超时释放、超卖处理与并发策略。",
+              "owner": "delivery",
+              "inputs": ["数据真源表", "状态映射表"],
+              "outputs": ["库存策略"],
+              "decision": { "question": "库存在何时预占？", "criteria": ["加入购物车", "创建订单", "支付成功", "热销品是否需要排队或限购"] }
+            },
+            {
+              "id": "commerce.event-contract",
+              "action": "列出需处理的支付与退款事件，约定验签、按事件ID去重、乱序挂起与失败重放。",
+              "owner": "delivery",
+              "inputs": ["状态映射表", "支付服务商事件文档"],
+              "outputs": ["事件处理说明"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "实施与配置",
+          "steps": [
+            {
+              "id": "commerce.sandbox-setup",
+              "action": "在测试商户或沙盒中配置商品、支付、配送与税费；密钥只进宿主安全配置，不写入项目JSON或仓库。",
+              "owner": "delivery",
+              "inputs": ["沙盒账户", "商品样例"],
+              "outputs": ["可运行的测试店铺"],
+              "blocking": true
+            },
+            {
+              "id": "commerce.checkout-path",
+              "action": "实现下单与结账路径；自有前台只用供应商正式API，成功状态仅由可信后台或已验签事件确认。",
+              "owner": "delivery",
+              "inputs": ["可运行的测试店铺", "状态映射表"],
+              "outputs": ["下单与结账实现"]
+            },
+            {
+              "id": "commerce.webhook-handler",
+              "action": "实现事件接收：验签、事件ID去重、状态机校验、失败可重放，并记录处理日志。",
+              "owner": "delivery",
+              "inputs": ["事件处理说明"],
+              "outputs": ["事件接收实现", "处理日志"]
+            },
+            {
+              "id": "commerce.refund-flow",
+              "action": "实现全额与部分退款，退款累计不得超过实付，并保留可对账字段。",
+              "owner": "delivery",
+              "inputs": ["状态映射表"],
+              "outputs": ["退款实现"]
+            },
+            {
+              "id": "commerce.reconciliation",
+              "action": "建立支付服务商流水与订单的对账方式及差异处理流程。",
+              "owner": "delivery",
+              "inputs": ["支付服务商流水导出", "订单导出"],
+              "outputs": ["对账方式", "差异处理记录"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "commerce.run-acceptance",
+              "action": "在测试环境逐项执行本手册验收用例，保存交易标识、事件日志与截图。",
+              "owner": "delivery",
+              "inputs": ["验收用例", "可运行的测试店铺"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            },
+            {
+              "id": "commerce.contract-selftest",
+              "action": "对连接器运行verifyConnector(\"commerce\", connector)并保存报告；通过只说明符合契约，不等于已接通真实后台。",
+              "owner": "delivery",
+              "inputs": ["连接器实现"],
+              "outputs": ["契约自测报告"]
+            },
+            {
+              "id": "commerce.policy-confirm",
+              "action": "切换正式商户前确认退换政策、客服入口、隐私与条款页面的真实内容。",
+              "owner": "client",
+              "inputs": ["政策页面草稿"],
+              "outputs": ["客户确认记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接与运营",
+          "steps": [
+            {
+              "id": "commerce.operator-training",
+              "action": "演示商品管理、订单查询、发货、退款与异常处理，并确认客户能独立完成。",
+              "owner": "delivery",
+              "inputs": ["验收记录"],
+              "outputs": ["培训记录"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        {
+          "id": "commerce.region-entity",
+          "category": "地区与主体",
+          "criterion": "支持商户主体所在地区、结算币种与销售地区；跨境收款条件另行核实。",
+          "verify": "供应商官方支持地区文档与开通结论"
+        },
+        { "id": "commerce.payment-access", "category": "支付准入", "criterion": "商户品类、资质材料与审核要求明确，拒绝或冻结的处理流程可查。", "verify": "准入申请回执或后台开通状态" },
+        { "id": "commerce.license", "category": "许可证", "criterion": "自托管底座的开源许可证与企业版边界与使用方式相容。", "verify": "所选版本的LICENSE文件及官方说明" },
+        { "id": "commerce.data-export", "category": "数据导出", "criterion": "商品、客户、订单可批量导出为通用格式，退出时不依赖供应商私有格式。", "verify": "用测试数据完成一次完整导出" },
+        {
+          "id": "commerce.api-capability",
+          "category": "API能力",
+          "criterion": "提供订单、支付、退款、库存API与签名事件，含沙盒环境与版本策略。",
+          "verify": "官方API文档与沙盒调用记录"
+        },
+        { "id": "commerce.ops-requirements", "category": "运维要求", "criterion": "自托管需明确部署、备份恢复、安全补丁、升级与监控的责任人。", "verify": "运维分工文档与恢复演练记录" },
+        { "id": "commerce.compliance", "category": "合规", "criterion": "个人信息、税务发票与消费者保护要求在目标地区有可执行做法。", "verify": "客户法务或顾问的书面确认" }
+      ],
+      "acceptance": [
+        {
+          "id": "commerce.pay-success",
+          "scenario": "测试环境下单并付款成功",
+          "expected": "订单由pending_payment变paid，只收到一次payment.succeeded，库存按数量减少，页面状态来自后台而非前端跳转。",
+          "evidence": "订单号、支付流水号、事件日志、库存前后查询结果"
+        },
+        {
+          "id": "commerce.pay-failed",
+          "scenario": "用失败的测试支付方式付款",
+          "expected": "订单变payment_failed，库存释放，不发货，用户可重试或取消。",
+          "evidence": "订单号、失败事件日志、库存查询结果"
+        },
+        {
+          "id": "commerce.callback-duplicate",
+          "scenario": "同一payment.succeeded事件重复投递3次",
+          "expected": "只处理一次，订单状态、库存、通知邮件不变，重复投递得到duplicate结果。",
+          "evidence": "三次投递的请求与响应日志"
+        },
+        {
+          "id": "commerce.callback-bad-signature",
+          "scenario": "投递签名错误或时间戳过期的事件",
+          "expected": "被拒绝并返回SIGNATURE_INVALID或SIGNATURE_EXPIRED，订单与库存无变化。",
+          "evidence": "拒绝日志与订单前后状态"
+        },
+        {
+          "id": "commerce.callback-out-of-order",
+          "scenario": "refund.completed先于payment.succeeded到达",
+          "expected": "被拒绝或挂起等待，不出现负库存或错误状态，之后补到的事件可正常处理。",
+          "evidence": "事件顺序日志与订单状态变化记录"
+        },
+        {
+          "id": "commerce.refund-partial",
+          "scenario": "对已付订单发起部分退款",
+          "expected": "订单变partially_refunded，累计退款不超过实付；再次超额退款返回错误且金额不变。",
+          "evidence": "退款单号、服务商退款记录、订单金额明细"
+        },
+        {
+          "id": "commerce.refund-full",
+          "scenario": "对已付订单全额退款",
+          "expected": "订单变refunded，库存按政策回补或不回补，服务商退款流水与订单一致。",
+          "evidence": "退款单号、库存查询结果、对账记录"
+        },
+        {
+          "id": "commerce.stock-concurrency",
+          "scenario": "库存为1的SKU并发20次以上下单",
+          "expected": "恰好一单预占成功，其余得到库存不足错误，库存不为负。",
+          "evidence": "并发脚本、各请求结果与最终库存查询"
+        },
+        {
+          "id": "commerce.reservation-timeout",
+          "scenario": "下单后超过预占时限仍不付款",
+          "expected": "订单变cancelled，库存释放，迟到的付款事件被拒绝并进入人工对账。",
+          "evidence": "订单状态时间线与库存查询结果"
+        },
+        {
+          "id": "commerce.reconciliation-clean",
+          "scenario": "按一个对账周期核对服务商流水与订单",
+          "expected": "逐笔匹配，差异为零，或每条差异有原因与处理记录。",
+          "evidence": "对账表与差异说明"
+        },
+        {
+          "id": "commerce.secrets-hygiene",
+          "scenario": "扫描仓库、project.json与导出包",
+          "expected": "不含任何支付密钥、访问令牌或回调密钥。",
+          "evidence": "扫描命令与空结果记录"
+        }
+      ],
+      "risks": [
+        { "risk": "把前端支付跳转成功当作付款成功，导致未付款订单发货。", "mitigation": "成功状态只由可信后台或已验签事件产生，用pay-success与callback用例验证。" },
+        { "risk": "支付准入被拒或延迟，拖慢上线。", "mitigation": "选型阶段先取得准入结论；主体或品类不被支持时回到选型。" },
+        { "risk": "库存多处可写造成超卖。", "mitigation": "明确数据真源，做并发用例，并保留库存对账。" },
+        { "risk": "自托管底座长期缺乏补丁与备份责任人。", "mitigation": "交接前确定运维责任并完成恢复演练，否则改选托管平台。" },
+        { "risk": "契约自测通过被误当作真实交易已验证。", "mitigation": "报告中单独标明契约自测与真实沙盒/正式环境证据，能力状态只在证据齐备后更改。" }
+      ],
+      "handoff": ["选型记录与未解决条件", "数据真源表与状态映射表", "库存策略与事件处理说明", "验收记录与契约自测报告", "商户与密钥的持有人及轮换方式（不含密钥本身）", "对账方式与退款处理流程", "运维与备份责任说明"]
+    },
+    {
+      "capability": "tickets",
+      "title": "场次容量、票务、核销与退款",
+      "summary": "把票种、日期场次、容量、订单、凭证、核销、改退与对账落到专用票务系统，不能用普通商品页代替。",
+      "guide": "guides/tickets-booking.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "票务规则确认",
+          "steps": [
+            {
+              "id": "tickets.ticket-facts",
+              "action": "取得票种、权益、日期、场次、容量、可售规则、实名要求、退款改期与核销规则。",
+              "owner": "client",
+              "inputs": ["票种清单", "场次与容量", "实名与限购规则", "退改与核销规则"],
+              "outputs": ["票务规则说明"],
+              "blocking": true
+            },
+            {
+              "id": "tickets.operator-license",
+              "action": "确认经营主体及所需行业许可或授权，由客户承担资质真实性，核心不代填、不推断。",
+              "owner": "client",
+              "inputs": ["经营主体信息", "行业许可或授权文件"],
+              "outputs": ["资质确认记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "选型与准入",
+          "steps": [
+            {
+              "id": "tickets.vendor-choice",
+              "action": "对照vendorCriteria评估客户现有或候选票务系统，候选在核实前一律标注“待核实”。",
+              "owner": "delivery",
+              "inputs": ["票务规则说明", "vendorCriteria"],
+              "outputs": ["选型记录"],
+              "decision": { "question": "沿用客户现有票务系统，还是引入专用票务供应商？", "criteria": ["是否开放订单与库存API", "是否支持签名事件", "是否支持所需核销方式", "多渠道库存是否共享"] },
+              "blocking": true
+            },
+            {
+              "id": "tickets.api-access",
+              "action": "申请测试环境与API权限，取得接口文档、沙盒账户与事件投递配置。",
+              "owner": "vendor",
+              "inputs": ["选型记录"],
+              "outputs": ["沙盒账户", "接口文档"],
+              "blocking": true
+            },
+            {
+              "id": "tickets.inventory-truth",
+              "action": "多渠道售票时确定共享库存的最终数据源与对账周期。",
+              "owner": "delivery",
+              "inputs": ["选型记录", "渠道清单"],
+              "outputs": ["库存真源说明"],
+              "decision": { "question": "哪一个系统是库存的最终数据源？", "criteria": ["实时可读", "渠道回写延迟可接受", "渠道之间不重复占用"] }
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "状态与流程设计",
+          "steps": [
+            {
+              "id": "tickets.state-model",
+              "action": "按tickets连接器契约把供应商的票、订单、核销状态映射为reserved/issued/redeemed等契约状态。",
+              "owner": "delivery",
+              "inputs": ["adapters/contracts/tickets.contract.json", "供应商状态清单"],
+              "outputs": ["状态映射表"],
+              "blocking": true
+            },
+            {
+              "id": "tickets.reservation-policy",
+              "action": "确定占位保留时长、超时释放、改期释放与重复核销的处理规则。",
+              "owner": "delivery",
+              "inputs": ["票务规则说明"],
+              "outputs": ["占位与核销策略"]
+            },
+            {
+              "id": "tickets.event-contract",
+              "action": "约定支付、退款事件的验签、去重、乱序与重放处理。",
+              "owner": "delivery",
+              "inputs": ["状态映射表", "供应商事件文档"],
+              "outputs": ["事件处理说明"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "实施与配置",
+          "steps": [
+            {
+              "id": "tickets.catalog-sync",
+              "action": "同步票种、场次与可售状态，展示信息与供应商一致；未取得的价格不写入页面。",
+              "owner": "delivery",
+              "inputs": ["沙盒账户", "票务规则说明"],
+              "outputs": ["票务展示数据"]
+            },
+            {
+              "id": "tickets.order-flow",
+              "action": "实现占位、下单、支付确认与出票，凭证只在支付事件确认后签发。",
+              "owner": "delivery",
+              "inputs": ["状态映射表"],
+              "outputs": ["订单与出票实现"]
+            },
+            {
+              "id": "tickets.redeem-flow",
+              "action": "实现核销接口与离线或弱网时的处理，重复核销被拒绝。",
+              "owner": "delivery",
+              "inputs": ["占位与核销策略"],
+              "outputs": ["核销实现"]
+            },
+            {
+              "id": "tickets.refund-reschedule",
+              "action": "实现取消退款与改期，释放或转移容量，并保证退款不超过实付。",
+              "owner": "delivery",
+              "inputs": ["状态映射表", "票务规则说明"],
+              "outputs": ["改退实现"]
+            },
+            {
+              "id": "tickets.reconciliation",
+              "action": "建立售票、核销、退款与支付流水的对账方式。",
+              "owner": "delivery",
+              "inputs": ["供应商订单导出", "支付流水"],
+              "outputs": ["对账方式"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "tickets.run-acceptance",
+              "action": "在测试环境按验收用例走完购买到入园核销的完整路径并保存证据。",
+              "owner": "delivery",
+              "inputs": ["验收用例", "沙盒账户"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            },
+            {
+              "id": "tickets.contract-selftest",
+              "action": "对连接器运行verifyConnector(\"tickets\", connector)并保存报告。",
+              "owner": "delivery",
+              "inputs": ["连接器实现"],
+              "outputs": ["契约自测报告"]
+            },
+            {
+              "id": "tickets.onsite-drill",
+              "action": "安排入口人员用实际核销设备做一次真实场景演练。",
+              "owner": "client",
+              "inputs": ["测试票", "核销设备"],
+              "outputs": ["现场演练记录"]
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接与运营",
+          "steps": [
+            {
+              "id": "tickets.operator-training",
+              "action": "培训订单查询、改退处理、核销异常与日终对账。",
+              "owner": "delivery",
+              "inputs": ["验收记录"],
+              "outputs": ["培训记录"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "tickets.region-entity", "category": "地区与主体", "criterion": "支持经营主体所在地区和售票地区，实名核验方式与当地要求相符。", "verify": "供应商官方支持说明与书面确认" },
+        { "id": "tickets.licence", "category": "许可证与资质", "criterion": "供应商与客户各自承担的行业许可、授权材料边界清楚；不由本核心推断。", "verify": "合同条款与客户确认的授权文件" },
+        { "id": "tickets.capacity-model", "category": "容量模型", "criterion": "支持日期、场次、票种级容量，并支持占位保留与超时释放。", "verify": "沙盒中创建场次并占位的记录" },
+        { "id": "tickets.redeem", "category": "核销能力", "criterion": "支持二维码或证件核销、重复核销拦截及离线处理方式。", "verify": "沙盒核销与重复核销结果" },
+        { "id": "tickets.refund-reschedule-support", "category": "改退能力", "criterion": "支持部分退款、改期与容量释放，规则可配置。", "verify": "沙盒改退操作记录" },
+        { "id": "tickets.api-capability", "category": "API能力", "criterion": "订单、库存、核销API与签名事件齐全，提供沙盒与版本策略。", "verify": "官方API文档与沙盒调用记录" },
+        { "id": "tickets.data-export", "category": "数据导出", "criterion": "订单、凭证、核销记录可批量导出，退出时可迁移。", "verify": "测试数据导出结果" },
+        { "id": "tickets.ops-requirements", "category": "运维要求", "criterion": "服务时段、故障联系渠道、核销设备要求与现场运维责任明确。", "verify": "支持协议与运维分工表" }
+      ],
+      "acceptance": [
+        {
+          "id": "tickets.purchase-to-redeem",
+          "scenario": "测试环境从选场次、下单、付款、出票到核销走完整路径",
+          "expected": "票依次为reserved、issued、redeemed，核销记录含时间与核销点，页面凭证来自供应商。",
+          "evidence": "订单号、票号、事件日志、核销记录"
+        },
+        {
+          "id": "tickets.oversell-concurrency",
+          "scenario": "容量为1的场次并发20次以上下单",
+          "expected": "恰好一张占位成功，其余得到容量不足错误，已售数量不超过容量。",
+          "evidence": "并发脚本、各请求结果与容量查询"
+        },
+        {
+          "id": "tickets.double-redeem",
+          "scenario": "同一张票重复核销",
+          "expected": "第二次核销被拒绝并返回ILLEGAL_TRANSITION，票保持redeemed，核销记录只有一条。",
+          "evidence": "两次核销响应与核销记录"
+        },
+        {
+          "id": "tickets.reservation-expiry",
+          "scenario": "占位后超过保留时长不付款",
+          "expected": "票变expired，容量释放，迟到的支付事件被拒绝并进入人工对账。",
+          "evidence": "状态时间线与容量查询"
+        },
+        {
+          "id": "tickets.reschedule-release",
+          "scenario": "已出票改期到另一场次",
+          "expected": "原场次容量释放，新场次容量占用，原票不能再核销。",
+          "evidence": "改期前后两场次的容量与票状态"
+        },
+        {
+          "id": "tickets.cancel-refund",
+          "scenario": "对未核销票申请退款",
+          "expected": "票经refund_pending到refunded，退款不超过实付，容量释放；已核销票退款被拒绝。",
+          "evidence": "退款单号、服务商退款记录、票状态"
+        },
+        {
+          "id": "tickets.callback-duplicate",
+          "scenario": "同一payment.succeeded事件重复投递",
+          "expected": "只出一张票，重复投递得到duplicate结果，通知只发一次。",
+          "evidence": "投递日志与出票记录"
+        },
+        {
+          "id": "tickets.multi-channel-inventory",
+          "scenario": "两个渠道同时销售同一场次最后一张",
+          "expected": "最终数据源只确认一次占位，另一渠道得到不可售结果，不出现双重出票。",
+          "evidence": "双渠道请求日志与最终库存"
+        },
+        {
+          "id": "tickets.real-name",
+          "scenario": "实名票录入缺失或不符合规则的证件信息",
+          "expected": "创建请求被VALIDATION_FAILED拒绝，不出票。",
+          "evidence": "拒绝响应与订单列表"
+        },
+        { "id": "tickets.reconciliation-clean", "scenario": "日终核对售票、核销、退款与支付流水", "expected": "数量与金额逐项一致，差异均有说明。", "evidence": "日终对账表" }
+      ],
+      "risks": [
+        { "risk": "多渠道库存不同步造成超卖。", "mitigation": "确定库存最终数据源并做双渠道用例与日终对账。" },
+        { "risk": "核销设备离线时重复入场。", "mitigation": "明确离线策略并做现场演练。" },
+        { "risk": "资质或授权不全导致无法合规售票。", "mitigation": "资质由客户确认并留存，缺失时停在选型阶段。" },
+        { "risk": "只做按钮和页面便宣称票务已完成。", "mitigation": "能力状态只在验收证据齐备后更新，referral路线不得写成站内售票。" }
+      ],
+      "handoff": ["选型记录与未解决条件", "票种、场次、容量规则与资质确认记录", "状态映射表与占位核销策略", "验收记录、现场演练记录与契约自测报告", "对账方式与日终流程", "供应商联系渠道与故障处理流程"]
+    },
+    {
+      "capability": "booking",
+      "title": "预约时段、容量、改期与取消",
+      "summary": "以预约系统确认时段、容量与状态，覆盖时区、重叠、改期、取消释放与通知；页面提示不等于预约成功。",
+      "guide": "guides/tickets-booking.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "预约规则确认",
+          "steps": [
+            {
+              "id": "booking.booking-facts",
+              "action": "取得服务项目、人员或资源、营业时间、时区、时长、容量、提前期、取消与支付规则。",
+              "owner": "client",
+              "inputs": ["服务清单", "人员或资源清单", "营业时间与时区", "取消与支付规则"],
+              "outputs": ["预约规则说明"],
+              "blocking": true
+            },
+            {
+              "id": "booking.notification-policy",
+              "action": "确认预约确认、改期、取消、提醒的通知渠道、语言与发送时机。",
+              "owner": "client",
+              "inputs": ["预约规则说明"],
+              "outputs": ["通知规则"]
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "选型与准入",
+          "steps": [
+            {
+              "id": "booking.platform-choice",
+              "action": "对照vendorCriteria评估现有或候选预约系统，候选在核实前标注“待核实”。",
+              "owner": "delivery",
+              "inputs": ["预约规则说明", "vendorCriteria"],
+              "outputs": ["选型记录"],
+              "decision": { "question": "使用预约平台，还是由客户已有系统承接？", "criteria": ["时区与时段模型能否表达规则", "是否需要预付或押金", "是否开放API与签名事件", "数据能否导出"] },
+              "blocking": true
+            },
+            {
+              "id": "booking.account-access",
+              "action": "开通测试账户并取得API或嵌入配置权限，按最小权限授权。",
+              "owner": "vendor",
+              "inputs": ["选型记录"],
+              "outputs": ["测试账户", "接口或嵌入文档"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "状态与规则设计",
+          "steps": [
+            {
+              "id": "booking.state-model",
+              "action": "按booking连接器契约映射pending/confirmed/cancelled/completed等状态及改期规则。",
+              "owner": "delivery",
+              "inputs": ["adapters/contracts/booking.contract.json", "平台状态清单"],
+              "outputs": ["状态映射表"],
+              "blocking": true
+            },
+            {
+              "id": "booking.slot-policy",
+              "action": "确定重叠判定、占位保留时长、截止时间、夏令时处理与迟到、爽约规则。",
+              "owner": "delivery",
+              "inputs": ["预约规则说明", "状态映射表"],
+              "outputs": ["时段与占位策略"],
+              "decision": { "question": "时间以什么时区存储和展示？", "criteria": ["存储统一时区", "展示使用服务所在地时区", "夏令时切换日单独验证"] }
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "实施与配置",
+          "steps": [
+            {
+              "id": "booking.configure-services",
+              "action": "配置服务、资源、时段、容量与提前期，不设置规则之外的默认值。",
+              "owner": "delivery",
+              "inputs": ["预约规则说明", "测试账户"],
+              "outputs": ["已配置的预约服务"]
+            },
+            {
+              "id": "booking.connect-site",
+              "action": "在站点中以链接或经确认的嵌入方式承接预约，成功页面展示系统返回的预约编号。",
+              "owner": "delivery",
+              "inputs": ["已配置的预约服务"],
+              "outputs": ["站点预约入口"]
+            },
+            {
+              "id": "booking.event-handling",
+              "action": "实现预约、支付、取消事件的验签、去重与重放处理，并发出booking.cancelled等通知事件。",
+              "owner": "delivery",
+              "inputs": ["状态映射表", "通知规则"],
+              "outputs": ["事件处理实现"]
+            },
+            {
+              "id": "booking.notifications",
+              "action": "配置确认、改期、取消与提醒通知，并保留送达记录。",
+              "owner": "delivery",
+              "inputs": ["通知规则"],
+              "outputs": ["通知配置与送达记录"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "booking.run-acceptance",
+              "action": "按验收用例在测试环境逐项验证并保存预约编号、时间与通知记录。",
+              "owner": "delivery",
+              "inputs": ["验收用例", "测试账户"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            },
+            {
+              "id": "booking.contract-selftest",
+              "action": "对连接器运行verifyConnector(\"booking\", connector)并保存报告。",
+              "owner": "delivery",
+              "inputs": ["连接器实现"],
+              "outputs": ["契约自测报告"]
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接与运营",
+          "steps": [
+            {
+              "id": "booking.operator-training",
+              "action": "培训日程管理、临时关停时段、改期取消、爽约处理与通知排错。",
+              "owner": "delivery",
+              "inputs": ["验收记录"],
+              "outputs": ["培训记录"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "booking.region-entity", "category": "地区与主体", "criterion": "支持服务所在地区、语言与币种，支付能力与主体所在地区相符。", "verify": "官方支持说明与测试账户确认" },
+        { "id": "booking.time-model", "category": "时区与时段", "criterion": "支持多时区、夏令时、缓冲时间和资源级容量。", "verify": "测试账户中跨夏令时日期的配置结果" },
+        { "id": "booking.lifecycle", "category": "改期与取消", "criterion": "改期、取消、释放容量与退款规则可配置。", "verify": "测试账户中的改期取消记录" },
+        { "id": "booking.api-capability", "category": "API能力", "criterion": "提供预约创建、查询、取消API与签名事件，含沙盒与版本策略。", "verify": "官方API文档与沙盒调用记录" },
+        { "id": "booking.notification", "category": "通知", "criterion": "确认、提醒与取消通知可配置语言和渠道，并有送达记录。", "verify": "测试预约的通知记录" },
+        { "id": "booking.data-export", "category": "数据导出", "criterion": "预约与客户记录可批量导出，退出时可迁移。", "verify": "测试数据导出结果" },
+        { "id": "booking.privacy", "category": "隐私与存储", "criterion": "客户个人信息的存储地区、保存期限与删除方式可核实。", "verify": "供应商隐私文档与客户确认" }
+      ],
+      "acceptance": [
+        {
+          "id": "booking.confirmation-by-system",
+          "scenario": "提交预约后查看页面提示与系统记录",
+          "expected": "只有系统返回预约编号并处于confirmed时才提示成功，网络失败时不显示成功。",
+          "evidence": "预约编号、系统记录、断网情况下的页面表现"
+        },
+        {
+          "id": "booking.overlap-reject",
+          "scenario": "对同一资源同一时段并发提交两个预约",
+          "expected": "只有一个成功，另一个得到CAPACITY_EXCEEDED，容量不为负。",
+          "evidence": "并发请求结果与容量查询"
+        },
+        { "id": "booking.dst-timezone", "scenario": "在夏令时切换日前后各预约一个时段", "expected": "存储与展示时间一致，提醒按正确的本地时间发送。", "evidence": "含时区的预约记录与通知时间" },
+        {
+          "id": "booking.cancel-release",
+          "scenario": "取消已确认预约",
+          "expected": "预约变cancelled，容量立即释放，同时发出booking.cancelled事件并通知一次。",
+          "evidence": "预约状态、容量查询、事件与通知日志"
+        },
+        {
+          "id": "booking.reschedule",
+          "scenario": "把已确认预约改期到另一时段",
+          "expected": "原时段释放，新时段占用，预约编号不变，旧时间不再有效。",
+          "evidence": "改期前后两个时段的容量与预约记录"
+        },
+        {
+          "id": "booking.hold-expiry",
+          "scenario": "需要预付的预约占位后不付款",
+          "expected": "占位超时后变expired，容量释放，迟到的付款事件被拒绝并进入人工对账。",
+          "evidence": "状态时间线与容量查询"
+        },
+        {
+          "id": "booking.lead-time-cutoff",
+          "scenario": "提交早于提前期下限或晚于截止时间的预约",
+          "expected": "请求被VALIDATION_FAILED拒绝，不占用容量。",
+          "evidence": "拒绝响应与容量查询"
+        },
+        {
+          "id": "booking.callback-duplicate",
+          "scenario": "同一支付事件重复投递",
+          "expected": "预约只确认一次，通知只发一次，重复投递得到duplicate结果。",
+          "evidence": "投递日志与通知记录"
+        },
+        {
+          "id": "booking.refund-on-cancel",
+          "scenario": "带预付的预约在可退款窗口内取消",
+          "expected": "退款金额符合规则，预约与退款状态一致；窗口外取消按规则不退款。",
+          "evidence": "取消时间、退款记录与规则对照"
+        },
+        { "id": "booking.no-show", "scenario": "标记爽约或迟到", "expected": "按规则处理占位与费用，不影响其他预约，客户可见记录。", "evidence": "处理记录与客户通知" }
+      ],
+      "risks": [
+        { "risk": "时区与夏令时处理错误导致错过服务。", "mitigation": "统一存储时区并做跨夏令时用例。" },
+        { "risk": "页面提示成功但系统实际未确认。", "mitigation": "成功提示只依赖系统返回的预约编号与状态。" },
+        { "risk": "取消后容量未释放造成空档。", "mitigation": "取消与改期用例检查容量，并保留日终核对。" },
+        { "risk": "通知失败而无人察觉。", "mitigation": "保留送达记录并在交接时说明排错路径。" }
+      ],
+      "handoff": ["选型记录与未解决条件", "预约规则说明与时段占位策略", "状态映射表与通知规则", "验收记录与契约自测报告", "账户与权限持有人说明（不含密钥）", "日程管理与异常处理手册"]
+    },
+    {
+      "capability": "cms",
+      "title": "客户可登录的内容管理后台",
+      "summary": "让客户在后台编辑、预览、审核和发布内容，并驱动站点更新；覆盖权限、历史版本、多语言与冲突处理。",
+      "guide": "guides/content-app.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "内容模型与角色",
+          "steps": [
+            {
+              "id": "cms.content-types",
+              "action": "确认内容类型、字段、语言、角色、审核、草稿、发布与回退要求。",
+              "owner": "client",
+              "inputs": ["现有内容清单", "语言列表", "编辑人员名单"],
+              "outputs": ["内容模型说明"],
+              "blocking": true
+            },
+            {
+              "id": "cms.roles",
+              "action": "确认谁可以编辑、审核、发布、撤回和管理用户。",
+              "owner": "client",
+              "inputs": ["编辑人员名单"],
+              "outputs": ["角色权限表"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "选型",
+          "steps": [
+            {
+              "id": "cms.cms-choice",
+              "action": "对照vendorCriteria比较CMS候选，候选在核实前标注“待核实”。",
+              "owner": "delivery",
+              "inputs": ["内容模型说明", "vendorCriteria"],
+              "outputs": ["选型记录"],
+              "decision": { "question": "采用托管CMS、自托管CMS，还是由站点内容源承接？", "criteria": ["客户是否必须登录改内容", "托管与许可条件", "运维责任人", "多语言工作流"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "模型与流程设计",
+          "steps": [
+            {
+              "id": "cms.model-design",
+              "action": "设计内容模型、字段校验、引用与多语言状态，并映射到站点内容格式。",
+              "owner": "delivery",
+              "inputs": ["内容模型说明"],
+              "outputs": ["内容模型设计"],
+              "blocking": true
+            },
+            {
+              "id": "cms.state-model",
+              "action": "按cms连接器契约映射draft/in_review/published/unpublished/archived状态。",
+              "owner": "delivery",
+              "inputs": ["adapters/contracts/cms.contract.json", "选型记录"],
+              "outputs": ["状态映射表"]
+            },
+            {
+              "id": "cms.publish-pipeline",
+              "action": "设计发布到站点的流水：发布事件触发内容导出、构建、检查，失败时不更新线上版本。",
+              "owner": "delivery",
+              "inputs": ["内容模型设计"],
+              "outputs": ["发布流水设计"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "实施与配置",
+          "steps": [
+            {
+              "id": "cms.setup-cms",
+              "action": "部署或开通CMS，配置内容模型、角色、预览与审核；初始账号凭据只经安全渠道交付。",
+              "owner": "delivery",
+              "inputs": ["内容模型设计", "角色权限表"],
+              "outputs": ["可登录的后台"],
+              "blocking": true
+            },
+            {
+              "id": "cms.connect-site",
+              "action": "实现内容读取或导出到站点内容源，构建结果保持版本记录。",
+              "owner": "delivery",
+              "inputs": ["发布流水设计"],
+              "outputs": ["站点连接实现"]
+            },
+            {
+              "id": "cms.locale-workflow",
+              "action": "为每种语言维护译文状态，缺少译文时阻止发布而不是回退到其他语言。",
+              "owner": "delivery",
+              "inputs": ["内容模型设计"],
+              "outputs": ["多语言状态实现"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "cms.run-acceptance",
+              "action": "用多个角色按验收用例实测编辑、预览、发布、撤回、历史和越权操作。",
+              "owner": "delivery",
+              "inputs": ["验收用例", "可登录的后台"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            },
+            {
+              "id": "cms.contract-selftest",
+              "action": "对连接器运行verifyConnector(\"cms\", connector)并保存报告。",
+              "owner": "delivery",
+              "inputs": ["连接器实现"],
+              "outputs": ["契约自测报告"]
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接与运营",
+          "steps": [
+            {
+              "id": "cms.editor-training",
+              "action": "培训编辑、审核、发布与撤回，并确认客户能独立改一次内容。",
+              "owner": "delivery",
+              "inputs": ["验收记录"],
+              "outputs": ["培训记录"]
+            },
+            {
+              "id": "cms.ops-owner",
+              "action": "指定账号管理、备份、升级与故障联系的责任人。",
+              "owner": "client",
+              "inputs": ["选型记录"],
+              "outputs": ["运维责任说明"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "cms.region-entity", "category": "地区与托管", "criterion": "托管地区、访问速度与目标地区的数据要求相容。", "verify": "供应商托管说明与访问测试" },
+        { "id": "cms.license", "category": "许可证", "criterion": "开源许可证或商业条款允许当前使用方式和再分发。", "verify": "所选版本LICENSE与官方说明" },
+        { "id": "cms.role-model", "category": "角色与审核", "criterion": "支持细粒度角色、草稿、审核、发布与撤回。", "verify": "测试账户中的角色配置结果" },
+        { "id": "cms.data-export", "category": "数据导出", "criterion": "内容、资源与历史可批量导出为通用格式。", "verify": "测试内容的完整导出" },
+        { "id": "cms.api-capability", "category": "API能力", "criterion": "提供内容读取API与发布事件，含版本策略与鉴权。", "verify": "官方文档与调用记录" },
+        { "id": "cms.ops-requirements", "category": "运维要求", "criterion": "自托管需明确升级、备份恢复、补丁与监控责任。", "verify": "运维分工与恢复演练记录" },
+        { "id": "cms.localization", "category": "多语言", "criterion": "支持按语言维护译文状态与权限。", "verify": "测试内容的多语言工作流记录" }
+      ],
+      "acceptance": [
+        {
+          "id": "cms.edit-save-preview",
+          "scenario": "编辑角色修改一篇内容并保存预览",
+          "expected": "内容保持draft，预览显示新内容，线上站点不变。",
+          "evidence": "内容编号、预览截图、线上页面对照"
+        },
+        {
+          "id": "cms.publish-appears-on-site",
+          "scenario": "发布角色发布该内容",
+          "expected": "状态变published，构建成功后线上页面更新，发布事件只发出一次。",
+          "evidence": "状态记录、构建记录、线上页面"
+        },
+        {
+          "id": "cms.review-gate",
+          "scenario": "未经审核的内容尝试发布（若流程要求审核）",
+          "expected": "被拒绝并返回ILLEGAL_TRANSITION，内容保持原状态。",
+          "evidence": "拒绝响应与状态记录"
+        },
+        { "id": "cms.unpublish-rollback", "scenario": "撤回已发布内容并恢复上一版本", "expected": "线上内容在构建完成后撤回或恢复，历史记录保留。", "evidence": "撤回前后线上页面与版本历史" },
+        { "id": "cms.history-restore", "scenario": "查看历史版本并恢复一个旧版本", "expected": "旧版本成为新的草稿，不覆盖已有历史。", "evidence": "版本列表与恢复后的草稿" },
+        { "id": "cms.unauthorized-denied", "scenario": "编辑角色尝试发布、删除用户或访问未授权内容", "expected": "全部被拒绝并有审计记录，数据不变。", "evidence": "请求结果与审计日志" },
+        {
+          "id": "cms.concurrent-edit-conflict",
+          "scenario": "两位编辑基于同一版本同时保存",
+          "expected": "后保存者得到VERSION_CONFLICT，不静默覆盖先保存者的修改。",
+          "evidence": "两次保存的响应与最终内容"
+        },
+        {
+          "id": "cms.locale-state",
+          "scenario": "只填写部分语言的译文后尝试发布",
+          "expected": "缺少译文的语言被阻止发布，已完成语言按流程处理，不用其他语言顶替。",
+          "evidence": "各语言状态与发布结果"
+        },
+        { "id": "cms.draft-not-public", "scenario": "直接访问草稿内容的线上地址", "expected": "线上站点不包含草稿内容。", "evidence": "线上请求结果" }
+      ],
+      "risks": [
+        { "risk": "编辑权限过大造成误发布。", "mitigation": "角色权限表经客户确认，并用越权用例验证。" },
+        { "risk": "多人编辑覆盖彼此修改。", "mitigation": "版本冲突检测并保留历史。" },
+        { "risk": "CMS升级或停服后无法维护。", "mitigation": "指定运维责任人，保持可导出，并保留回退方案。" },
+        { "risk": "把画布编辑器当作CMS。", "mitigation": "内容管理与可视化编辑分别验收，visual-editor保持独立能力。" }
+      ],
+      "handoff": ["选型记录与许可证确认", "内容模型设计与角色权限表", "发布流水设计与状态映射表", "验收记录与契约自测报告", "培训记录与账号持有人说明（不含密钥）", "备份、升级与故障联系责任说明"]
+    },
+    {
+      "capability": "application",
+      "title": "会员、权限和业务应用后台",
+      "summary": "先设计用户、权限、数据、操作与异常状态，再从一条关键业务流程开始实施并用越权与隔离用例验收。",
+      "guide": "guides/content-app.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "业务模型",
+          "steps": [
+            {
+              "id": "application.actors-data",
+              "action": "列出每种用户能看到的数据、能做的动作，以及成功和失败分别是什么状态。",
+              "owner": "client",
+              "inputs": ["用户类型", "业务数据清单", "关键业务流程"],
+              "outputs": ["业务模型说明"],
+              "blocking": true
+            },
+            {
+              "id": "application.first-flow",
+              "action": "选定第一条要上线的关键业务流程并确认验收口径。",
+              "owner": "client",
+              "inputs": ["业务模型说明"],
+              "outputs": ["首条流程定义"],
+              "decision": { "question": "哪条流程最先验证业务价值？", "criteria": ["使用频率", "依赖外部系统的数量", "失败代价"] }
+            },
+            {
+              "id": "application.compliance-scope",
+              "action": "确认涉及的个人信息、保存期限、导出与删除义务及适用地区要求。",
+              "owner": "client",
+              "inputs": ["业务数据清单"],
+              "outputs": ["合规范围说明"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "自研或采购",
+          "steps": [
+            {
+              "id": "application.build-or-buy",
+              "action": "比较现成SaaS、低代码、自研三类方案，记录选择依据与退出方式。",
+              "owner": "delivery",
+              "inputs": ["业务模型说明", "vendorCriteria"],
+              "outputs": ["选型记录"],
+              "decision": { "question": "现成产品能否满足首条流程？", "criteria": ["权限模型能否表达", "数据能否导出", "是否需要自有代码或自托管", "运维团队能力"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "权限与数据设计",
+          "steps": [
+            {
+              "id": "application.permission-matrix",
+              "action": "设计角色×资源×动作权限矩阵与数据隔离策略，默认拒绝。",
+              "owner": "delivery",
+              "inputs": ["业务模型说明"],
+              "outputs": ["权限矩阵"],
+              "blocking": true
+            },
+            {
+              "id": "application.audit-retention",
+              "action": "设计审计日志、数据导出、删除与保存期限。",
+              "owner": "delivery",
+              "inputs": ["合规范围说明", "权限矩阵"],
+              "outputs": ["审计与留存设计"]
+            },
+            {
+              "id": "application.state-design",
+              "action": "为首条流程定义状态机、失败状态和用户可见提示。",
+              "owner": "delivery",
+              "inputs": ["首条流程定义"],
+              "outputs": ["流程状态设计"]
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "实施",
+          "steps": [
+            {
+              "id": "application.auth",
+              "action": "实现认证、会话、密码重置或第三方登录，限制会话时长与失败次数。",
+              "owner": "delivery",
+              "inputs": ["选型记录"],
+              "outputs": ["认证实现"]
+            },
+            {
+              "id": "application.authz",
+              "action": "在服务端实现授权与数据隔离，不依赖前端隐藏入口。",
+              "owner": "delivery",
+              "inputs": ["权限矩阵"],
+              "outputs": ["授权实现"],
+              "blocking": true
+            },
+            {
+              "id": "application.flow-build",
+              "action": "实现首条业务流程，外部支付、预约等能力通过各自连接器接入。",
+              "owner": "delivery",
+              "inputs": ["流程状态设计", "授权实现"],
+              "outputs": ["首条流程实现"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "application.run-acceptance",
+              "action": "按验收用例验证登录、越权、隔离、审计、导出删除与首条流程。",
+              "owner": "delivery",
+              "inputs": ["验收用例"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接与运营",
+          "steps": [
+            {
+              "id": "application.ops-owner",
+              "action": "指定账号管理、权限变更、数据请求与故障处理的责任人。",
+              "owner": "client",
+              "inputs": ["验收记录"],
+              "outputs": ["运维责任说明"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "application.region-entity", "category": "地区与主体", "criterion": "托管地区与目标用户所在地区的数据要求相容。", "verify": "供应商数据处理说明与客户确认" },
+        { "id": "application.permission-model", "category": "权限模型", "criterion": "支持角色、资源级授权和租户或组织级隔离。", "verify": "测试账户中的权限配置结果" },
+        { "id": "application.data-export", "category": "数据导出与删除", "criterion": "可批量导出并按个人请求删除。", "verify": "测试数据的导出与删除记录" },
+        { "id": "application.api-capability", "category": "API能力", "criterion": "提供认证、数据与审计API，含版本策略。", "verify": "官方文档与调用记录" },
+        { "id": "application.license", "category": "许可证", "criterion": "开源或商业许可与使用方式相容。", "verify": "LICENSE与官方说明" },
+        { "id": "application.ops-requirements", "category": "运维要求", "criterion": "备份恢复、安全补丁、监控与应急责任明确。", "verify": "运维分工与恢复演练记录" }
+      ],
+      "acceptance": [
+        {
+          "id": "application.login-logout",
+          "scenario": "正常登录、登出，并在会话过期后访问受保护页面",
+          "expected": "登录后可访问授权内容，登出或过期后被重定向且不能读取数据。",
+          "evidence": "登录记录与过期后的请求结果"
+        },
+        {
+          "id": "application.privilege-escalation-denied",
+          "scenario": "低权限用户直接请求高权限接口或他人的数据标识",
+          "expected": "请求被拒绝，数据不变，并记录审计日志。",
+          "evidence": "请求响应与审计日志"
+        },
+        { "id": "application.tenant-isolation", "scenario": "两个组织各自创建数据后互相查询", "expected": "互相查不到对方数据，列表、详情与导出均如此。", "evidence": "双方查询结果" },
+        { "id": "application.audit-trail", "scenario": "执行创建、修改、删除和权限变更", "expected": "审计日志记录操作者、时间、对象与结果。", "evidence": "审计日志样例" },
+        {
+          "id": "application.data-export-delete",
+          "scenario": "用户请求导出并删除个人数据",
+          "expected": "导出内容完整，删除后查询不再返回，备份保留期有说明。",
+          "evidence": "导出文件、删除记录与查询结果"
+        },
+        {
+          "id": "application.password-reset-session",
+          "scenario": "重置密码后检查旧会话与旧凭证",
+          "expected": "旧会话失效，重置链接只能使用一次并有有效期。",
+          "evidence": "重置流程记录与旧会话请求结果"
+        },
+        {
+          "id": "application.key-flow-e2e",
+          "scenario": "用测试数据走完首条关键业务流程",
+          "expected": "每一步状态可回查，失败路径有明确状态，结果与业务预期一致。",
+          "evidence": "流程记录、状态时间线与数据对照"
+        },
+        {
+          "id": "application.failed-state",
+          "scenario": "制造流程中途失败（外部服务不可用）",
+          "expected": "用户看到明确失败提示，数据不处于半完成状态，可重试或回退。",
+          "evidence": "失败日志与重试结果"
+        }
+      ],
+      "risks": [
+        { "risk": "把静态页面当作账号系统，缺少服务端授权。", "mitigation": "授权只在服务端实现，并用越权用例验证。" },
+        { "risk": "范围过大导致迟迟无法上线。", "mitigation": "从一条关键业务流程开始，其余按真实使用反馈增加。" },
+        { "risk": "个人信息义务被忽略。", "mitigation": "范围确认阶段列出个人信息与保存期限，并验证导出删除。" },
+        { "risk": "自研后缺少维护团队。", "mitigation": "选型阶段评估运维能力，必要时采购托管方案。" }
+      ],
+      "handoff": ["业务模型说明与首条流程定义", "选型记录与退出方式", "权限矩阵与审计留存设计", "验收记录", "账号与权限变更流程", "数据请求与故障处理责任说明"]
+    },
+    {
+      "capability": "live-deployment",
+      "title": "公网部署、DNS与运行验收",
+      "summary": "把通过准备检查的site/上传到客户授权的托管，配置域名与HTTPS，并用实测回执关联到同一版本。",
+      "guide": "guides/publishing.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "授权与条件",
+          "steps": [
+            {
+              "id": "live-deployment.hosting-authority",
+              "action": "确认托管账户、域名持有人、费用承担人与授权范围；核心不代为开通账户或改DNS。",
+              "owner": "client",
+              "inputs": ["托管账户信息", "域名持有人", "授权说明"],
+              "outputs": ["部署授权记录"],
+              "blocking": true
+            },
+            {
+              "id": "live-deployment.region-requirements",
+              "action": "确认目标访问地区及其网络可达、备案或许可等要求；托管在特定地区时按当地规定核实。",
+              "owner": "client",
+              "inputs": ["目标地区", "托管地区"],
+              "outputs": ["地区要求清单"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "托管选择",
+          "steps": [
+            {
+              "id": "live-deployment.hosting-choice",
+              "action": "对照vendorCriteria选择静态托管与DNS，记录选择依据与未解决条件。",
+              "owner": "delivery",
+              "inputs": ["地区要求清单", "vendorCriteria"],
+              "outputs": ["托管选型记录"],
+              "decision": { "question": "采用哪种托管与域名方案？", "criteria": ["目标地区可达性", "HTTPS证书是否自动管理", "部署回执是否可回查", "回退与保留旧版本的方式"] }
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "部署与配置",
+          "steps": [
+            {
+              "id": "live-deployment.prepare-package",
+              "action": "确认baseUrl为实际HTTPS地址，build、check、review通过后运行prepare-publish生成待上传包。",
+              "owner": "delivery",
+              "inputs": ["已构建版本", "三项人工核对证据"],
+              "outputs": ["公开准备包"],
+              "blocking": true
+            },
+            {
+              "id": "live-deployment.upload-site",
+              "action": "只把site/作为静态网站根上传到托管；内部source与回执不公开；保留部署ID与时间。",
+              "owner": "vendor",
+              "inputs": ["公开准备包", "部署授权记录"],
+              "outputs": ["部署回执"],
+              "blocking": true
+            },
+            {
+              "id": "live-deployment.dns-https",
+              "action": "按供应商官方步骤配置域名记录与HTTPS证书，记录变更时间与前后值。",
+              "owner": "vendor",
+              "inputs": ["部署回执", "域名持有人授权"],
+              "outputs": ["DNS与证书配置记录"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "运行验收",
+          "steps": [
+            {
+              "id": "live-deployment.post-deploy-checks",
+              "action": "上线后检查HTTPS、跳转、页面、静态资源、404、移动布局、目标地区访问和联系或业务路径。",
+              "owner": "delivery",
+              "inputs": ["部署回执", "验收用例"],
+              "outputs": ["运行验收记录"],
+              "blocking": true
+            },
+            {
+              "id": "live-deployment.link-receipt",
+              "action": "把部署回执与实测记录关联到同一版本ID，准备包的published:false不改写为已发布。",
+              "owner": "delivery",
+              "inputs": ["部署回执", "运行验收记录"],
+              "outputs": ["版本关联记录"]
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接与运营",
+          "steps": [
+            {
+              "id": "live-deployment.rollback-plan",
+              "action": "记录回退方式与保留的上一个可用版本，并交接域名、托管和证书续期责任。",
+              "owner": "delivery",
+              "inputs": ["版本关联记录"],
+              "outputs": ["回退与续期说明"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        {
+          "id": "live-deployment.region-reach",
+          "category": "地区与可达",
+          "criterion": "目标访问地区可稳定访问；托管在特定地区时备案或许可要求已核实。",
+          "verify": "目标地区实测访问与官方要求文档"
+        },
+        { "id": "live-deployment.https", "category": "HTTPS", "criterion": "证书自动签发续期，或续期责任人明确。", "verify": "证书颁发与到期时间记录" },
+        { "id": "live-deployment.deploy-trace", "category": "部署回执", "criterion": "每次部署有可回查的ID、时间与对应文件。", "verify": "后台部署记录" },
+        { "id": "live-deployment.rollback", "category": "回退", "criterion": "支持保留历史部署并回到上一版本。", "verify": "一次回退演练记录" },
+        { "id": "live-deployment.dns-control", "category": "DNS控制", "criterion": "域名记录的修改权限、生效方式与责任人明确。", "verify": "域名后台权限截图（隐去敏感信息）" },
+        { "id": "live-deployment.account-ownership", "category": "账户归属", "criterion": "账户和域名属于客户，交接时可转移或移出。", "verify": "账户信息与服务条款" }
+      ],
+      "acceptance": [
+        {
+          "id": "live-deployment.https-valid",
+          "scenario": "以域名访问站点首页和子页",
+          "expected": "证书有效且域名匹配，HTTP请求跳转HTTPS。",
+          "evidence": "浏览器与命令行请求结果、证书信息"
+        },
+        { "id": "live-deployment.dns-resolves", "scenario": "从多个网络解析域名", "expected": "解析到约定目标，且与记录的配置一致。", "evidence": "解析查询结果与配置记录" },
+        {
+          "id": "live-deployment.redirects-canonical",
+          "scenario": "访问带www与不带www、带与不带尾斜杠的地址",
+          "expected": "统一跳转到canonical地址，sitemap与canonical一致。",
+          "evidence": "请求链与sitemap内容"
+        },
+        { "id": "live-deployment.not-found-page", "scenario": "访问不存在的地址", "expected": "返回404状态与可用的提示页。", "evidence": "请求状态码与页面" },
+        { "id": "live-deployment.region-access", "scenario": "在目标地区网络访问首页、图片与脚本", "expected": "页面和静态资源均可加载，耗时可接受。", "evidence": "地区网络访问记录" },
+        {
+          "id": "live-deployment.contact-path-live",
+          "scenario": "在线上站点走一次联系或业务路径",
+          "expected": "路径有真实结果，记录哪一种路径已验证。",
+          "evidence": "提交或点击记录与对方收到的证据"
+        },
+        {
+          "id": "live-deployment.only-site-root",
+          "scenario": "检查线上能否访问内部source、回执或工作区文件",
+          "expected": "均不可访问，只暴露site/内容。",
+          "evidence": "请求结果列表"
+        },
+        {
+          "id": "live-deployment.receipt-linked-to-revision",
+          "scenario": "核对部署回执与版本",
+          "expected": "部署ID、时间和版本ID一一对应；准备包本身不作为部署证据。",
+          "evidence": "回执与版本关联记录"
+        }
+      ],
+      "risks": [
+        { "risk": "把准备包当作已发布。", "mitigation": "回执保持published:false，只有外部部署回执和实测才算上线。" },
+        { "risk": "内部资料随网站根被公开。", "mitigation": "只上传site/，上线后用only-site-root检查。" },
+        { "risk": "域名或账户不在客户名下。", "mitigation": "授权阶段确认归属，交接时记录转移方式。" },
+        { "risk": "证书到期无人续期。", "mitigation": "确认自动续期或指定责任人。" }
+      ],
+      "handoff": ["部署授权记录与托管选型记录", "部署回执与版本关联记录", "DNS与证书配置记录", "运行验收记录", "回退与续期说明", "账户与域名持有人信息"]
+    },
+    {
+      "capability": "visual-editor",
+      "title": "可视化拖拽编辑器",
+      "summary": "规划项：受控组件的可视化编辑，必须与内容源和版本机制一致；当前未实现。",
+      "guide": "docs/ROADMAP.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "范围确认",
+          "steps": [
+            {
+              "id": "visual-editor.editable-scope",
+              "action": "确认哪些页面与区域需要客户自行拖拽编辑，其余仍由内容源管理。",
+              "owner": "client",
+              "inputs": ["页面清单", "编辑人员"],
+              "outputs": ["可编辑范围说明"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "select",
+          "name": "选型",
+          "steps": [
+            {
+              "id": "visual-editor.editor-choice",
+              "action": "对照vendorCriteria比较画布编辑候选，候选在核实前标注“待核实”。",
+              "owner": "delivery",
+              "inputs": ["可编辑范围说明", "vendorCriteria"],
+              "outputs": ["选型记录"],
+              "decision": { "question": "采用现成画布编辑器，还是在受控字段上做表单式编辑？", "criteria": ["是否输出可审阅的结构化数据", "组件是否可限制", "与版本机制的集成难度", "许可证"] },
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "设计",
+          "steps": [
+            {
+              "id": "visual-editor.source-mapping",
+              "action": "定义编辑结果写回project.json的结构，保证再次构建不丢内容。",
+              "owner": "delivery",
+              "inputs": ["选型记录"],
+              "outputs": ["内容映射设计"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "实施",
+          "steps": [
+            {
+              "id": "visual-editor.integrate-editor",
+              "action": "接入编辑器、受控组件与权限，保存产生新草稿而非直接改线上版本。",
+              "owner": "delivery",
+              "inputs": ["内容映射设计"],
+              "outputs": ["编辑器集成实现"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "visual-editor.run-acceptance",
+              "action": "按验收用例验证编辑往返、再次构建和版本差异。",
+              "owner": "delivery",
+              "inputs": ["验收用例"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        {
+          "id": "visual-editor.structured-output",
+          "category": "结构化输出",
+          "criterion": "编辑结果可导出为结构化数据，不是不可审阅的HTML片段。",
+          "verify": "测试编辑后的数据导出"
+        },
+        { "id": "visual-editor.component-control", "category": "组件控制", "criterion": "可限制可用组件与样式，阻止任意脚本。", "verify": "配置后的可用组件列表" },
+        { "id": "visual-editor.license", "category": "许可证", "criterion": "开源许可证与使用方式相容。", "verify": "LICENSE与官方说明" },
+        { "id": "visual-editor.data-export", "category": "数据导出", "criterion": "页面数据可批量导出，退出时不依赖私有格式。", "verify": "测试页面导出结果" }
+      ],
+      "acceptance": [
+        {
+          "id": "visual-editor.roundtrip-no-loss",
+          "scenario": "在编辑器中修改后保存，再从内容源重新载入",
+          "expected": "内容、顺序和多语言字段无丢失。",
+          "evidence": "保存前后数据对照"
+        },
+        { "id": "visual-editor.rebuild-stable", "scenario": "编辑后构建两次", "expected": "同一资料得到同一版本ID，旧版本保留。", "evidence": "两次构建的版本ID与版本列表" },
+        { "id": "visual-editor.diff-visible", "scenario": "编辑保存后查看变更", "expected": "可看到相对上一版本的差异，并可回退。", "evidence": "差异输出与回退记录" },
+        {
+          "id": "visual-editor.no-script-injection",
+          "scenario": "尝试在编辑内容中加入脚本或内联事件",
+          "expected": "被拒绝或转义，输出页面不执行。",
+          "evidence": "输入与生成页面检查"
+        }
+      ],
+      "risks": [
+        { "risk": "编辑结果绕过内容源，导致重新构建丢失内容。", "mitigation": "要求编辑器只写回内容源并用roundtrip-no-loss验证。" },
+        { "risk": "任意HTML和脚本带来安全风险。", "mitigation": "限制组件，拒绝脚本输入。" }
+      ],
+      "handoff": ["选型记录", "内容映射设计", "验收记录", "可编辑范围与权限说明"]
+    },
+    {
+      "capability": "media-assets",
+      "title": "图片与视频资源管理和授权记录",
+      "summary": "规划项：资源导入、尺寸格式、引用与授权记录，保证可交接、可回查。",
+      "guide": "docs/ROADMAP.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "资源与授权",
+          "steps": [
+            {
+              "id": "media-assets.asset-inventory",
+              "action": "列出需要使用的图片与视频，并提供来源、授权范围、期限与署名要求。",
+              "owner": "client",
+              "inputs": ["素材文件", "授权文件或来源说明"],
+              "outputs": ["资源清单"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "元数据设计",
+          "steps": [
+            {
+              "id": "media-assets.metadata",
+              "action": "为每个资源记录来源、授权范围、到期日、替代文本和不同语言说明，不补写未提供的信息。",
+              "owner": "delivery",
+              "inputs": ["资源清单"],
+              "outputs": ["资源元数据"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "导入与引用",
+          "steps": [
+            {
+              "id": "media-assets.import-optimize",
+              "action": "导入资源，限制格式与尺寸，生成可用尺寸，并保留原件。",
+              "owner": "delivery",
+              "inputs": ["资源清单", "资源元数据"],
+              "outputs": ["站点资源", "原件存档"]
+            },
+            {
+              "id": "media-assets.reference-content",
+              "action": "在内容源中以资源ID引用，缺失资源或授权过期时阻止构建。",
+              "owner": "delivery",
+              "inputs": ["资源元数据"],
+              "outputs": ["引用实现"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "media-assets.run-acceptance",
+              "action": "按验收用例核对引用、授权记录、替代文本和交接包。",
+              "owner": "delivery",
+              "inputs": ["验收用例"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "handoff",
+          "name": "交接",
+          "steps": [
+            {
+              "id": "media-assets.originals-handoff",
+              "action": "交付原件、授权记录与资源清单，说明授权到期后的处理。",
+              "owner": "delivery",
+              "inputs": ["原件存档", "资源元数据"],
+              "outputs": ["资源交接包"]
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "media-assets.license-records", "category": "授权记录", "criterion": "图库或素材来源能提供可回查的授权凭据与使用范围。", "verify": "授权文件副本" },
+        { "id": "media-assets.format-support", "category": "格式支持", "criterion": "格式与尺寸满足站点性能与浏览器兼容要求。", "verify": "样例资源的加载检查" },
+        { "id": "media-assets.data-export", "category": "导出", "criterion": "资源和元数据可完整导出。", "verify": "测试导出结果" }
+      ],
+      "acceptance": [
+        { "id": "media-assets.reference-valid", "scenario": "构建引用了不存在的资源", "expected": "构建被拒绝并指明资源ID，不生成缺图页面。", "evidence": "构建错误输出" },
+        {
+          "id": "media-assets.license-recorded",
+          "scenario": "检查每个已使用资源的授权记录",
+          "expected": "都有来源、授权范围和期限；缺失的资源不可用于公开包。",
+          "evidence": "资源元数据表"
+        },
+        { "id": "media-assets.alt-text", "scenario": "检查每张图片在各语言下的替代文本", "expected": "均由客户或授权工作流提供，没有编造内容。", "evidence": "元数据与页面检查" },
+        { "id": "media-assets.size-format", "scenario": "检查超大或不支持格式的资源", "expected": "被拒绝或转换并记录，页面不加载超大原图。", "evidence": "导入结果与页面资源列表" },
+        { "id": "media-assets.handoff-originals", "scenario": "检查交接包", "expected": "包含原件、授权记录与引用清单，可在另一环境重新构建。", "evidence": "交接包内容清单" }
+      ],
+      "risks": [{ "risk": "使用授权不明的素材。", "mitigation": "无授权记录的资源阻止进入公开包。" }, { "risk": "原件丢失导致无法重新导出。", "mitigation": "导入时保留原件并随交接包交付。" }],
+      "handoff": ["资源清单与元数据表", "授权文件副本", "原件存档", "引用清单与验收记录"]
+    },
+    {
+      "capability": "additional-locales",
+      "title": "中文英文之外的界面翻译与审核",
+      "summary": "规划项：新增语言的界面词典、译文与审核；译文由客户或经授权的翻译流程提供，核心不编造。",
+      "guide": "docs/ROADMAP.md",
+      "phases": [
+        {
+          "id": "scope",
+          "name": "语言与市场",
+          "steps": [
+            {
+              "id": "additional-locales.target-locales",
+              "action": "确认目标语言、地区、书写方向与是否同时需要法律文本和业务信息的译文。",
+              "owner": "client",
+              "inputs": ["目标市场", "语言清单"],
+              "outputs": ["语言范围说明"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "design",
+          "name": "词典与排版设计",
+          "steps": [
+            {
+              "id": "additional-locales.dictionary",
+              "action": "列出界面词典键，设计日期、数字、复数与书写方向的处理。",
+              "owner": "delivery",
+              "inputs": ["语言范围说明"],
+              "outputs": ["界面词典", "排版规则"],
+              "blocking": true
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "name": "译文与实现",
+          "steps": [
+            {
+              "id": "additional-locales.translations",
+              "action": "提供界面、页面与业务信息的译文，并说明译者或审核人。",
+              "owner": "client",
+              "inputs": ["界面词典", "站点内容"],
+              "outputs": ["译文与审核记录"],
+              "blocking": true
+            },
+            {
+              "id": "additional-locales.locale-support",
+              "action": "在渲染与检查中加入新语言，缺少任何译文即拒绝构建。",
+              "owner": "delivery",
+              "inputs": ["界面词典", "译文与审核记录"],
+              "outputs": ["新语言实现"]
+            }
+          ]
+        },
+        {
+          "id": "verify",
+          "name": "验证",
+          "steps": [
+            {
+              "id": "additional-locales.run-acceptance",
+              "action": "按验收用例核对词典、排版、业务信息一致性、hreflang和审核记录。",
+              "owner": "delivery",
+              "inputs": ["验收用例"],
+              "outputs": ["验收记录"],
+              "blocking": true
+            }
+          ]
+        }
+      ],
+      "vendorCriteria": [
+        { "id": "additional-locales.review", "category": "译文审核", "criterion": "译者或审核人具备目标语言能力，并可留下审核记录。", "verify": "审核记录" },
+        { "id": "additional-locales.rtl-support", "category": "书写方向", "criterion": "需要从右到左的语言时，渲染与样式有明确支持。", "verify": "样例页面检查" }
+      ],
+      "acceptance": [
+        {
+          "id": "additional-locales.ui-dictionary-complete",
+          "scenario": "检查新语言的全部界面词典键",
+          "expected": "无缺失，缺失时构建失败而非回退到其他语言。",
+          "evidence": "构建输出与词典对照"
+        },
+        { "id": "additional-locales.rtl-layout", "scenario": "对从右到左的语言检查页面", "expected": "方向、对齐与导航均正确，没有错位。", "evidence": "多设备页面检查" },
+        {
+          "id": "additional-locales.business-info-consistent",
+          "scenario": "对照各语言的价格、规则、联系方式等业务信息",
+          "expected": "与源语言一致，差异有说明。",
+          "evidence": "逐项对照表"
+        },
+        {
+          "id": "additional-locales.hreflang",
+          "scenario": "检查语言页面的互链与sitemap",
+          "expected": "各语言页面互相声明，canonical与sitemap一致。",
+          "evidence": "页面源码与sitemap内容"
+        },
+        { "id": "additional-locales.review-recorded", "scenario": "检查译文审核记录", "expected": "每种新增语言都有审核人和日期，译文不是核心自动生成。", "evidence": "审核记录" }
+      ],
+      "risks": [{ "risk": "机器翻译未经审核直接公开。", "mitigation": "要求审核记录，缺少时不进入公开包。" }, { "risk": "各语言业务信息不一致。", "mitigation": "用逐项对照验收。" }],
+      "handoff": ["界面词典与排版规则", "译文与审核记录", "验收记录"]
+    }
+  ]
+}

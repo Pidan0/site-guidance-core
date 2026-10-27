@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "kind": "cms",
+  "version": "1.0.0",
+  "capability": "cms",
+  "summary": "内容后台连接器：内容条目的草稿、审核、发布、撤回与归档；发布事件驱动站点构建。",
+  "notes": "契约只定义连接器必须满足的行为，不代表任何后台已接通；能力状态仍以knowledge/capabilities.json为准。用法见adapters/README.md。",
+  "interface": {
+    "operations": "连接器对象上同名的异步方法，入参和返回值为JSON对象；失败时抛出带code的错误。",
+    "ingestEvent": "async ingestEvent(rawBody, headers) → { status: \"applied\"|\"duplicate\", entityId, state }；仅在存在入站事件时必需。",
+    "onEvent": "onEvent(handler) → 取消订阅函数；handler接收出站事件信封；仅在存在出站事件时必需。",
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "entityId": { "type": "string", "minLength": 1 },
+        "occurredAt": { "type": "string", "minLength": 1 },
+        "data": { "type": "object" }
+      },
+      "required": ["id", "type", "entityId", "occurredAt"]
+    }
+  },
+  "operations": [
+    {
+      "name": "createEntry",
+      "summary": "创建草稿条目；初始状态draft。",
+      "idempotent": true,
+      "creates": true,
+      "input": {
+        "type": "object",
+        "properties": {
+          "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "contentType": { "type": "string", "minLength": 1 },
+          "locale": { "type": "string", "minLength": 1 },
+          "fields": { "type": "object" }
+        },
+        "required": ["idempotencyKey", "contentType", "locale", "fields"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "state": { "type": "string", "minLength": 1 },
+          "contentType": { "type": "string", "minLength": 1 }
+        },
+        "required": ["id", "state", "contentType"]
+      },
+      "errors": ["VALIDATION_FAILED", "IDEMPOTENCY_CONFLICT"]
+    },
+    {
+      "name": "getEntry",
+      "summary": "按id读取当前状态；必须返回契约状态名。",
+      "input": { "type": "object", "properties": { "id": { "type": "string", "minLength": 1 } }, "required": ["id"] },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND"]
+    },
+    {
+      "name": "updateEntry",
+      "summary": "修改条目字段；以expectedVersion做乐观并发控制，不静默覆盖他人修改。",
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "expectedVersion": { "type": "number" }, "fields": { "type": "object" } },
+        "required": ["id", "expectedVersion", "fields"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 }, "version": { "type": "number" } },
+        "required": ["id", "state", "version"]
+      },
+      "errors": ["NOT_FOUND", "VERSION_CONFLICT", "VALIDATION_FAILED", "PERMISSION_DENIED"]
+    },
+    {
+      "name": "submitForReview",
+      "summary": "提交审核。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "requestChanges",
+      "summary": "审核退回修改。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "publishEntry",
+      "summary": "发布条目；缺少必需语言译文时拒绝发布。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED", "PERMISSION_DENIED"]
+    },
+    {
+      "name": "unpublishEntry",
+      "summary": "撤回已发布条目，线上不再出现。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    },
+    {
+      "name": "archiveEntry",
+      "summary": "归档未发布的条目。",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128 } },
+        "required": ["id", "idempotencyKey"]
+      },
+      "output": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "minLength": 1 }, "state": { "type": "string", "minLength": 1 } },
+        "required": ["id", "state"]
+      },
+      "errors": ["NOT_FOUND", "ILLEGAL_TRANSITION", "IDEMPOTENCY_CONFLICT", "VALIDATION_FAILED"]
+    }
+  ],
+  "events": [
+    { "name": "entry.published", "direction": "outbound", "summary": "条目已发布，可触发站点构建。", "data": { "type": "object", "properties": {  } } },
+    { "name": "entry.unpublished", "direction": "outbound", "summary": "条目已撤回。", "data": { "type": "object", "properties": {  } } },
+    { "name": "entry.archived", "direction": "outbound", "summary": "条目已归档。", "data": { "type": "object", "properties": {  } } }
+  ],
+  "lifecycle": {
+    "entity": "entry",
+    "create": "createEntry",
+    "read": "getEntry",
+    "initial": "draft",
+    "states": ["draft", "in_review", "published", "unpublished", "archived"],
+    "terminal": ["archived"],
+    "transitions": [
+      { "from": "draft", "to": "in_review", "via": { "operation": "submitForReview" } },
+      { "from": "in_review", "to": "draft", "via": { "operation": "requestChanges" } },
+      { "from": "in_review", "to": "published", "via": { "operation": "publishEntry" }, "emits": "entry.published" },
+      { "from": "draft", "to": "published", "via": { "operation": "publishEntry" }, "emits": "entry.published" },
+      { "from": "published", "to": "unpublished", "via": { "operation": "unpublishEntry" }, "emits": "entry.unpublished" },
+      { "from": "unpublished", "to": "published", "via": { "operation": "publishEntry" }, "emits": "entry.published" },
+      { "from": "draft", "to": "archived", "via": { "operation": "archiveEntry" }, "emits": "entry.archived" },
+      { "from": "unpublished", "to": "archived", "via": { "operation": "archiveEntry" }, "emits": "entry.archived" }
+    ]
+  },
+  "errors": [
+    { "code": "VALIDATION_FAILED", "meaning": "输入缺字段或取值不合格式；不产生任何副作用。", "retryable": false },
+    { "code": "NOT_FOUND", "meaning": "指定id的对象不存在。", "retryable": false },
+    { "code": "ILLEGAL_TRANSITION", "meaning": "当前状态不允许该操作或事件；状态保持不变，不静默忽略。", "retryable": false },
+    { "code": "IDEMPOTENCY_CONFLICT", "meaning": "同一idempotencyKey被用于不同的输入。", "retryable": false },
+    { "code": "SIGNATURE_INVALID", "meaning": "事件签名缺失或不匹配；事件不被处理。", "retryable": false },
+    { "code": "SIGNATURE_EXPIRED", "meaning": "事件时间戳超出容忍窗口；事件不被处理。", "retryable": false },
+    { "code": "UPSTREAM_UNAVAILABLE", "meaning": "上游供应商暂时不可用；调用方可以用同一idempotencyKey重试。", "retryable": true },
+    { "code": "VERSION_CONFLICT", "meaning": "expectedVersion与当前版本不一致；内容不变。", "retryable": false },
+    { "code": "PERMISSION_DENIED", "meaning": "当前身份无权执行该操作；内容不变并记录审计。", "retryable": false }
+  ],
+  "conformance": {
+    "create": { "contentType": "article", "locale": "zh-CN", "fields": { "title": "测试标题" } },
+    "createAlt": { "contentType": "article", "locale": "en", "fields": { "title": "Test title" } },
+    "operations": { "submitForReview": {  }, "requestChanges": {  }, "publishEntry": {  }, "unpublishEntry": {  }, "archiveEntry": {  } },
+    "events": {  }
+  },
+  "idempotency": {
+    "operations": "带idempotencyKey的操作：同键同输入返回相同结果且只产生一次副作用；同键不同输入抛IDEMPOTENCY_CONFLICT；键至少保留24小时。",
+    "events": "入站事件以信封id去重：重复投递返回{status:\"duplicate\"}，不重复变更状态、不重复发出出站事件。",
+    "outbound": "每次状态转换最多发出一次出站事件，事件id稳定，幂等重放不再发出。"
+  },
+  "signature": { "required": false }
+}

@@ -33,6 +33,7 @@ const HELP = `Site Guidance Core ${ENGINE_VERSION}
   node bin/site-core.mjs plan --brief examples/b2b.brief.json [--out 新目录]
   node bin/site-core.mjs answer --brief 需求.json --answers 回答.json [--out 新需求文件]
   node bin/site-core.mjs catalog
+  node bin/site-core.mjs playbook --route managed-commerce|--capability commerce [--json]
 
 本地静态站闭环：
   node bin/site-core.mjs init --brief 需求.json --site 内容.json --out 新工作区
@@ -68,7 +69,7 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
   const [command, ...rest] = args, options = argsOf(rest);
   const print = value => stdout(typeof value === 'string' ? value : JSON.stringify(value, null, 2));
   const allowed = {
-    help: [], intake: ['text'], plan: ['brief', 'out'], answer: ['brief', 'answers', 'out'], catalog: [],
+    help: [], intake: ['text'], plan: ['brief', 'out'], answer: ['brief', 'answers', 'out'], catalog: [], playbook: ['route', 'capability', 'json'],
     init: ['brief', 'site', 'out'], build: ['workspace'], update: ['workspace', 'patch'], check: ['workspace'],
     rollback: ['workspace', 'revision', 'discard-draft'], review: ['workspace', 'check', 'status', 'note'],
     export: ['workspace', 'out'], 'prepare-publish': ['workspace', 'out'], demo: ['out']
@@ -76,10 +77,19 @@ export async function runCLI(args, { stdout = text => process.stdout.write(`${te
   const cmd = command ?? 'help';
   if (!Object.hasOwn(allowed, cmd)) throw fail('INVALID_ARGUMENTS', `未知命令：${cmd}`);
   for (const key of Object.keys(options)) if (!allowed[cmd].includes(key)) throw fail('INVALID_ARGUMENTS', `未知选项：--${key}`);
-  if (options['discard-draft'] !== undefined && options['discard-draft'] !== true) throw fail('INVALID_ARGUMENTS', '--discard-draft是独立开关，不接受参数值');
+  for (const flag of ['discard-draft', 'json']) {
+    if (options[flag] !== undefined && options[flag] !== true) throw fail('INVALID_ARGUMENTS', `--${flag}是独立开关，不接受参数值`);
+  }
   if (cmd === 'help') return print(HELP);
   if (cmd === 'intake') return print(core.intakeRequest(required(options, 'text')));
   if (cmd === 'catalog') return print({ ...core.validateCatalog(), routes: core.routes, capabilities: core.capabilities, rules: core.rules });
+  if (cmd === 'playbook') {
+    for (const key of ['route', 'capability']) {
+      if (options[key] !== undefined && typeof options[key] !== 'string') throw fail('INVALID_ARGUMENTS', `需要 --${key} 的值`);
+    }
+    const book = core.getPlaybook({ route: options.route, capability: options.capability });
+    return print(options.json === true ? book : core.playbookMarkdown(book));
+  }
   if (cmd === 'plan') {
     const plan = core.planSite(await load(required(options, 'brief')));
     if (options.out) {
